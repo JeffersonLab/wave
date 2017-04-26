@@ -1,2 +1,2 @@
 # WAVE
-Web Archive Viewer Expositor
+Web Archive Viewer and Expositor
