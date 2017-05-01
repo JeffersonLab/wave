@@ -68,32 +68,36 @@ jlab.wave.addPv = function (pv) {
     $("#chart-holder").css("border", "none");
 };
 
-jlab.wave.getData = function(c) {
+jlab.wave.getData = function (c) {
     var url = jlab.wave.mygetUrl + '/span-data',
             data = {c: c.pv},
-            dataType = "json";
-    
-    if(url.indexOf("/") !== 0) {
+    dataType = "json",
+            options = {url: url, type: 'GET', data: data, dataType: dataType};
+
+    if (url.indexOf("/") !== 0) {
         dataType = "jsonp";
+        options.dataType = dataType;
+        options.jsonp = 'jsonp';
     }
 
-    var promise = $.ajax({
-        url: url,
-        type: 'GET',
-        data: data,
-        dataType: dataType,
-        jsonp: 'p'
-    });
+    var promise = $.ajax(options);
+
     promise.done(function (json) {
         c.data = json.data;
         c.plot.setData([c.data]);
         c.plot.setupGrid();
         c.plot.draw();
     });
+
     promise.error(function (xhr) {
         var json;
+
         try {
-            json = $.parseJSON(xhr.responseText);
+            if (typeof xhr.responseText === 'undefined' || xhr.responseText === '') {
+                json = {};
+            } else {
+                json = $.parseJSON(xhr.responseText);
+            }
         } catch (err) {
             window.console && console.log('Response is not JSON: ' + xhr.responseText);
             json = {};
@@ -103,7 +107,7 @@ jlab.wave.getData = function(c) {
         alert('Unable to perform request: ' + message);
     });
 
-    return promise;    
+    return promise;
 };
 
 jlab.wave.doLayout = function () {
