@@ -14,6 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "ChartController", urlPatterns = {"/chart"})
 public class ChartController extends HttpServlet {
 
+    public static final String MYGET_URL;
+    
+    static {
+        String mygetUrl = System.getenv("WAVE_MYGET_URL");
+        
+        if(mygetUrl == null) {
+            mygetUrl = "/myget";
+        }
+        
+        MYGET_URL = mygetUrl;
+    }
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -25,6 +37,9 @@ public class ChartController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        request.setAttribute("mygetUrl", MYGET_URL);
+        
         request.getRequestDispatcher("/WEB-INF/views/chart.jsp").forward(request, response);
     }
 }
