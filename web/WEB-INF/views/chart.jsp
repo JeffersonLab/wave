@@ -23,6 +23,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot-0.8.3.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.time-0.8.3.min.js"></script>        
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.resize-0.8.3.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.tooltip-0.8.5.min.js"></script>        
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/wave.js?v=${initParam.releaseNumber}"></script>
         <script type="text/javascript">
             jlab.wave.mygetUrl = '${fn:escapeXml(mygetUrl)}';

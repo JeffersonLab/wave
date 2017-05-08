@@ -51,30 +51,39 @@ jlab.wave.addPv = function (pv) {
 
     var minDate = new Date(),
             maxDate = new Date();
-    
+
     minDate.setMinutes(minDate.getMinutes() - 1);
 
-    var plot = $.plot($div.find(".chart-body"), [[]], {
-        series: {
-           lines: {
-               show: true
-           },    
-           points: {
-               show: true
-           }
-        },
-        xaxis: {
-            show: true,
-            min: minDate.getTime(),
-            max: maxDate.getTime(),
-            mode: "time",
-            timezone: "browser" /*browser local*/
-        },
-        yaxis: {
-            show: true,
-            labelWidth: 75
-        }
-    });
+    var $placeholder = $div.find(".chart-body"),
+            plot = $.plot($placeholder, [[]], {
+                series: {
+                    lines: {
+                        show: true
+                    },
+                    points: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    show: true,
+                    min: minDate.getTime(),
+                    max: maxDate.getTime(),
+                    mode: "time",
+                    timezone: "browser" /*browser local*/
+                },
+                yaxis: {
+                    show: true,
+                    labelWidth: 75
+                },
+                grid: {
+                    hoverable: true
+                },
+                tooltip: {
+                    show: true,
+                    content: "%s | x: %x; y: %y",
+                    xDateFormat: "%Y-%m-%d %H:%M:%S"
+                }
+            });
 
     var c = new jlab.wave.Chart(pv, plot);
 
@@ -104,31 +113,31 @@ jlab.wave.getData = function (c) {
         /*console.log(json);*/
 
         var flotFormattedData = [],
-        prev = null;
+                prev = null;
 
         for (var i = 0; i < json.data.length; i++) {
             var record = json.data[i],
-            /* Date must be ISO 8601 format with time (Not just date).
-             * The space should be a 'T' so we replace it.
-             * Only interrepted as local time zone due to time; if just date it
-             * would be interpreted as UTC time zone.
-             */
-            timestamp = Date.parse(record.date.replace(" ", "T")),
-            value =  parseFloat(record.value), /*Should already be float?*/
-            point = [timestamp, value];
+                    /* Date must be ISO 8601 format with time (Not just date).
+                     * The space should be a 'T' so we replace it.
+                     * Only interrepted as local time zone due to time; if just date it
+                     * would be interpreted as UTC time zone.
+                     */
+                    timestamp = Date.parse(record.date.replace(" ", "T")),
+                    value = parseFloat(record.value), /*Should already be float?*/
+                    point = [timestamp, value];
 
-            if(prev !== null) {
+            if (prev !== null) {
                 flotFormattedData.push([timestamp, prev]);
             }
 
-            flotFormattedData.push(point); 
-            
+            flotFormattedData.push(point);
+
             prev = value;
         }
-        
+
         /*console.log(flotFormattedData);*/
 
-        c.data = flotFormattedData;
+        c.data = {label: c.pv, data: flotFormattedData};
         c.plot.setData([c.data]);
         c.plot.setupGrid();
         c.plot.draw();
