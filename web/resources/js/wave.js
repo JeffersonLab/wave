@@ -187,8 +187,6 @@ $(document).on("click", ".chart-close-button", function () {
     delete jlab.wave.pvToChartMap[pv];
     jlab.wave.doLayout();
 
-    console.log(jlab.wave.pvToChartMap);
-
     if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
         $("#chart-holder").css("border", "1px dashed black");
     }
