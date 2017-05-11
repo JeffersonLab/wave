@@ -58,10 +58,11 @@ jlab.wave.addPv = function (pv) {
             plot = $.plot($placeholder, [[]], {
                 series: {
                     lines: {
-                        show: true
+                        show: true,
+                        steps: true
                     },
                     points: {
-                        show: true
+                        show: false
                     }
                 },
                 xaxis: {
@@ -76,10 +77,12 @@ jlab.wave.addPv = function (pv) {
                     labelWidth: 75
                 },
                 grid: {
-                    hoverable: true
+                    hoverable: true,
+                    autoHighlight: false
                 },
                 tooltip: {
                     show: true,
+                    lines: true,
                     content: "%s | x: %x; y: %y",
                     xDateFormat: "%Y-%m-%d %H:%M:%S"
                 }
@@ -118,16 +121,15 @@ jlab.wave.getData = function (c) {
         for (var i = 0; i < json.data.length; i++) {
             var record = json.data[i],
                     /* Date must be ISO 8601 format with time (Not just date).
-                     * The space should be a 'T' so we replace it.
                      * Only interrepted as local time zone due to time; if just date it
                      * would be interpreted as UTC time zone.
                      */
-                    timestamp = Date.parse(record.date.replace(" ", "T")),
+                    timestamp = Date.parse(record.date),
                     value = parseFloat(record.value), /*Should already be float?*/
                     point = [timestamp, value];
 
             if (prev !== null) {
-                flotFormattedData.push([timestamp, prev]);
+                /*flotFormattedData.push([timestamp, prev]);*/ /*Let's try the built-in step feature of flot instead*/
             }
 
             flotFormattedData.push(point);
