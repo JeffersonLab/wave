@@ -1,9 +1,10 @@
-#chart-holder {
-    position: absolute;
-    left: 1em;
-    top: 3em;
-    bottom: 1em;
-    right: 1em;
+#chart-page {
+    display: flex;
+    flex-direction: column;    
+}
+#chart-container {
+    flex-grow: 1;
+    position: relative;
     border: 1px dashed black;
 }
 .chart {
@@ -18,7 +19,7 @@
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0;
+    right: 0;    
 }
 .chart-title-bar {
     position: absolute;
@@ -34,23 +35,9 @@
 .chart-close-button {
     float: right;
 }
-.subpanel:nth-child(2) {
-    text-align: right;
+#version {
+    float: right;
+    margin: 0.5em;
+    font-size: 0.60em;
 }
-h1 {
-    font-size: 1em;
-    margin: 0;
-}
-#chrome {
-    display: table;
-    width: 100%;
-    min-width: 450px;
-}
-.subpanel {
-    display: table-cell;
-}
-#pv-input {
-    width: 9em;
-}
-
 

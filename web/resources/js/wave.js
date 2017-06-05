@@ -35,7 +35,7 @@ jlab.wave.addPv = function (pv) {
         return;
     }
 
-    var $chartHolder = $("#chart-holder"),
+    var $chartHolder = $("#chart-container"),
             $charts = $chartHolder.find(".chart");
 
     if ($charts.length + 1 > jlab.wave.MAX_CHARTS) {
@@ -56,6 +56,9 @@ jlab.wave.addPv = function (pv) {
 
     var $placeholder = $div.find(".chart-body"),
             plot = $.plot($placeholder, [[]], {
+                legend: {
+                    show: false  
+                },
                 series: {
                     lines: {
                         show: true,
@@ -95,7 +98,7 @@ jlab.wave.addPv = function (pv) {
     jlab.wave.getData(c);
 
     $("#pv-input").val("");
-    $("#chart-holder").css("border", "none");
+    $("#chart-container").css("border", "none");
 };
 
 jlab.wave.getData = function (c) {
@@ -167,7 +170,7 @@ jlab.wave.getData = function (c) {
 };
 
 jlab.wave.doLayout = function () {
-    var $chartHolder = $("#chart-holder"),
+    var $chartHolder = $("#chart-container"),
             $charts = $chartHolder.find(".chart");
 
     var offset = 0;
@@ -190,7 +193,7 @@ $(document).on("click", ".chart-close-button", function () {
     jlab.wave.doLayout();
 
     if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
-        $("#chart-holder").css("border", "1px dashed black");
+        $("#chart-container").css("border", "1px dashed black");
     }
 });
 
@@ -206,9 +209,37 @@ $(document).on("click", "#go-button", function () {
     return false;
 });
 
+$(document).on("click", "#options-button", function () {
+    $( "#options-panel" ).panel("open");
+});
+
 $(document).on("keyup", "#pv-input", function (e) {
     if (e.keyCode === 13) {
         $("#go-button").click();
         return false; /*Don't do default action*/
     }
+});
+
+$(window).on("resize", function() {
+    /*var pageHeight = $(window).height();
+    console.log(pageHeight);*/
+    jlab.wave.doLayout();
+});
+
+$(document).on("pageshow", function () {
+    var $page = $(".ui-page-active"),
+            id = $page.attr("id"),
+            $previousBtn = $("#previous-button");
+    if (id === 'chart-page') {
+        $previousBtn.hide();
+    } else {
+        $previousBtn.show();
+    }
+});
+$(document).bind("mobileinit", function () {
+    $.mobile.autoInitialize = false;
+});
+$(function () {
+    $("#header-panel").toolbar({theme: "a", tapToggle: false});
+    $("#footer-panel").toolbar({theme: "a", tapToggle: false});
 });
