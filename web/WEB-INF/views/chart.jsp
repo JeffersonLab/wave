@@ -21,10 +21,10 @@
         </div>          
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" id="options-panel">
-                <input type="text" id="start-date-input" placeholder="Start Date" data-role="datebox" data-options="{&quot;mode&quot;: &quot;flipbox&quot;, &quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
-                <input type="text" id="start-time-input" placeholder="Start Time" data-role="datebox" data-options="{&quot;mode&quot;: &quot;timeflipbox&quot;}"/>
-                <input type="text" id="end-date-input" placeholder="End Date" data-role="datebox" data-options="{&quot;mode&quot;: &quot;flipbox&quot;, &quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
-                <input type="text" id="end-time-input" placeholder="End Time" data-role="datebox" data-options="{&quot;mode&quot;: &quot;timeflipbox&quot;}"/>
+                <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
+                <input type="text" id="start-time-input" placeholder="Start Time"/>
+                <input type="text" id="end-date-input" placeholder="End Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
+                <input type="text" id="end-time-input" placeholder="End Time"/>
                 <button type="button" id="update-datetime-button">Update</button>
                 <a id="cancel-datepicker" href="#">Cancel</a>
             </div>

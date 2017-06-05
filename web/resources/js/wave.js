@@ -8,6 +8,15 @@ jlab.wave.MAX_CHARTS = 5;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
+jlab.wave.hasTouch = function () {
+    try {
+        document.createEvent("TouchEvent");
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 jlab.wave.pad = function (n, width, z) {
     z = z || '0';
     n = n + '';
@@ -39,19 +48,19 @@ jlab.wave.toUserTimeString = function (x) {
     return jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2);
 };
 
-jlab.wave.parseUserDate = function(x) {
+jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
             day = parseInt(x.substring(4, 6)),
             year = parseInt(x.substring(7, 11));
 
-    return new Date(year, month, day, 0, 0);    
+    return new Date(year, month, day, 0, 0);
 };
 
-jlab.wave.parseUserTime = function(x) {
+jlab.wave.parseUserTime = function (x) {
     var hour = parseInt(x.substring(0, 2)),
             minute = parseInt(x.substring(4, 6));
 
-    return new Date(2000, 0, 1, hour, minute);    
+    return new Date(2000, 0, 1, hour, minute);
 };
 
 jlab.wave.Chart = function (pv, plot) {
@@ -77,6 +86,19 @@ jlab.wave.Chart = function (pv, plot) {
             this.data.push([this.i++, point]);
         }
     };
+};
+
+jlab.wave.refresh = function(){
+    for(var key in jlab.wave.pvToChartMap) {
+        var chart = jlab.wave.pvToChartMap[key];
+        console.log(key);
+        console.log(chart);
+        
+        chart.plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
+        chart.plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
+        
+        jlab.wave.getData(chart);
+    };    
 };
 
 jlab.wave.addPv = function (pv) {
@@ -165,6 +187,8 @@ jlab.wave.getData = function (c) {
         options.jsonp = 'jsonp';
     }
 
+    $.mobile.loading("show", {textVisible: true, theme: "b"});
+
     var promise = $.ajax(options);
 
     promise.done(function (json) {
@@ -192,7 +216,7 @@ jlab.wave.getData = function (c) {
             prev = value;
         }
 
-        /*console.log(flotFormattedData);*/
+        console.log(flotFormattedData);
 
         c.data = {label: c.pv, data: flotFormattedData};
         c.plot.setData([c.data]);
@@ -216,6 +240,10 @@ jlab.wave.getData = function (c) {
 
         var message = json.error || 'Server did not handle request';
         alert('Unable to perform request: ' + message);
+    });
+    
+    promise.always(function(){
+        $.mobile.loading("hide");
     });
 
     return promise;
@@ -284,29 +312,31 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#end-time-input").val(jlab.wave.toUserTimeString(jlab.wave.endDateAndTime));
 });
 
-$(document).on("click", "#update-datetime-button", function(){
+$(document).on("click", "#update-datetime-button", function () {
     var startDateStr = $("#start-date-input").val(),
-    startTimeStr = $("#start-time-input").val(),
-    endDateStr = $("#end-date-input").val(),
-    endTimeStr = $("#end-time-input").val();
-    
+            startTimeStr = $("#start-time-input").val(),
+            endDateStr = $("#end-date-input").val(),
+            endTimeStr = $("#end-time-input").val();
+
     var startDate = jlab.wave.parseUserDate(startDateStr),
-    startTime = jlab.wave.parseUserTime(startTimeStr),
-    endDate = jlab.wave.parseUserDate(endDateStr),
-    endTime = jlab.wave.parseUserTime(endTimeStr);
-    
+            startTime = jlab.wave.parseUserTime(startTimeStr),
+            endDate = jlab.wave.parseUserDate(endDateStr),
+            endTime = jlab.wave.parseUserTime(endTimeStr);
+
     jlab.wave.startDateAndTime.setFullYear(startDate.getFullYear());
     jlab.wave.startDateAndTime.setMonth(startDate.getMonth());
     jlab.wave.startDateAndTime.setDate(startDate.getDate());
     jlab.wave.startDateAndTime.setHours(startTime.getHours());
     jlab.wave.startDateAndTime.setMinutes(startTime.getMinutes());
-    
+
     jlab.wave.endDateAndTime.setFullYear(endDate.getFullYear());
     jlab.wave.endDateAndTime.setMonth(endDate.getMonth());
     jlab.wave.endDateAndTime.setDate(endDate.getDate());
     jlab.wave.endDateAndTime.setHours(endTime.getHours());
-    jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());    
-    
+    jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());
+
+    jlab.wave.refresh();
+
     $("#options-panel").panel("close");
 });
 
@@ -334,4 +364,16 @@ $(function () {
 
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
+
+    if (jlab.wave.hasTouch()) {
+        $("#start-date-input").datebox({mode: "flipbox"});
+        $("#start-time-input").datebox({mode: "timeflipbox"});
+        $("#end-date-input").datebox({mode: "flipbox"});
+        $("#end-time-input").datebox({mode: "timeflipbox"});
+    } else {
+        $("#start-date-input").datebox({mode: "calbox"});
+        $("#start-time-input").datebox({mode: "timebox"});
+        $("#end-date-input").datebox({mode: "calbox"});
+        $("#end-time-input").datebox({mode: "timebox"});
+    }
 });
