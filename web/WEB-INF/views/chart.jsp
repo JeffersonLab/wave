@@ -16,7 +16,6 @@
         <div id="header-panel" data-role="header" data-position="fixed" data-theme="a">
             <h1>WAVE</h1>
             <button type="button" data-icon="gear" data-iconpos="notext" id="options-button"></button>
-            <button type="button" data-icon="plus" data-iconpos="notext" id="go-button"></button>
             <input type="text" id="pv-input" placeholder="PV Name"/>
         </div>          
         <div data-role="page" id="chart-page">  

@@ -91,14 +91,15 @@ jlab.wave.Chart = function (pv, plot) {
 jlab.wave.refresh = function () {
     for (var key in jlab.wave.pvToChartMap) {
         var chart = jlab.wave.pvToChartMap[key];
-        console.log(key);
-        console.log(chart);
+        /*console.log(key);
+        console.log(chart);*/
 
         chart.plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
         chart.plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
 
         jlab.wave.getData(chart);
-    };
+    }
+    ;
 };
 
 jlab.wave.addPv = function (pv) {
@@ -187,7 +188,7 @@ jlab.wave.getData = function (c) {
                 e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)
             },
     dataType = "json",
-            options = {url: url, type: 'GET', data: data, dataType: dataType};
+            options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 5000};
 
     if (url.indexOf("/") !== 0) {
         dataType = "jsonp";
@@ -224,7 +225,7 @@ jlab.wave.getData = function (c) {
             prev = value;
         }
 
-        console.log(flotFormattedData);
+        /*console.log(flotFormattedData);*/
 
         c.data = {label: c.pv, data: flotFormattedData};
         c.plot.setData([c.data]);
@@ -232,11 +233,13 @@ jlab.wave.getData = function (c) {
         c.plot.draw();
     });
 
-    promise.error(function (xhr) {
+    promise.error(function (xhr, t, m) {
         var json;
 
         try {
-            if (typeof xhr.responseText === 'undefined' || xhr.responseText === '') {
+            if(t === "timeout") {
+                json = {error: 'Timeout while waiting for response'};
+            } else if (typeof xhr.responseText === 'undefined' || xhr.responseText === '') {
                 json = {};
             } else {
                 json = $.parseJSON(xhr.responseText);
@@ -285,25 +288,16 @@ $(document).on("click", ".chart-close-button", function () {
     }
 });
 
-$(document).on("click", "#go-button", function () {
-    var pv = $.trim($("#pv-input").val());
-
-    if (pv === '') {
-        alert('Please provide an EPICS PV name');
-    } else {
-        jlab.wave.addPv(pv);
-    }
-
-    return false;
-});
-
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
 });
 
 $(document).on("keyup", "#pv-input", function (e) {
     if (e.keyCode === 13) {
-        $("#go-button").click();
+        var pv = $.trim($("#pv-input").val());
+        if (pv !== '') {
+            jlab.wave.addPv(pv);
+        }
         return false; /*Don't do default action*/
     }
 });
