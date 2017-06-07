@@ -58,7 +58,7 @@ jlab.wave.parseUserDate = function (x) {
 
 jlab.wave.parseUserTime = function (x) {
     var hour = parseInt(x.substring(0, 2)),
-            minute = parseInt(x.substring(4, 6));
+            minute = parseInt(x.substring(3, 6));
 
     return new Date(2000, 0, 1, hour, minute);
 };
