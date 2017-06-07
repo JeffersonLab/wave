@@ -15,7 +15,7 @@ jlab.wave.hasTouch = function () {
     } catch (e) {
         return false;
     }
-}
+};
 
 jlab.wave.pad = function (n, width, z) {
     z = z || '0';
@@ -88,17 +88,17 @@ jlab.wave.Chart = function (pv, plot) {
     };
 };
 
-jlab.wave.refresh = function(){
-    for(var key in jlab.wave.pvToChartMap) {
+jlab.wave.refresh = function () {
+    for (var key in jlab.wave.pvToChartMap) {
         var chart = jlab.wave.pvToChartMap[key];
         console.log(key);
         console.log(chart);
-        
+
         chart.plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
         chart.plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
-        
+
         jlab.wave.getData(chart);
-    };    
+    };
 };
 
 jlab.wave.addPv = function (pv) {
@@ -132,11 +132,12 @@ jlab.wave.addPv = function (pv) {
                 series: {
                     lines: {
                         show: true,
-                        steps: true
+                        steps: false /*This is busted; we'll do it manually*/
                     },
                     points: {
                         show: false
-                    }
+                    },
+                    shadowSize: 0 /*Performance better without*/
                 },
                 xaxis: {
                     show: true,
@@ -158,6 +159,13 @@ jlab.wave.addPv = function (pv) {
                     lines: true,
                     content: "%s | x: %x; y: %y",
                     xDateFormat: "%Y-%m-%d %H:%M:%S"
+                },
+                zoom: {
+                    interactive: true
+                },
+                pan: {
+                    interactive: true,
+                    frameRate: 24
                 }
             });
 
@@ -208,7 +216,7 @@ jlab.wave.getData = function (c) {
                     point = [timestamp, value];
 
             if (prev !== null) {
-                /*flotFormattedData.push([timestamp, prev]);*/ /*Let's try the built-in step feature of flot instead*/
+                flotFormattedData.push([timestamp, prev]);
             }
 
             flotFormattedData.push(point);
@@ -241,8 +249,8 @@ jlab.wave.getData = function (c) {
         var message = json.error || 'Server did not handle request';
         alert('Unable to perform request: ' + message);
     });
-    
-    promise.always(function(){
+
+    promise.always(function () {
         $.mobile.loading("hide");
     });
 
