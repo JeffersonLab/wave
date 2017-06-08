@@ -20,8 +20,11 @@
         </div>          
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" id="options-panel">
+                <h2>Time Interval</h2>
+                <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="start-time-input" placeholder="Start Time"/>
+                <div class="endpoint-header">End</div>
                 <input type="text" id="end-date-input" placeholder="End Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="end-time-input" placeholder="End Time"/>
                 <button type="button" id="update-datetime-button">Update</button>

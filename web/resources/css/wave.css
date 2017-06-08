@@ -46,3 +46,15 @@
     bottom: 1em;
     left: 1em;
 }
+.ui-panel-inner {
+    margin-bottom: 3em;
+}
+h2 {
+    margin: 0;
+    padding: 0 0 10px 0;
+    font-size: 1.2em;
+}
+.endpoint-header {
+    font-size: 1.2em;
+    font-style: italic;
+}
