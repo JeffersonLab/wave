@@ -28,9 +28,10 @@ jlab.wave.toIsoDateTimeString = function (x) {
             month = x.getMonth() + 1,
             day = x.getDate(),
             hour = x.getHours(),
-            minute = x.getMinutes();
+            minute = x.getMinutes(),
+            second = x.getSeconds();
 
-    return year + '-' + jlab.wave.pad(month, 2) + '-' + jlab.wave.pad(day, 2) + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2);
+    return year + '-' + jlab.wave.pad(month, 2) + '-' + jlab.wave.pad(day, 2) + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
 
 jlab.wave.toUserDateString = function (x) {
@@ -43,9 +44,10 @@ jlab.wave.toUserDateString = function (x) {
 
 jlab.wave.toUserTimeString = function (x) {
     var hour = x.getHours(),
-            minute = x.getMinutes();
+            minute = x.getMinutes(),
+            second = x.getSeconds();
 
-    return jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2);
+    return jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
 
 jlab.wave.parseUserDate = function (x) {
@@ -58,9 +60,10 @@ jlab.wave.parseUserDate = function (x) {
 
 jlab.wave.parseUserTime = function (x) {
     var hour = parseInt(x.substring(0, 2)),
-            minute = parseInt(x.substring(3, 6));
+            minute = parseInt(x.substring(3, 5)),
+            second = parseInt(x.substring(6, 9));
 
-    return new Date(2000, 0, 1, hour, minute);
+    return new Date(2000, 0, 1, hour, minute, second);
 };
 
 jlab.wave.Chart = function (pv, plot) {
@@ -174,14 +177,14 @@ jlab.wave.addPv = function (pv) {
             });
 
     $placeholder.on("plotzoom", function (event, plot, args) {
-       
-       plot.getOptions().xaxes[0].min = new Date(plot.getOptions().xaxes[0].min);
-       plot.getOptions().xaxes[0].max = new Date(plot.getOptions().xaxes[0].max);
-        
-       jlab.wave.startDateAndTime = plot.getOptions().xaxes[0].min;
-       jlab.wave.endDateAndTime =  plot.getOptions().xaxes[0].max;
-       
-       console.log('selection: ' + jlab.wave.startDateAndTime.toLocaleString() + " to " + jlab.wave.endDateAndTime.toLocaleString());
+
+        plot.getOptions().xaxes[0].min = new Date(plot.getOptions().xaxes[0].min);
+        plot.getOptions().xaxes[0].max = new Date(plot.getOptions().xaxes[0].max);
+
+        jlab.wave.startDateAndTime = plot.getOptions().xaxes[0].min;
+        jlab.wave.endDateAndTime = plot.getOptions().xaxes[0].max;
+
+        console.log('selection: ' + jlab.wave.startDateAndTime.toLocaleString() + " to " + jlab.wave.endDateAndTime.toLocaleString());
     });
 
     $placeholder.on("plotselected", function (event, ranges) {
@@ -360,12 +363,14 @@ $(document).on("click", "#update-datetime-button", function () {
     jlab.wave.startDateAndTime.setDate(startDate.getDate());
     jlab.wave.startDateAndTime.setHours(startTime.getHours());
     jlab.wave.startDateAndTime.setMinutes(startTime.getMinutes());
+    jlab.wave.startDateAndTime.setSeconds(startTime.getSeconds());
 
     jlab.wave.endDateAndTime.setFullYear(endDate.getFullYear());
     jlab.wave.endDateAndTime.setMonth(endDate.getMonth());
     jlab.wave.endDateAndTime.setDate(endDate.getDate());
     jlab.wave.endDateAndTime.setHours(endTime.getHours());
     jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());
+    jlab.wave.endDateAndTime.setSeconds(endTime.getSeconds());
 
     jlab.wave.refresh();
 
@@ -399,13 +404,17 @@ $(function () {
 
     if (jlab.wave.hasTouch()) {
         $("#start-date-input").datebox({mode: "flipbox"});
-        $("#start-time-input").datebox({mode: "timeflipbox"});
+        $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
         $("#end-date-input").datebox({mode: "flipbox"});
-        $("#end-time-input").datebox({mode: "timeflipbox"});
+        $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
     } else {
         $("#start-date-input").datebox({mode: "calbox"});
-        $("#start-time-input").datebox({mode: "timebox"});
+        $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
         $("#end-date-input").datebox({mode: "calbox"});
-        $("#end-time-input").datebox({mode: "timebox"});
+        $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
     }
+});
+
+jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
+    'maxDur': 86399
 });
