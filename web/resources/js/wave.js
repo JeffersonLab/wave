@@ -92,7 +92,7 @@ jlab.wave.refresh = function () {
     for (var key in jlab.wave.pvToChartMap) {
         var chart = jlab.wave.pvToChartMap[key];
         /*console.log(key);
-        console.log(chart);*/
+         console.log(chart);*/
 
         chart.plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
         chart.plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
@@ -165,10 +165,29 @@ jlab.wave.addPv = function (pv) {
                     interactive: true
                 },
                 pan: {
-                    interactive: true,
+                    interactive: false,
                     frameRate: 24
+                },
+                selection: {
+                    mode: "xy"
                 }
             });
+
+    $placeholder.on("plotselected", function (event, ranges) {
+        console.log('selection: ' + ranges.xaxis.from.toFixed(1) + " to " + ranges.xaxis.to.toFixed(1));
+
+        jlab.wave.startDateAndTime = new Date(ranges.xaxis.from);
+        jlab.wave.endDateAndTime = new Date(ranges.xaxis.to);
+
+        /*jlab.wave.refresh();*/
+
+        plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
+        plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
+        
+        plot.setupGrid();
+        plot.draw();
+        plot.clearSelection();
+    });
 
     var c = new jlab.wave.Chart(pv, plot);
 
@@ -237,7 +256,7 @@ jlab.wave.getData = function (c) {
         var json;
 
         try {
-            if(t === "timeout") {
+            if (t === "timeout") {
                 json = {error: 'Timeout while waiting for response'};
             } else if (typeof xhr.responseText === 'undefined' || xhr.responseText === '') {
                 json = {};

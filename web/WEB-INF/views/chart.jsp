@@ -36,9 +36,10 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.mobile-1.4.5.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jtsage-datebox-4.1.1.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot-0.8.3.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.time-0.8.3.min.js"></script>        
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.resize-0.8.3.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.navigate-0.8.3.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.time-1.0.min.js"></script>        
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.resize-1.0.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.navigate-1.3.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.selection-1.1.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.tooltip-0.9.1.min.js"></script>        
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/wave.js?v=${initParam.releaseNumber}"></script>
         <script type="text/javascript">
