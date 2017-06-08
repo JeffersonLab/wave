@@ -173,17 +173,28 @@ jlab.wave.addPv = function (pv) {
                 }
             });
 
-    $placeholder.on("plotselected", function (event, ranges) {
-        console.log('selection: ' + ranges.xaxis.from.toFixed(1) + " to " + ranges.xaxis.to.toFixed(1));
+    $placeholder.on("plotzoom", function (event, plot, args) {
+       
+       plot.getOptions().xaxes[0].min = new Date(plot.getOptions().xaxes[0].min);
+       plot.getOptions().xaxes[0].max = new Date(plot.getOptions().xaxes[0].max);
+        
+       jlab.wave.startDateAndTime = plot.getOptions().xaxes[0].min;
+       jlab.wave.endDateAndTime =  plot.getOptions().xaxes[0].max;
+       
+       console.log('selection: ' + jlab.wave.startDateAndTime.toLocaleString() + " to " + jlab.wave.endDateAndTime.toLocaleString());
+    });
 
+    $placeholder.on("plotselected", function (event, ranges) {
         jlab.wave.startDateAndTime = new Date(ranges.xaxis.from);
         jlab.wave.endDateAndTime = new Date(ranges.xaxis.to);
+
+        console.log('selection: ' + jlab.wave.startDateAndTime.toLocaleString() + " to " + jlab.wave.endDateAndTime.toLocaleString());
 
         /*jlab.wave.refresh();*/
 
         plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
         plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
-        
+
         plot.setupGrid();
         plot.draw();
         plot.clearSelection();
