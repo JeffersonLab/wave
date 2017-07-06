@@ -214,20 +214,21 @@ jlab.wave.addPv = function (pv) {
 };
 
 jlab.wave.getData = function (c) {
-    var url = jlab.wave.mygetUrl + '/span-data',
+    var url = jlab.wave.mygetUrl + '/jmyapi-span-data',
             data = {
                 c: c.pv,
                 b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
-                e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)
+                e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime),
+                t: ''
             },
     dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 5000};
 
-    if (url.indexOf("/") !== 0) {
-        dataType = "jsonp";
-        options.dataType = dataType;
-        options.jsonp = 'jsonp';
-    }
+    /*if (url.indexOf("/") !== 0) {
+     dataType = "jsonp";
+     options.dataType = dataType;
+     options.jsonp = 'jsonp';
+     }*/
 
     $.mobile.loading("show", {textVisible: true, theme: "b"});
 
@@ -245,8 +246,10 @@ jlab.wave.getData = function (c) {
                      * Only interrepted as local time zone due to time; if just date it
                      * would be interpreted as UTC time zone.
                      */
-                    timestamp = Date.parse(record.date),
-                    value = parseFloat(record.value), /*Should already be float?*/
+                    /*timestamp = Date.parse(record.date),*/
+                    /*timestamp = new Date(record.d),*/
+                    timestamp = record.d;
+            value = parseFloat(record.v), /*Should already be float?*/
                     point = [timestamp, value];
 
             if (prev !== null) {
@@ -258,12 +261,16 @@ jlab.wave.getData = function (c) {
             prev = value;
         }
 
+        console.log('stepped points: ' + flotFormattedData.length);
+
         /*console.log(flotFormattedData);*/
 
+        console.time("draw");
         c.data = {label: c.pv, data: flotFormattedData};
         c.plot.setData([c.data]);
         c.plot.setupGrid();
         c.plot.draw();
+        console.timeEnd("draw");
     });
 
     promise.error(function (xhr, t, m) {
@@ -404,17 +411,18 @@ $(function () {
 
     if (jlab.wave.hasTouch()) {
         $("#start-date-input").datebox({mode: "flipbox"});
-        $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
+        $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
         $("#end-date-input").datebox({mode: "flipbox"});
-        $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
+        $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     } else {
         $("#start-date-input").datebox({mode: "calbox"});
-        $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
+        $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
         $("#end-date-input").datebox({mode: "calbox"});
-        $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h','i', 's']});
+        $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
 });
 
 jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
-    'maxDur': 86399
+    'maxDur': 86399,
+    'lockInput': false
 });
