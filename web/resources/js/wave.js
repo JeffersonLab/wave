@@ -214,7 +214,7 @@ jlab.wave.addPv = function (pv) {
 };
 
 jlab.wave.getData = function (c) {
-    var url = jlab.wave.mygetUrl + '/jmyapi-span-data',
+    var url = '/myget/jmyapi-span-data',
             data = {
                 c: c.pv,
                 b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
@@ -223,12 +223,6 @@ jlab.wave.getData = function (c) {
             },
     dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 5000};
-
-    /*if (url.indexOf("/") !== 0) {
-     dataType = "jsonp";
-     options.dataType = dataType;
-     options.jsonp = 'jsonp';
-     }*/
 
     $.mobile.loading("show", {textVisible: true, theme: "b"});
 
