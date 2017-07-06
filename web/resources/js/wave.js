@@ -165,14 +165,14 @@ jlab.wave.addPv = function (pv) {
                     xDateFormat: "%Y-%m-%d %H:%M:%S"
                 },
                 zoom: {
-                    interactive: true
+                    interactive: false
                 },
                 pan: {
                     interactive: false,
                     frameRate: 24
                 },
                 selection: {
-                    mode: "xy"
+                    mode: "x"
                 }
             });
 
