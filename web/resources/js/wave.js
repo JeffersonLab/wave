@@ -34,6 +34,17 @@ jlab.wave.toIsoDateTimeString = function (x) {
     return year + '-' + jlab.wave.pad(month, 2) + '-' + jlab.wave.pad(day, 2) + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
 
+jlab.wave.parseIsoDateTimeString = function (x) {
+    var year = parseInt(x.substring(0, 4)),
+            month = parseInt(x.substring(5, 7)) - 1,
+            day = parseInt(x.substring(8, 10)),
+            hour = parseInt(x.substring(11, 13)),
+            minute = parseInt(x.substring(14, 16)),
+            second = parseInt(x.substring(17, 19));
+
+    return new Date(year, month, day, hour, minute, second);
+};
+
 jlab.wave.toUserDateString = function (x) {
     var year = x.getFullYear(),
             month = x.getMonth(),
@@ -211,6 +222,24 @@ jlab.wave.addPv = function (pv) {
 
     $("#pv-input").val("");
     $("#chart-container").css("border", "none");
+
+    var uri = new URI(),
+            queryMap = uri.query(true),
+            pvs = queryMap['pv'] || [],
+            addToUrl = false;
+
+    if (!Array.isArray(pvs)) {
+        pvs = [pvs];
+    }
+    
+    if($.inArray(pv, pvs) === -1) {
+        addToUrl = true;
+    }
+    
+    if (addToUrl) {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
+        window.history.replaceState({}, 'Add pv: ' + pv, url);
+    }
 };
 
 jlab.wave.getData = function (c) {
@@ -320,6 +349,11 @@ $(document).on("click", ".chart-close-button", function () {
     if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
         $("#chart-container").css("border", "1px dashed black");
     }
+    
+    var uri = new URI();
+    uri.removeQuery("pv", pv);
+    var url = uri.href();
+    window.history.replaceState({}, 'Remove pv: ' + pv, url);
 });
 
 $(document).on("click", "#options-button", function () {
@@ -373,6 +407,11 @@ $(document).on("click", "#update-datetime-button", function () {
     jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());
     jlab.wave.endDateAndTime.setSeconds(endTime.getSeconds());
 
+    var uri = new URI();
+    uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
+    uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
+    window.history.replaceState({}, 'Set start and end', uri.href());
+
     jlab.wave.refresh();
 
     $("#options-panel").panel("close");
@@ -400,6 +439,22 @@ $(document).bind("mobileinit", function () {
 $(function () {
     jlab.wave.startDateAndTime.setMinutes(jlab.wave.startDateAndTime.getMinutes() - 5);
 
+    var uri = new URI(),
+            queryMap = uri.query(true);
+    if (uri.hasQuery("start")) {
+        jlab.wave.startDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["start"]);
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime)});
+        window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
+    }
+
+    if (uri.hasQuery("end")) {
+        jlab.wave.endDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["end"]);
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)});
+        window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
+    }
+
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
 
@@ -413,6 +468,16 @@ $(function () {
         $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
         $("#end-date-input").datebox({mode: "calbox"});
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+    }
+
+    var i, pvs = queryMap["pv"] || [];
+
+    if (!Array.isArray(pvs)) {
+        pvs = [pvs];
+    }
+
+    for (var i = 0; i < pvs.length; i++) {
+        jlab.wave.addPv(pvs[i]);
     }
 });
 

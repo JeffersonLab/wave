@@ -43,7 +43,8 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.resize-1.0.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.navigate-1.3.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.selection-1.1.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.tooltip-0.9.1.min.js"></script>        
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.flot.tooltip-0.9.1.min.js"></script>    
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/uri-1.14.1.min.js"></script>        
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/wave.js?v=${initParam.releaseNumber}"></script>
     </body>
 </html>
