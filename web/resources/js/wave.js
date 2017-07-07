@@ -84,6 +84,8 @@ jlab.wave.Chart = function (pv, plot) {
     this.prev = null;
     this.lastUpdated = null;
     this.i = 0;
+    this.metadata = null;
+    this.$div = null;
 
     jlab.wave.Chart.prototype.addPointSquare = function (point) {
         if (typeof point !== 'undefined') {
@@ -183,7 +185,7 @@ jlab.wave.addPv = function (pv) {
                     frameRate: 24
                 },
                 selection: {
-                    mode: "x"
+                    /*mode: "x"*/
                 }
             });
 
@@ -218,6 +220,8 @@ jlab.wave.addPv = function (pv) {
 
     jlab.wave.pvToChartMap[pv] = c;
 
+    c.$div = $div;
+
     jlab.wave.getData(c);
 
     $("#pv-input").val("");
@@ -231,11 +235,11 @@ jlab.wave.addPv = function (pv) {
     if (!Array.isArray(pvs)) {
         pvs = [pvs];
     }
-    
-    if($.inArray(pv, pvs) === -1) {
+
+    if ($.inArray(pv, pvs) === -1) {
         addToUrl = true;
     }
-    
+
     if (addToUrl) {
         var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
         window.history.replaceState({}, 'Add pv: ' + pv, url);
@@ -248,7 +252,8 @@ jlab.wave.getData = function (c) {
                 c: c.pv,
                 b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
                 e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime),
-                t: ''
+                t: '',
+                l: 10000
             },
     dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 5000};
@@ -260,19 +265,31 @@ jlab.wave.getData = function (c) {
     promise.done(function (json) {
         /*console.log(json);*/
 
+        c.metadata = {'datatype': json.datatype, 'datasize': json.datasize, 'sampled': json.sampled, 'count': json.count};
+
+        if (!(json.datatype === 'DBR_DOUBLE' || json.datatype === 'DBR_FLOAT' || json.datatype === 'DBR_SHORT' || json.datatype === 'DBR_LONG')) {
+            alert('datatype not a number: ' + json.datatype);
+            return;
+        }
+
+        if (json.datasize !== 1) { /*This check is probably unnecessary since only vectors are strings*/
+            alert('datasize not scalar: ' + json.datasize);
+            return;
+        }
+
+        if (json.sampled === true) {
+            c.$div.addClass("sampled-data");
+        } else {
+            c.$div.removeClass("sampled-data");
+        }
+
         var flotFormattedData = [],
                 prev = null;
 
         for (var i = 0; i < json.data.length; i++) {
             var record = json.data[i],
-                    /* Date must be ISO 8601 format with time (Not just date).
-                     * Only interrepted as local time zone due to time; if just date it
-                     * would be interpreted as UTC time zone.
-                     */
-                    /*timestamp = Date.parse(record.date),*/
-                    /*timestamp = new Date(record.d),*/
-                    timestamp = record.d;
-            value = parseFloat(record.v), /*Should already be float?*/
+                    timestamp = record.d,
+                    value = parseFloat(record.v), /*Should already be float?*/
                     point = [timestamp, value];
 
             if (prev !== null) {
@@ -349,7 +366,7 @@ $(document).on("click", ".chart-close-button", function () {
     if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
         $("#chart-container").css("border", "1px dashed black");
     }
-    
+
     var uri = new URI();
     uri.removeQuery("pv", pv);
     var url = uri.href();

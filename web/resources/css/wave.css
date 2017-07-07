@@ -61,3 +61,7 @@ h2 {
 .flotTip {
     font-family: Verdana, Arial, sans-serif;
 }
+.sampled-data .chart-title:after {
+    content: ' (sampled)';
+    color: red;
+}
