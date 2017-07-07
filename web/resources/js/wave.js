@@ -172,7 +172,7 @@ jlab.wave.addPv = function (pv) {
                 tooltip: {
                     show: true,
                     lines: true,
-                    content: "%s | x: %x; y: %y",
+                    content: "<b>%s</b><br/><b>x:</b> %x<br/><b>y:</b> %y",
                     xDateFormat: "%Y-%m-%d %H:%M:%S"
                 },
                 zoom: {
