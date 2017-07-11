@@ -132,7 +132,7 @@ jlab.wave.addPvFlot = function (pv) {
         return;
     }
 
-    var $div = $('<div class="chart"><div class="chart-title-bar"><span class="chart-title">' + pv + '</span><button type="button" class="chart-close-button">X</button></div><div class="chart-body"></div></div>');
+    var $div = $('<div class="chart" data-pv="' + pv + '"><div class="chart-title-bar"><span class="chart-title">' + pv + '</span><button type="button" class="chart-close-button">X</button></div><div class="chart-body"></div></div>');
     $chartHolder.append($div);
     jlab.wave.doLayout();
     var minDate = jlab.wave.startDateAndTime,
@@ -240,7 +240,7 @@ jlab.wave.addPvCanvasJS = function (pv) {
         return;
     }
 
-    var $div = $('<div class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
+    var $div = $('<div class="chart" data-pv="' + pv + '"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
     $chartHolder.append($div);
     /*jlab.wave.doLayout();*/
     var minDate = jlab.wave.startDateAndTime,
@@ -261,7 +261,7 @@ jlab.wave.addPvCanvasJS = function (pv) {
         },
         data: [{type: "line", xValueType: "dateTime", dataPoints: [{x: 1088620200000, y: 1}]}]
     });
-    chart.render();
+    /*chart.render();*/
     var c = new jlab.wave.Chart(pv, chart);
     jlab.wave.pvToChartMap[pv] = c;
     c.$div = $div;
@@ -479,7 +479,7 @@ jlab.wave.doLayout = function () {
 };
 $(document).on("click", ".chart-close-button", function () {
     var $chart = $(this).closest(".chart"),
-            pv = $chart.find(".chart-title").text();
+            pv = $chart.attr("data-pv");
     $chart.remove();
     delete jlab.wave.pvToChartMap[pv];
     jlab.wave.doLayout();
