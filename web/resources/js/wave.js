@@ -3,9 +3,10 @@ jlab.wave = jlab.wave || {};
 jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 jlab.wave.pvToChartMap = {};
-jlab.wave.charts = [];
-jlab.wave.MAX_POINTS = 200;
+/*jlab.wave.charts = [];*/
+/*jlab.wave.MAX_POINTS = 200;*/
 jlab.wave.MAX_CHARTS = 5;
+jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 jlab.wave.hasTouch = function () {
@@ -259,7 +260,7 @@ jlab.wave.addPvCanvasJS = function (pv) {
             valueFormatString: "DD-MMM HH:mm",
             labelAngle: -50
         },
-        data: [{type: "line", xValueType: "dateTime", dataPoints: [{x: 1088620200000, y: 1}]}]
+        data: [{type: "line", xValueType: "dateTime", dataPoints: []}]
     });
     /*chart.render();*/
     var c = new jlab.wave.Chart(pv, chart);
@@ -296,7 +297,7 @@ jlab.wave.getDataCanvasJS = function (c) {
                 b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
                 e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime),
                 t: '',
-                l: 10000000
+                l: jlab.wave.maxPointsPerSeries
             },
     dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 30000};
@@ -318,8 +319,10 @@ jlab.wave.getDataCanvasJS = function (c) {
 
         if (json.sampled === true) {
             c.$div.addClass("sampled-data");
+            c.plot.options.title.text = c.pv + ' (Sampled)';
         } else {
             c.$div.removeClass("sampled-data");
+            c.plot.options.title.text = c.pv;
         }
 
         var formattedData = [],
@@ -342,8 +345,6 @@ jlab.wave.getDataCanvasJS = function (c) {
 
         c.plot.options.data[0].dataPoints = formattedData;
 
-        console.log("data request complete");
-        jlab.wave.doLayout();
         /*console.time("draw");
          c.plot.render();
          console.timeEnd("draw");*/
@@ -368,6 +369,8 @@ jlab.wave.getDataCanvasJS = function (c) {
     });
     promise.always(function () {
         $.mobile.loading("hide");
+        console.log("data request complete");
+        jlab.wave.doLayout();        
     });
     return promise;
 };
