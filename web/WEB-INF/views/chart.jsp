@@ -35,7 +35,7 @@
         <div id="footer-panel" data-role="footer" data-position="fixed" data-theme="a">
             <div id="version">Version: ${initParam.releaseNumber} (${initParam.releaseDate})</div> 
         </div>    
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/canvasjs.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/canvasjs-1.9.10.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.mobile-1.4.5.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jtsage-datebox-4.1.1.min.js"></script>
