@@ -1,5 +1,11 @@
-The canvasjs library is commerical software and requires a separate license to use.  https://canvasjs.com/
+THIS SOFTWARE IS DEPENDENT ON A COMMERCIAL LICENSE
+The canvasjs library is commercial software and requires a separate license to 
+use.  See: https://canvasjs.com/.   We have purchased a team license for us; but 
+unless you have one you cannot develop this software.
 
+The code that we actually wrote (not third party libraries) is NOT commercially 
+licensed.  If you are a laboratory with an EPICS control system you may reuse 
+for the purpose of supporting research.
 
 MIT License
 
