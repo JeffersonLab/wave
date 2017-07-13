@@ -222,7 +222,7 @@ jlab.wave.getDataCanvasJS = function (c) {
             makeStepLine = false;
             c.plot.options.title.text = c.pv + ' (Sampled)';
             c.plot.options.data[0].lineDashType = "dot";
-            
+
             //c.plot.options.data[0].type = "scatter";
             //c.plot.options.data[0].markerType = "square"; //square renders WAY faster than circle
             //c.plot.options.data[0].color = "red";
@@ -240,9 +240,19 @@ jlab.wave.getDataCanvasJS = function (c) {
             for (var i = 0; i < json.data.length; i++) {
                 var record = json.data[i],
                         timestamp = record.d,
-                        value = parseFloat(record.v), /*Should already be float?*/
-                        point = {x: timestamp, y: value};
-                if (prev !== null) {
+                        value = parseFloat(record.v),
+                        point;
+
+                /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
+                if (value !== value) {
+                    formattedData.push({x: timestamp, y: null});
+                    formattedData.push({x: timestamp, y: 0, indexLabel: record.v, markerType: 'triangle', markerColor: 'red', markerSize: 12});
+                    point = {x: timestamp, y: null};
+                } else {
+                    point = {x: timestamp, y: value};
+                }
+
+                if (prev !== null && prev === prev) { /*prev === prev skips NaN*/
                     formattedData.push({x: timestamp, y: prev});
                 }
 
@@ -253,8 +263,17 @@ jlab.wave.getDataCanvasJS = function (c) {
             for (var i = 0; i < json.data.length; i++) {
                 var record = json.data[i],
                         timestamp = record.d,
-                        value = parseFloat(record.v), /*Should already be float?*/
-                        point = {x: timestamp, y: value};
+                        value = parseFloat(record.v),
+                        point;
+
+                /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
+                if (value !== value) {
+                    formattedData.push({x: timestamp, y: null});
+                    formattedData.push({x: timestamp, y: 0, indexLabel: record.v, markerType: 'triangle', markerColor: 'red', markerSize: 12});
+                    point = {x: timestamp, y: null};
+                } else {
+                    point = {x: timestamp, y: value};
+                }
 
                 formattedData.push(point);
             }
