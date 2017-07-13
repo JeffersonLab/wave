@@ -299,7 +299,7 @@ jlab.wave.getDataCanvasJS = function (c) {
                 t: '',
                 l: jlab.wave.maxPointsPerSeries
             },
-    dataType = "json",
+            dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 30000};
     $.mobile.loading("show", {textVisible: true, theme: "b"});
     var promise = $.ajax(options);
@@ -370,7 +370,7 @@ jlab.wave.getDataCanvasJS = function (c) {
     promise.always(function () {
         $.mobile.loading("hide");
         console.log("data request complete");
-        jlab.wave.doLayout();        
+        jlab.wave.doLayout();
     });
     return promise;
 };
@@ -384,7 +384,7 @@ jlab.wave.getDataFlot = function (c) {
                 t: '',
                 l: 10000
             },
-    dataType = "json",
+            dataType = "json",
             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 10000};
     $.mobile.loading("show", {textVisible: true, theme: "b"});
     var promise = $.ajax(options);
@@ -469,15 +469,11 @@ jlab.wave.doLayout = function () {
         offset = offset + chartHeight;
         $(this).height(chartHeight);
 
-        /*for(var i = 0; i < jlab.wave.charts.length; i++) {
-         jlab.wave.charts[i].render();
-         }*/
-        for (var key in jlab.wave.pvToChartMap) {
-            var chart = jlab.wave.pvToChartMap[key];
-            console.time("render");
-            chart.plot.render();
-            console.timeEnd("render");
-        }
+        var pv = $(this).attr("data-pv"),
+                chart = jlab.wave.pvToChartMap[pv];
+        console.time("render");
+        chart.plot.render();
+        console.timeEnd("render");
     });
 };
 $(document).on("click", ".chart-close-button", function () {
