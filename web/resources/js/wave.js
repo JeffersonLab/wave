@@ -215,19 +215,22 @@ jlab.wave.getDataCanvasJS = function (c) {
             return;
         }
 
-        var makeStepLine = true;
+        var makeStepLine;
 
         if (json.sampled === true) {
             c.$div.addClass("sampled-data");
             makeStepLine = false;
             c.plot.options.title.text = c.pv + ' (Sampled)';
-            //c.plot.options.data[0].type = "scatter";
             c.plot.options.data[0].lineDashType = "dot";
+            
+            //c.plot.options.data[0].type = "scatter";
             //c.plot.options.data[0].markerType = "square"; //square renders WAY faster than circle
             //c.plot.options.data[0].color = "red";
         } else {
             c.$div.removeClass("sampled-data");
+            makeStepLine = true;
             c.plot.options.title.text = c.pv;
+            c.plot.options.data[0].lineDashType = "solid";
         }
 
         var formattedData = [],
@@ -257,6 +260,7 @@ jlab.wave.getDataCanvasJS = function (c) {
             }
         }
 
+        console.log('database event count: ' + json.count);
         console.log('transferred points: ' + json.data.length);
         console.log('total points (includes steps): ' + formattedData.length);
         /*console.log(flotFormattedData);*/
