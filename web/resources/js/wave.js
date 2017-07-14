@@ -246,7 +246,7 @@ jlab.wave.getDataCanvasJS = function (c) {
                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                 if (value !== value) {
                     formattedData.push({x: timestamp, y: null});
-                    formattedData.push({x: timestamp, y: 0, indexLabel: record.v, markerType: 'triangle', markerColor: 'red', markerSize: 12});
+                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: "{x}, " + record.v});
                     point = {x: timestamp, y: null};
                 } else {
                     point = {x: timestamp, y: value};
@@ -269,7 +269,7 @@ jlab.wave.getDataCanvasJS = function (c) {
                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                 if (value !== value) {
                     formattedData.push({x: timestamp, y: null});
-                    formattedData.push({x: timestamp, y: 0, indexLabel: record.v, markerType: 'triangle', markerColor: 'red', markerSize: 12});
+                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: "{x}, " + record.v});
                     point = {x: timestamp, y: null};
                 } else {
                     point = {x: timestamp, y: value};
