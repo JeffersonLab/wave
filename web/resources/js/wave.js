@@ -149,8 +149,8 @@ jlab.wave.addPvCanvasJS = function (pv) {
         },
         axisX: {
             title: 'Time',
-            valueFormatString: "DD-MMM HH:mm",
-            labelAngle: -50
+            /*valueFormatString: "DD-MMM-YYYY HH:mm:ss",*/
+            labelAngle: -45
         },
         data: [{type: "line", markerType: "none", xValueType: "dateTime", dataPoints: []}]
     });
