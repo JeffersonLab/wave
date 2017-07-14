@@ -58,10 +58,6 @@ h2 {
     font-size: 1.2em;
     font-style: italic;
 }
-.flotTip {
-    font-family: Verdana, Arial, sans-serif;
-}
-.sampled-data .chart-title:after {
-    content: ' (sampled)';
-    color: red;
+.canvasjs-chart-toolbar {
+    top: 50px !important;
 }

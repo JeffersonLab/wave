@@ -140,6 +140,7 @@ jlab.wave.addPvCanvasJS = function (pv) {
             maxDate = jlab.wave.endDateAndTime;
 
     var chart = new CanvasJS.Chart("div" + pv, {
+        zoomEnabled: true,
         title: {
             text: pv
         },
