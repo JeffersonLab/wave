@@ -133,7 +133,9 @@ jlab.wave.Chart = function (pvs) {
             axisX: {
                 title: 'Time',
                 /*valueFormatString: "DD-MMM-YYYY HH:mm:ss",*/
-                labelAngle: -45
+                labelAngle: -45,
+                minimum: minDate,
+                maximum: maxDate
             },
             data: data
         });
