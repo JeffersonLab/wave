@@ -78,16 +78,25 @@ jlab.wave.Chart = function (pvs) {
     this.canvasjsChart = null;
     this.$placeholderDiv = null;
 
-    jlab.wave.Chart.prototype.createCanvasJsChart = function () {
+    jlab.wave.Chart.prototype.createCanvasJsChart = function (separateYAxis) {
         var chartId = 'chart-' + jlab.wave.chartIdSequence,
                 chartBodyId = 'chart-body-' + jlab.wave.chartIdSequence++,
                 labels = [],
-                data = [];
+                data = [],
+                axisY = [];
+
+        if (!separateYAxis) {
+            axisY.push({
+                title: 'EPICS Value',
+                margin: 30
+            });
+        }
 
         for (var i = 0; i < this.pvs.length; i++) {
             var pv = this.pvs[i],
                     metadata = jlab.wave.pvToMetadataMap[pv],
-                    lineDashType = "solid";
+                    lineDashType = "solid",
+                    axisYIndex = 0;
 
             if (metadata.sampled === true) {
                 labels[i] = pv + ' (Sampled)';
@@ -96,7 +105,12 @@ jlab.wave.Chart = function (pvs) {
                 labels[i] = pv;
             }
 
-            data.push({type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            if (separateYAxis) {
+                axisYIndex = i;
+                axisY.push({title: pv + ' Value', margin: 30});
+            }
+
+            data.push({axisYindex: axisYIndex, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
         }
 
         var title = labels[0];
@@ -115,10 +129,7 @@ jlab.wave.Chart = function (pvs) {
             title: {
                 text: title
             },
-            axisY: {
-                title: 'EPICS Value',
-                margin: 30
-            },
+            axisY: axisY,
             axisX: {
                 title: 'Time',
                 /*valueFormatString: "DD-MMM-YYYY HH:mm:ss",*/
@@ -132,15 +143,25 @@ jlab.wave.Chart = function (pvs) {
 };
 
 jlab.wave.refresh = function () {
-    for (var key in jlab.wave.idToChartMap) {
-        var chart = jlab.wave.pvToChartMap[key];
-        /*console.log(key);
-         console.log(chart);*/
 
-        /*chart.canvasjsChart.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
-         chart.canvasjsChart.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;*/
-        jlab.wave.getData(chart);
+    console.log('refresh');
+
+    var promiseArray = [];
+
+    $.mobile.loading("show", {textVisible: true, theme: "b"});
+
+    for (var i = 0; i < jlab.wave.pvs.length; i++) {
+        var pv = jlab.wave.pvs[i],
+                promise = jlab.wave.getData(pv, true);
+
+        promiseArray.push(promise);
     }
+
+    $.when.apply($, promiseArray).done(function () {
+        $.mobile.loading("hide");
+        jlab.wave.doLayout();
+    });
+
 };
 
 jlab.wave.addPv = function (pv, multiple) {
@@ -156,6 +177,8 @@ jlab.wave.addPv = function (pv, multiple) {
     }
 
     jlab.wave.pvs.push(pv);
+
+    jlab.wave.pvs.sort();
 
     var promise = jlab.wave.getData(pv, multiple);
 
@@ -311,10 +334,31 @@ jlab.wave.getData = function (pv, multiple) {
 jlab.wave.doLayout = function () {
     jlab.wave.chartHolder.empty();
 
-    var offset = 0;
-
     console.log('doLayout');
     console.log('pvs: ' + jlab.wave.pvs);
+
+    console.log('mode: ' + jlab.wave.multiplePvMode);
+
+    if (jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SEPARATE_CHART) {
+        console.log('separate chart layout');
+        jlab.wave.doSeparateChartLayout();
+    } else {
+        console.log('single chart layout');
+        jlab.wave.doSingleChartLayout();
+    }
+};
+jlab.wave.doSingleChartLayout = function () {
+    var c = new jlab.wave.Chart(jlab.wave.pvs),
+            $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
+    $placeholderDiv.css("top", 0);
+    $placeholderDiv.height(jlab.wave.chartHolder.height());
+
+    console.time("render");
+    c.canvasjsChart.render();
+    console.timeEnd("render");
+};
+jlab.wave.doSeparateChartLayout = function () {
+    var offset = 0;
 
     for (var i = 0; i < jlab.wave.pvs.length; i++) {
         var pv = jlab.wave.pvs[i],
@@ -385,6 +429,9 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#multiple-pv-mode-select").val(jlab.wave.multiplePvMode).change();
 });
 $(document).on("click", "#update-options-button", function () {
+
+    console.log('update button pressed');
+
     var startDateStr = $("#start-date-input").val(),
             startTimeStr = $("#start-time-input").val(),
             endDateStr = $("#end-date-input").val(),
@@ -406,7 +453,7 @@ $(document).on("click", "#update-options-button", function () {
     jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());
     jlab.wave.endDateAndTime.setSeconds(endTime.getSeconds());
 
-    jlab.wave.multiplePvMode = $("#multiple-pv-mode-select").val();
+    jlab.wave.multiplePvMode = parseInt($("#multiple-pv-mode-select").val());
 
     var uri = new URI();
     uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
@@ -464,7 +511,7 @@ $(document).on("pagecontainershow", function () {
         }
 
         if (uri.hasQuery("multiplePvMode")) {
-            jlab.wave.multiplePvMode = queryMap["multiplePvMode"];
+            jlab.wave.multiplePvMode = parseInt(queryMap["multiplePvMode"]);
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.multiplePvMode});
             window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.multiplePvMode, url);
