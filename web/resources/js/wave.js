@@ -76,21 +76,7 @@ jlab.wave.Chart = function (pvs, plot) {
     this.lastUpdated = null;
     this.i = 0;
     this.metadata = null;
-    this.$div = null;
-    jlab.wave.Chart.prototype.addPointSquare = function (point) {
-        if (typeof point !== 'undefined') {
-            if (this.data.length >= jlab.wave.MAX_POINTS) {
-                this.data = this.data.slice(2);
-            }
-
-            if (this.prev !== null) {
-                this.data.push([this.i, this.prev]);
-            }
-
-            this.prev = point;
-            this.data.push([this.i++, point]);
-        }
-    };
+    this.$placeholderDiv = null;
 };
 
 jlab.wave.refresh = function () {
@@ -119,8 +105,8 @@ jlab.wave.addPv = function (pv) {
     }
 
     var chartId = 'chart-' + jlab.wave.chartIdSequence++;
-    var $div = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
-    $chartHolder.append($div);
+    var $placeholderDiv = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
+    $chartHolder.append($placeholderDiv);
     var minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime;
 
@@ -144,7 +130,7 @@ jlab.wave.addPv = function (pv) {
     var c = new jlab.wave.Chart(pvs, chart);
     jlab.wave.pvToChartMap[pv] = c;
     jlab.wave.idToChartMap[chartId] = c;
-    c.$div = $div;
+    c.$placeholderDiv = $placeholderDiv;
     jlab.wave.getData(c);
     $("#pv-input").val("");
     $("#chart-container").css("border", "none");
@@ -204,7 +190,7 @@ jlab.wave.fetch = function (c, pv) {
         var makeStepLine;
 
         if (json.sampled === true) {
-            c.$div.addClass("sampled-data");
+            c.$placeholderDiv.addClass("sampled-data");
             makeStepLine = false;
             c.plot.options.title.text = pv + ' (Sampled)';
             c.plot.options.data[0].lineDashType = "dot";
@@ -213,7 +199,7 @@ jlab.wave.fetch = function (c, pv) {
             //c.plot.options.data[0].markerType = "square"; //square renders WAY faster than circle
             //c.plot.options.data[0].color = "red";
         } else {
-            c.$div.removeClass("sampled-data");
+            c.$placeholderDiv.removeClass("sampled-data");
             makeStepLine = true;
             c.plot.options.title.text = pv;
             c.plot.options.data[0].lineDashType = "solid";
