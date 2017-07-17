@@ -27,7 +27,14 @@
                 <div class="endpoint-header">End</div>
                 <input type="text" id="end-date-input" placeholder="End Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="end-time-input" placeholder="End Time"/>
-                <button type="button" id="update-datetime-button">Update</button>
+                <h2>Multiple PVs</h2>
+                <select id="multiple-pv-mode-select">
+                    <option value="1">Separate Chart</option>
+                    <option value="2">Same Chart Same Axis</option>
+                    <option value="3">Same Chart Separate Axis</option>
+                </select>
+                <hr id="options-hr"/>
+                <button type="button" id="update-options-button">Update</button>
                 <a id="cancel-datepicker" href="#">Cancel</a>
             </div>
             <div id="chart-container"></div>

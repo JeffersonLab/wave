@@ -2,6 +2,7 @@ var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3};
 jlab.wave.pvToChartMap = {};
 /*jlab.wave.charts = [];*/
 /*jlab.wave.MAX_POINTS = 200;*/
@@ -9,6 +10,7 @@ jlab.wave.MAX_CHARTS = 5;
 jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
+jlab.wave.MultiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
 jlab.wave.hasTouch = function () {
     try {
         document.createEvent("TouchEvent");
@@ -90,22 +92,6 @@ jlab.wave.Chart = function (pv, plot) {
 };
 
 jlab.wave.refresh = function () {
-    jlab.wave.refreshCanvasJS();
-};
-
-jlab.wave.refreshFlot = function () {
-    for (var key in jlab.wave.pvToChartMap) {
-        var chart = jlab.wave.pvToChartMap[key];
-        /*console.log(key);
-         console.log(chart);*/
-
-        chart.plot.getOptions().xaxes[0].min = jlab.wave.startDateAndTime;
-        chart.plot.getOptions().xaxes[0].max = jlab.wave.endDateAndTime;
-        jlab.wave.getData(chart);
-    }
-};
-
-jlab.wave.refreshCanvasJS = function () {
     for (var key in jlab.wave.pvToChartMap) {
         var chart = jlab.wave.pvToChartMap[key];
         /*console.log(key);
@@ -118,9 +104,6 @@ jlab.wave.refreshCanvasJS = function () {
 };
 
 jlab.wave.addPv = function (pv) {
-    jlab.wave.addPvCanvasJS(pv);
-};
-jlab.wave.addPvCanvasJS = function (pv) {
     if (typeof jlab.wave.pvToChartMap[pv] !== 'undefined') {
         alert('Already charting pv: ' + pv);
         return;
@@ -155,7 +138,6 @@ jlab.wave.addPvCanvasJS = function (pv) {
         },
         data: [{type: "line", markerType: "none", xValueType: "dateTime", dataPoints: []}]
     });
-    /*chart.render();*/
     var c = new jlab.wave.Chart(pv, chart);
     jlab.wave.pvToChartMap[pv] = c;
     c.$div = $div;
@@ -283,13 +265,8 @@ jlab.wave.getDataCanvasJS = function (c) {
         console.log('database event count: ' + json.count);
         console.log('transferred points: ' + json.data.length);
         console.log('total points (includes steps): ' + formattedData.length);
-        /*console.log(flotFormattedData);*/
 
         c.plot.options.data[0].dataPoints = formattedData;
-
-        /*console.time("draw");
-         c.plot.render();
-         console.timeEnd("draw");*/
     });
     promise.error(function (xhr, t, m) {
         var json;
@@ -373,8 +350,9 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#start-time-input").val(jlab.wave.toUserTimeString(jlab.wave.startDateAndTime));
     $("#end-date-input").val(jlab.wave.toUserDateString(jlab.wave.endDateAndTime));
     $("#end-time-input").val(jlab.wave.toUserTimeString(jlab.wave.endDateAndTime));
+    $("#multiple-pv-mode-select").val(jlab.wave.multiplePvMode).change();
 });
-$(document).on("click", "#update-datetime-button", function () {
+$(document).on("click", "#update-options-button", function () {
     var startDateStr = $("#start-date-input").val(),
             startTimeStr = $("#start-time-input").val(),
             endDateStr = $("#end-date-input").val(),
@@ -395,9 +373,13 @@ $(document).on("click", "#update-datetime-button", function () {
     jlab.wave.endDateAndTime.setHours(endTime.getHours());
     jlab.wave.endDateAndTime.setMinutes(endTime.getMinutes());
     jlab.wave.endDateAndTime.setSeconds(endTime.getSeconds());
+
+    jlab.wave.multiplePvMode = $("#multiple-pv-mode-select").val();
+
     var uri = new URI();
     uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
     uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
+    uri.setQuery("multiplePvMode", jlab.wave.multiplePvMode);
     window.history.replaceState({}, 'Set start and end', uri.href());
     jlab.wave.refresh();
     $("#options-panel").panel("close");
@@ -417,8 +399,6 @@ $(function () {
         $("#end-date-input").datebox({mode: "calbox"});
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
-
-    /*jlab.wave.doLayout(true);*/
 });
 
 $(document).on("pagecontainershow", function () {
@@ -449,6 +429,13 @@ $(document).on("pagecontainershow", function () {
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)});
             window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
+        }
+
+        if (uri.hasQuery("multiplePvMode")) {
+            jlab.wave.multiplePvMode = queryMap["multiplePvMode"];
+        } else {
+            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.multiplePvMode});
+            window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.multiplePvMode, url);
         }
 
         var i, pvs = queryMap["pv"] || [];

@@ -61,3 +61,6 @@ h2 {
 .canvasjs-chart-toolbar {
     top: 50px !important;
 }
+#options-hr {
+    margin-top: 3em;
+}
