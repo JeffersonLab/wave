@@ -4,9 +4,11 @@ jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3};
 jlab.wave.pvToChartMap = {};
-/*jlab.wave.charts = [];*/
+jlab.wave.idToChartMap = {};
+jlab.wave.chartIdSequence = 0;
+jlab.wave.colors = ['red', 'blue', 'green', 'orange', 'purple']; /*Make sure at least same number as MAX_CHARTS*/
 /*jlab.wave.MAX_POINTS = 200;*/
-jlab.wave.MAX_CHARTS = 5;
+jlab.wave.MAX_CHARTS = 5; /*Max PVs too*/
 jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
@@ -66,8 +68,8 @@ jlab.wave.parseUserTime = function (x) {
             second = parseInt(x.substring(6, 9));
     return new Date(2000, 0, 1, hour, minute, second);
 };
-jlab.wave.Chart = function (pv, plot) {
-    this.pv = pv;
+jlab.wave.Chart = function (pvs, plot) {
+    this.pvs = pvs;
     this.plot = plot;
     this.data = [];
     this.prev = null;
@@ -92,7 +94,7 @@ jlab.wave.Chart = function (pv, plot) {
 };
 
 jlab.wave.refresh = function () {
-    for (var key in jlab.wave.pvToChartMap) {
+    for (var key in jlab.wave.idToChartMap) {
         var chart = jlab.wave.pvToChartMap[key];
         /*console.log(key);
          console.log(chart);*/
@@ -116,9 +118,9 @@ jlab.wave.addPv = function (pv) {
         return;
     }
 
-    var $div = $('<div class="chart" data-pv="' + pv + '"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
+    var chartId = 'chart-' + jlab.wave.chartIdSequence++;
+    var $div = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="div' + pv + '" class="chart-body"></div></div>');
     $chartHolder.append($div);
-    /*jlab.wave.doLayout();*/
     var minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime;
 
@@ -138,8 +140,10 @@ jlab.wave.addPv = function (pv) {
         },
         data: [{type: "line", markerType: "none", xValueType: "dateTime", dataPoints: []}]
     });
-    var c = new jlab.wave.Chart(pv, chart);
+    var pvs = [pv];
+    var c = new jlab.wave.Chart(pvs, chart);
     jlab.wave.pvToChartMap[pv] = c;
+    jlab.wave.idToChartMap[chartId] = c;
     c.$div = $div;
     jlab.wave.getData(c);
     $("#pv-input").val("");
@@ -162,13 +166,12 @@ jlab.wave.addPv = function (pv) {
     }
 };
 jlab.wave.getData = function (c) {
-    jlab.wave.getDataCanvasJS(c);
+    jlab.wave.fetch(c, c.pvs[0]);
 };
-
-jlab.wave.getDataCanvasJS = function (c) {
+jlab.wave.fetch = function (c, pv) {
     var url = '/myget/jmyapi-span-data',
             data = {
-                c: c.pv,
+                c: pv,
                 b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
                 e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime),
                 t: '',
@@ -203,7 +206,7 @@ jlab.wave.getDataCanvasJS = function (c) {
         if (json.sampled === true) {
             c.$div.addClass("sampled-data");
             makeStepLine = false;
-            c.plot.options.title.text = c.pv + ' (Sampled)';
+            c.plot.options.title.text = pv + ' (Sampled)';
             c.plot.options.data[0].lineDashType = "dot";
 
             //c.plot.options.data[0].type = "scatter";
@@ -212,7 +215,7 @@ jlab.wave.getDataCanvasJS = function (c) {
         } else {
             c.$div.removeClass("sampled-data");
             makeStepLine = true;
-            c.plot.options.title.text = c.pv;
+            c.plot.options.title.text = pv;
             c.plot.options.data[0].lineDashType = "solid";
         }
 
@@ -296,30 +299,40 @@ jlab.wave.getDataCanvasJS = function (c) {
 
 jlab.wave.doLayout = function () {
     var $chartHolder = $("#chart-container"),
-            $charts = $chartHolder.find(".chart");
+            $chartDivs = $chartHolder.find(".chart");
     var offset = 0;
 
     /*console.log("doLayout: chartHolder Height: " + $chartHolder.height());*/
 
-    $charts.each(function () {
-        var chartHeight = $chartHolder.height() / $charts.length;
+    $chartDivs.each(function () {
+        var id = $(this).attr("id"),
+        chart = jlab.wave.idToChartMap[id],
+        chartHeight = $chartHolder.height() / $chartDivs.length;
         $(this).css("top", offset);
         offset = offset + chartHeight;
         $(this).height(chartHeight);
 
-        var pv = $(this).attr("data-pv"),
-                chart = jlab.wave.pvToChartMap[pv];
         console.time("render");
         chart.plot.render();
         console.timeEnd("render");
     });
 };
 $(document).on("click", ".chart-close-button", function () {
-    var $chart = $(this).closest(".chart"),
-            pv = $chart.attr("data-pv");
-    $chart.remove();
-    delete jlab.wave.pvToChartMap[pv];
+    var $chartDiv = $(this).closest(".chart"),
+            id = $chartDiv.attr("id"),
+            chart = jlab.wave.idToChartMap[id];
+            pvs = chart.pvs;
+
+    $chartDiv.remove();
+    delete chart;
+
+    for (var i = 0; i < pvs.length; i++) {
+        var pv = pvs[i];
+        delete jlab.wave.pvToChartMap[pv];
+    }
+
     jlab.wave.doLayout();
+
     if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
         $("#chart-container").css("border", "1px dashed black");
     }
