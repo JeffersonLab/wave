@@ -9,7 +9,8 @@ jlab.wave.pvToDataMap = {};
 jlab.wave.idToChartMap = {};
 jlab.wave.pvs = [];
 jlab.wave.chartIdSequence = 0;
-jlab.wave.colors = ['red', 'blue', 'green', 'orange', 'purple']; /*Make sure at least same number as MAX_CHARTS*/
+/*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
+jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_CHARTS*/
 /*jlab.wave.MAX_POINTS = 200;*/
 jlab.wave.MAX_CHARTS = 5; /*Max PVs too*/
 jlab.wave.maxPointsPerSeries = 100000;
@@ -96,7 +97,12 @@ jlab.wave.Chart = function (pvs) {
             var pv = this.pvs[i],
                     metadata = jlab.wave.pvToMetadataMap[pv],
                     lineDashType = "solid",
-                    axisYIndex = 0;
+                    axisYIndex = 0,
+                    colorIndex = i;
+            
+            if(this.pvs.length === 1) {
+                colorIndex = jlab.wave.pvs.indexOf(pv);
+            }
 
             if (metadata.sampled === true) {
                 labels[i] = pv + ' (Sampled)';
@@ -107,10 +113,10 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 30});
+                axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
-            data.push({axisYindex: axisYIndex, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({showInLegend: (pvs.length > 1), legendText: pv, axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
         }
 
         var title = labels[0];
@@ -121,6 +127,7 @@ jlab.wave.Chart = function (pvs) {
 
         this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="' + chartBodyId + '" class="chart-body"></div></div>');
         jlab.wave.chartHolder.append(this.$placeholderDiv);
+        jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
                 maxDate = jlab.wave.endDateAndTime;
 
@@ -128,6 +135,10 @@ jlab.wave.Chart = function (pvs) {
             zoomEnabled: true,
             title: {
                 text: title
+            },
+            legend: {
+                horizontalAlign: "center",
+                verticalAlign: "top"
             },
             axisY: axisY,
             axisX: {
@@ -236,6 +247,11 @@ jlab.wave.getData = function (pv, multiple) {
 
         jlab.wave.pvToMetadataMap[pv] = {'datatype': json.datatype, 'datasize': json.datasize, 'sampled': json.sampled, 'count': json.count};
 
+        if (typeof json.datatype === 'undefined') {
+            alert('PV ' + pv + ' not found');
+            return;
+        }
+
         if (!(json.datatype === 'DBR_DOUBLE' || json.datatype === 'DBR_FLOAT' || json.datatype === 'DBR_SHORT' || json.datatype === 'DBR_LONG')) {
             alert('datatype not a number: ' + json.datatype);
             return;
@@ -336,16 +352,12 @@ jlab.wave.getData = function (pv, multiple) {
 jlab.wave.doLayout = function () {
     jlab.wave.chartHolder.empty();
 
-    console.log('doLayout');
-    console.log('pvs: ' + jlab.wave.pvs);
-
-    console.log('mode: ' + jlab.wave.multiplePvMode);
+    /*console.log('doLayout');
+    console.log('pvs: ' + jlab.wave.pvs);*/
 
     if (jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SEPARATE_CHART) {
-        console.log('separate chart layout');
         jlab.wave.doSeparateChartLayout();
     } else {
-        console.log('single chart layout');
         jlab.wave.doSingleChartLayout();
     }
 };
@@ -378,23 +390,33 @@ jlab.wave.doSeparateChartLayout = function () {
     }
 };
 $(document).on("click", ".chart-close-button", function () {
-    var $chartDiv = $(this).closest(".chart"),
-            id = $chartDiv.attr("id"),
+    var $placeholderDiv = $(this).closest(".chart"),
+            id = $placeholderDiv.attr("id"),
             chart = jlab.wave.idToChartMap[id];
     pvs = chart.pvs;
 
-    $chartDiv.remove();
+    $placeholderDiv.remove();
     delete chart;
+
+    var uri = new URI();
 
     for (var i = 0; i < pvs.length; i++) {
         var pv = pvs[i];
         delete jlab.wave.pvToChartMap[pv];
         delete jlab.wave.pvToDataMap[pv];
         delete jlab.wave.pvToMetadataMap[pv];
+
+        var index = jlab.wave.pvs.indexOf(pv);
+        console.log('before: ' + jlab.wave.pvs);
+        console.log('index: ' + index);
+        var out = jlab.wave.pvs.splice(index, 1);
+        
+        console.log('out: ' + out);
+        
+        uri.removeQuery("pv", pv);
     }
 
-    var index = jlab.wave.pvs.indexOf(pv);
-    jlab.wave.pvs.slice(index, 1);
+    console.log('after: ' + jlab.wave.pvs);
 
     jlab.wave.doLayout();
 
@@ -402,10 +424,9 @@ $(document).on("click", ".chart-close-button", function () {
         $("#chart-container").css("border", "1px dashed black");
     }
 
-    var uri = new URI();
-    uri.removeQuery("pv", pv);
+
     var url = uri.href();
-    window.history.replaceState({}, 'Remove pv: ' + pv, url);
+    window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
 });
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
