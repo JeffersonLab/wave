@@ -16,7 +16,7 @@ jlab.wave.MAX_CHARTS = 5; /*Max PVs too*/
 jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
-jlab.wave.MultiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
+jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
 jlab.wave.chartHolder = $("#chart-container");
 
 jlab.wave.hasTouch = function () {
