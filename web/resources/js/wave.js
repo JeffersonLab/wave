@@ -175,7 +175,7 @@ jlab.wave.Chart = function (pvs) {
 
         if (!separateYAxis) {
             axisY.push({
-                title: 'EPICS Value',
+                title: '',
                 margin: 30
             });
         }
@@ -216,7 +216,7 @@ jlab.wave.Chart = function (pvs) {
         jlab.wave.chartHolder.append(this.$placeholderDiv);
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
-                maxDate = jlab.wave.endDateAndTime;
+                maxDate = jlab.wave.endDateAndTime; 
 
         this.canvasjsChart = new CanvasJS.Chart(chartBodyId, {
             zoomEnabled: true,
