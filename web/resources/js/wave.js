@@ -10,9 +10,9 @@ jlab.wave.idToChartMap = {};
 jlab.wave.pvs = [];
 jlab.wave.chartIdSequence = 0;
 /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_CHARTS*/
+jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
 /*jlab.wave.MAX_POINTS = 200;*/
-jlab.wave.MAX_CHARTS = 5; /*Max PVs too*/
+jlab.wave.MAX_PVS = 5; /*Max Charts too*/
 jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
@@ -116,7 +116,7 @@ jlab.wave.Chart = function (pvs) {
                 axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
-            data.push({xValueFormatString: "MMM-DD-YYYY HH:mm:ss", showInLegend: (pvs.length > 1), legendText: pv, axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({xValueFormatString: "MMM-DD-YYYY HH:mm:ss", showInLegend: (pvs.length > 1), legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
         }
 
         var title = labels[0];
@@ -188,14 +188,13 @@ jlab.wave.refresh = function () {
 };
 
 jlab.wave.addPv = function (pv, multiple) {
-    if (typeof jlab.wave.pvToChartMap[pv] !== 'undefined') {
+    if (jlab.wave.pvs.indexOf(pv) !== -1) {
         alert('Already charting pv: ' + pv);
         return;
     }
 
-    var $charts = jlab.wave.chartHolder.find(".chart");
-    if ($charts.length + 1 > jlab.wave.MAX_CHARTS) {
-        alert('Too many charts; maximum number is: ' + jlab.wave.MAX_CHARTS);
+    if (jlab.wave.pvs.length + 1 > jlab.wave.MAX_PVS) {
+        alert('Too many pvs; maximum number is: ' + jlab.wave.MAX_PVS);
         return;
     }
 
