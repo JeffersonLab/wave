@@ -116,7 +116,7 @@ jlab.wave.Chart = function (pvs) {
                 axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
-            data.push({xValueFormatString:"MMM-DD-YYYY HH:mm:ss", showInLegend: (pvs.length > 1), legendText: pv, axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({xValueFormatString: "MMM-DD-YYYY HH:mm:ss", showInLegend: (pvs.length > 1), legendText: pv, axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
         }
 
         var title = labels[0];
