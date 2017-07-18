@@ -362,14 +362,16 @@ jlab.wave.doLayout = function () {
     }
 };
 jlab.wave.doSingleChartLayout = function () {
-    var c = new jlab.wave.Chart(jlab.wave.pvs),
-            $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
-    $placeholderDiv.css("top", 0);
-    $placeholderDiv.height(jlab.wave.chartHolder.height());
+    if (jlab.wave.pvs.length > 0) {
+        var c = new jlab.wave.Chart(jlab.wave.pvs),
+                $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
+        $placeholderDiv.css("top", 0);
+        $placeholderDiv.height(jlab.wave.chartHolder.height());
 
-    console.time("render");
-    c.canvasjsChart.render();
-    console.timeEnd("render");
+        console.time("render");
+        c.canvasjsChart.render();
+        console.timeEnd("render");
+    }
 };
 jlab.wave.doSeparateChartLayout = function () {
     var offset = 0;
@@ -521,11 +523,11 @@ $(document).on("pagecontainershow", function () {
                 queryMap = uri.query(true);
         if (uri.hasQuery("start")) {
             jlab.wave.startDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["start"]);
-            
-            /*Verify valid number*/            
-            if(jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime.getTime()) { /*Only NaN is not equal itself*/
+
+            /*Verify valid number*/
+            if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime.getTime()) { /*Only NaN is not equal itself*/
                 jlab.wave.startDateAndTime = new Date();
-            }            
+            }
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime)});
             window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
@@ -533,12 +535,12 @@ $(document).on("pagecontainershow", function () {
 
         if (uri.hasQuery("end")) {
             jlab.wave.endDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["end"]);
-            
-            /*Verify valid number*/            
-            if(jlab.wave.endDateAndTime.getTime() !== jlab.wave.endDateAndTime.getTime()) { /*Only NaN is not equal itself*/
+
+            /*Verify valid number*/
+            if (jlab.wave.endDateAndTime.getTime() !== jlab.wave.endDateAndTime.getTime()) { /*Only NaN is not equal itself*/
                 jlab.wave.endDateAndTime = new Date();
             }
-            
+
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)});
             window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
