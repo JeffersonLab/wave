@@ -62,6 +62,15 @@ jlab.wave.toUserTimeString = function (x) {
             second = x.getSeconds();
     return jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
+jlab.wave.toUserDateTimeString = function (x) {
+    var year = x.getFullYear(),
+            month = x.getMonth(),
+            day = x.getDate(),
+            hour = x.getHours(),
+            minute = x.getMinutes(),
+            second = x.getSeconds();
+    return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
+};
 jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
             day = parseInt(x.substring(4, 6)),
@@ -125,7 +134,7 @@ jlab.wave.Chart = function (pvs) {
             title = title + ", " + labels[i];
         }
 
-        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button">X</button></div><div id="' + chartBodyId + '" class="chart-body"></div></div>');
+        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button" title="Close">X</button></div><div id="' + chartBodyId + '" class="chart-body"></div></div>');
         jlab.wave.chartHolder.append(this.$placeholderDiv);
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
@@ -133,8 +142,9 @@ jlab.wave.Chart = function (pvs) {
 
         this.canvasjsChart = new CanvasJS.Chart(chartBodyId, {
             zoomEnabled: true,
+            exportEnabled: true,
             title: {
-                text: title
+                text: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime)
             },
             legend: {
                 horizontalAlign: "center",
@@ -152,8 +162,8 @@ jlab.wave.Chart = function (pvs) {
             },
             axisY: axisY,
             axisX: {
-                title: 'Time',
-                /*valueFormatString: "DD-MMM-YYYY HH:mm:ss",*/
+                /*title: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime),*/
+                /*valueFormatString: "MMM DD YYYY HH:mm:ss",*/
                 labelAngle: -45,
                 minimum: minDate,
                 maximum: maxDate
@@ -474,8 +484,6 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#multiple-pv-mode-select").val(jlab.wave.multiplePvMode).change();
 });
 $(document).on("click", "#update-options-button", function () {
-
-    console.log('update button pressed');
 
     var startDateStr = $("#start-date-input").val(),
             startTimeStr = $("#start-time-input").val(),
