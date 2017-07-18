@@ -138,7 +138,17 @@ jlab.wave.Chart = function (pvs) {
             },
             legend: {
                 horizontalAlign: "center",
-                verticalAlign: "top"
+                verticalAlign: "top",
+                cursor: "pointer",
+                itemclick: function (e) {
+                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    } else {
+                        e.dataSeries.visible = true;
+                    }
+
+                    e.chart.render();
+                }
             },
             axisY: axisY,
             axisX: {
