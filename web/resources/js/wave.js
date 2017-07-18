@@ -372,7 +372,7 @@ jlab.wave.doLayout = function () {
 };
 jlab.wave.doSingleChartLayout = function () {
     if (jlab.wave.pvs.length > 0) {
-        var c = new jlab.wave.Chart(jlab.wave.pvs),
+        var c = new jlab.wave.Chart(jlab.wave.pvs.slice()), /* slice (not splice) makes a copy */
                 $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
         $placeholderDiv.css("top", 0);
         $placeholderDiv.height(jlab.wave.chartHolder.height());
@@ -403,14 +403,15 @@ jlab.wave.doSeparateChartLayout = function () {
 $(document).on("click", ".chart-close-button", function () {
     var $placeholderDiv = $(this).closest(".chart"),
             id = $placeholderDiv.attr("id"),
-            chart = jlab.wave.idToChartMap[id];
-    pvs = chart.pvs;
+            chart = jlab.wave.idToChartMap[id],
+            pvs = chart.pvs;
 
     $placeholderDiv.remove();
     delete chart;
 
     var uri = new URI();
 
+    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.splice when creating a multi-pv chart*/
     for (var i = 0; i < pvs.length; i++) {
         var pv = pvs[i];
         delete jlab.wave.pvToChartMap[pv];
@@ -418,16 +419,10 @@ $(document).on("click", ".chart-close-button", function () {
         delete jlab.wave.pvToMetadataMap[pv];
 
         var index = jlab.wave.pvs.indexOf(pv);
-        console.log('before: ' + jlab.wave.pvs);
-        console.log('index: ' + index);
-        var out = jlab.wave.pvs.splice(index, 1);
-
-        console.log('out: ' + out);
+        jlab.wave.pvs.splice(index, 1);
 
         uri.removeQuery("pv", pv);
     }
-
-    console.log('after: ' + jlab.wave.pvs);
 
     jlab.wave.doLayout();
 
@@ -446,7 +441,23 @@ $(document).on("keyup", "#pv-input", function (e) {
     if (e.keyCode === 13) {
         var pv = $.trim($("#pv-input").val());
         if (pv !== '') {
-            jlab.wave.addPv(pv);
+            /*Replace all commas with space, split on any whitespace, filter out empty strings*/
+            var tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
+
+            var promiseArray = [];
+
+            $.mobile.loading("show", {textVisible: true, theme: "b"});
+
+            for (var i = 0; i < tokens.length; i++) {
+                var promise = jlab.wave.addPv(tokens[i], true);
+
+                promiseArray.push(promise);
+            }
+
+            $.when.apply($, promiseArray).done(function () {
+                $.mobile.loading("hide");
+                jlab.wave.doLayout();
+            });
         }
         return false; /*Don't do default action*/
     }

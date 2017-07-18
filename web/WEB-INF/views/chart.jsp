@@ -16,7 +16,7 @@
         <div id="header-panel" data-role="header" data-position="fixed" data-theme="a">
             <h1>WAVE</h1>
             <button type="button" data-icon="gear" data-iconpos="notext" id="options-button"></button>
-            <input type="text" id="pv-input" placeholder="PV Name"/>
+            <input type="text" id="pv-input" placeholder="PV Names"/>
         </div>          
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" id="options-panel">
