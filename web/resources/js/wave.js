@@ -2,6 +2,7 @@ var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+jlab.wave.fullMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3};
 jlab.wave.pvToChartMap = {};
 jlab.wave.pvToMetadataMap = {};
@@ -71,6 +72,83 @@ jlab.wave.toUserDateTimeString = function (x) {
             second = x.getSeconds();
     return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
+jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
+    var sameYear = false,
+            sameMonth = false,
+            sameDay = false,
+            oneDaySpecial = false,
+            oneMonthSpecial = false,
+            oneYearSpecial = false,
+            startTimeNonZero = false,
+            endTimeNonZero = false,
+            formattedTime = '',
+            formattedStartDate,
+            formattedEndDate,
+            result;
+
+    if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
+        startTimeNonZero = true;
+    }
+
+    if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
+        endTimeNonZero = true;
+    }
+
+    if (startTimeNonZero || endTimeNonZero) {
+        formattedTime = ' (' + jlab.wave.toUserTimeString(start) + ' - ' + jlab.wave.toUserTimeString(end) + ')';
+    } else { /*Check for no-time special cases*/
+        var d = new Date(start.getTime());
+        d.setDate(start.getDate() + 1);
+        oneDaySpecial = d.getTime() === end.getTime();
+
+        if (!oneDaySpecial) { /*Check for one month special*/
+            d = new Date(start.getTime());
+            d.setMonth(start.getMonth() + 1);
+            oneMonthSpecial = d.getTime() === end.getTime();
+
+            if (!oneMonthSpecial) { /*Check for one year special*/
+                d = new Date(start.getTime());
+                d.setFullYear(start.getFullYear() + 1);
+                oneYearSpecial = d.getTime() === end.getTime();
+            }
+        }
+    }
+
+    if (oneDaySpecial) {
+        result = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+    } else if (oneMonthSpecial) {
+        result = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+    } else if (oneYearSpecial) {
+        result = start.getFullYear();
+    } else {
+        sameYear = start.getFullYear() === end.getFullYear();
+
+        if (sameYear) {
+            sameMonth = start.getMonth() === end.getMonth();
+
+            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
+
+            if (sameMonth) {
+                sameDay = start.getDate() === end.getDate();
+
+                if (sameDay) {
+                    formattedEndDate = ', ' + end.getFullYear();
+                } else { /*Days differ*/
+                    formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
+                }
+            } else { /*Months differ*/
+                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[start.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+            }
+        } else { /*Years differ*/
+            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+            formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+        }
+
+        result = formattedStartDate + formattedEndDate + formattedTime;
+    }
+
+    return result;
+};
 jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
             day = parseInt(x.substring(4, 6)),
@@ -125,7 +203,7 @@ jlab.wave.Chart = function (pvs) {
                 axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
-            data.push({xValueFormatString: "MMM-DD-YYYY HH:mm:ss", showInLegend: (pvs.length > 1), legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({xValueFormatString: "MMM-DD-YYYY HH:mm:ss", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
         }
 
         var title = labels[0];
@@ -144,7 +222,8 @@ jlab.wave.Chart = function (pvs) {
             zoomEnabled: true,
             exportEnabled: true,
             title: {
-                text: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime)
+                text: jlab.wave.toDynamicDateTimeRangeString(jlab.wave.startDateAndTime, jlab.wave.endDateAndTime)
+                        /*text: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime)*/
             },
             legend: {
                 horizontalAlign: "center",
