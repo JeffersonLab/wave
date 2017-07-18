@@ -99,8 +99,8 @@ jlab.wave.Chart = function (pvs) {
                     lineDashType = "solid",
                     axisYIndex = 0,
                     colorIndex = i;
-            
-            if(this.pvs.length === 1) {
+
+            if (this.pvs.length === 1) {
                 colorIndex = jlab.wave.pvs.indexOf(pv);
             }
 
@@ -353,7 +353,7 @@ jlab.wave.doLayout = function () {
     jlab.wave.chartHolder.empty();
 
     /*console.log('doLayout');
-    console.log('pvs: ' + jlab.wave.pvs);*/
+     console.log('pvs: ' + jlab.wave.pvs);*/
 
     if (jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SEPARATE_CHART) {
         jlab.wave.doSeparateChartLayout();
@@ -410,9 +410,9 @@ $(document).on("click", ".chart-close-button", function () {
         console.log('before: ' + jlab.wave.pvs);
         console.log('index: ' + index);
         var out = jlab.wave.pvs.splice(index, 1);
-        
+
         console.log('out: ' + out);
-        
+
         uri.removeQuery("pv", pv);
     }
 
@@ -535,6 +535,11 @@ $(document).on("pagecontainershow", function () {
 
         if (uri.hasQuery("multiplePvMode")) {
             jlab.wave.multiplePvMode = parseInt(queryMap["multiplePvMode"]);
+
+            if (jlab.wave.multiplePvMode !== jlab.wave.multiplePvMode) { /*Only NaN is not equal itself*/
+                jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
+            }
+
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.multiplePvMode});
             window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.multiplePvMode, url);
