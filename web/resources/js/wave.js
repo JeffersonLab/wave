@@ -451,10 +451,10 @@ jlab.wave.getData = function (pv, multiple) {
     });
     promise.always(function () {
         /*Need to figure out how to include series in legend even if no data; until then we'll just always add a point if empty*/
-        if(jlab.wave.pvToDataMap[pv].length === 0) {
+        if (jlab.wave.pvToDataMap[pv].length === 0) {
             jlab.wave.pvToDataMap[pv] = [{x: jlab.wave.startDateAndTime, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
         }
-        
+
         if (!multiple) {
             $.mobile.loading("hide");
             jlab.wave.doLayout();
@@ -504,6 +504,22 @@ jlab.wave.doSeparateChartLayout = function () {
         c.canvasjsChart.render();
         console.timeEnd("render");
     }
+};
+jlab.wave.validateOptions = function() {
+    /*Verify valid number*/
+    if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime) { /*Only NaN is not equal itself*/
+        jlab.wave.startDateAndTime = new Date();
+    }
+
+    /*Verify valid number*/
+    if (jlab.wave.endDateAndTime.getTime() !== jlab.wave.endDateAndTime.getTime()) { /*Only NaN is not equal itself*/
+        jlab.wave.endDateAndTime = new Date();
+    }
+
+    /*Verify valid number*/
+    if (jlab.wave.multiplePvMode !== jlab.wave.multiplePvMode) { /*Only NaN is not equal itself*/
+        jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
+    }    
 };
 $(document).on("click", ".chart-close-button", function () {
     var $placeholderDiv = $(this).closest(".chart"),
@@ -590,6 +606,8 @@ $(document).on("click", "#update-options-button", function () {
 
     jlab.wave.multiplePvMode = parseInt($("#multiple-pv-mode-select").val());
 
+    jlab.wave.validateOptions();
+
     var uri = new URI();
     uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
     uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
@@ -633,11 +651,6 @@ $(document).on("pagecontainershow", function () {
                 queryMap = uri.query(true);
         if (uri.hasQuery("start")) {
             jlab.wave.startDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["start"]);
-
-            /*Verify valid number*/
-            if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime.getTime()) { /*Only NaN is not equal itself*/
-                jlab.wave.startDateAndTime = new Date();
-            }
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime)});
             window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
@@ -645,12 +658,6 @@ $(document).on("pagecontainershow", function () {
 
         if (uri.hasQuery("end")) {
             jlab.wave.endDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["end"]);
-
-            /*Verify valid number*/
-            if (jlab.wave.endDateAndTime.getTime() !== jlab.wave.endDateAndTime.getTime()) { /*Only NaN is not equal itself*/
-                jlab.wave.endDateAndTime = new Date();
-            }
-
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)});
             window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
@@ -658,18 +665,14 @@ $(document).on("pagecontainershow", function () {
 
         if (uri.hasQuery("multiplePvMode")) {
             jlab.wave.multiplePvMode = parseInt(queryMap["multiplePvMode"]);
-
-            /*Verify valid number*/
-            if (jlab.wave.multiplePvMode !== jlab.wave.multiplePvMode) { /*Only NaN is not equal itself*/
-                jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
-            }
-
         } else {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.multiplePvMode});
             window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.multiplePvMode, url);
         }
 
-        var i, pvs = queryMap["pv"] || [];
+        jlab.wave.validateOptions();
+
+        var pvs = queryMap["pv"] || [];
         if (!Array.isArray(pvs)) {
             pvs = [pvs];
         }
