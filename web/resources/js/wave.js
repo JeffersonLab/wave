@@ -156,9 +156,19 @@ jlab.wave.parseUserDate = function (x) {
     return new Date(year, month, day, 0, 0);
 };
 jlab.wave.parseUserTime = function (x) {
-    var hour = parseInt(x.substring(0, 2)),
-            minute = parseInt(x.substring(3, 5)),
-            second = parseInt(x.substring(6, 9));
+
+    var hour, minute, second;
+
+    if (x.trim() === '') {
+        hour = 0;
+        minute = 0;
+        second = 0;
+    } else {
+        hour = parseInt(x.substring(0, 2));
+        minute = parseInt(x.substring(3, 5));
+        second = parseInt(x.substring(6, 9));
+    }
+
     return new Date(2000, 0, 1, hour, minute, second);
 };
 jlab.wave.multiplePvAction = function (pvs, add) {
@@ -505,9 +515,9 @@ jlab.wave.doSeparateChartLayout = function () {
         console.timeEnd("render");
     }
 };
-jlab.wave.validateOptions = function() {
+jlab.wave.validateOptions = function () {
     /*Verify valid number*/
-    if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime) { /*Only NaN is not equal itself*/
+    if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime.getTime()) { /*Only NaN is not equal itself*/
         jlab.wave.startDateAndTime = new Date();
     }
 
@@ -519,7 +529,7 @@ jlab.wave.validateOptions = function() {
     /*Verify valid number*/
     if (jlab.wave.multiplePvMode !== jlab.wave.multiplePvMode) { /*Only NaN is not equal itself*/
         jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
-    }    
+    }
 };
 $(document).on("click", ".chart-close-button", function () {
     var $placeholderDiv = $(this).closest(".chart"),
@@ -586,8 +596,8 @@ $(document).on("click", "#update-options-button", function () {
     var startDateStr = $("#start-date-input").val(),
             startTimeStr = $("#start-time-input").val(),
             endDateStr = $("#end-date-input").val(),
-            endTimeStr = $("#end-time-input").val();
-    var startDate = jlab.wave.parseUserDate(startDateStr),
+            endTimeStr = $("#end-time-input").val(),
+            startDate = jlab.wave.parseUserDate(startDateStr),
             startTime = jlab.wave.parseUserTime(startTimeStr),
             endDate = jlab.wave.parseUserDate(endDateStr),
             endTime = jlab.wave.parseUserTime(endTimeStr);
