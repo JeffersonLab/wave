@@ -10,6 +10,7 @@ jlab.wave.pvToDataMap = {};
 jlab.wave.idToChartMap = {};
 jlab.wave.pvs = [];
 jlab.wave.chartIdSequence = 0;
+jlab.wave.selectedSeries; /*When you click on series label in legend*/
 /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
 jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
 /*jlab.wave.MAX_POINTS = 200;*/
@@ -239,7 +240,9 @@ jlab.wave.Chart = function (pvs) {
                 axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
-            data.push({xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+        
+            jlab.wave.pvToChartMap[pv] = this;
         }
 
         var title = labels[0];
@@ -266,14 +269,15 @@ jlab.wave.Chart = function (pvs) {
                 verticalAlign: "top",
                 cursor: "pointer",
                 itemclick: function (e) {
+                    jlab.wave.selectedSeries = e;
+
+                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        $("#pv-visibility-toggle-button").text("Hide");
+                    } else {
+                        $("#pv-visibility-toggle-button").text("Show");
+                    }
+
                     $("#pv-panel").panel("open");
-                    /*if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                     e.dataSeries.visible = false;
-                     } else {
-                     e.dataSeries.visible = true;
-                     }
-                     
-                     e.chart.render();*/
                 }
             },
             axisY: axisY,
@@ -483,7 +487,7 @@ jlab.wave.doLayout = function () {
 };
 jlab.wave.doSingleChartLayout = function () {
     if (jlab.wave.pvs.length > 0) {
-        var c = new jlab.wave.Chart(jlab.wave.pvs.slice()), /* slice (not splice) makes a copy */
+        var c = new jlab.wave.Chart(jlab.wave.pvs),
                 $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
         $placeholderDiv.css("top", 0);
         $placeholderDiv.height(jlab.wave.chartHolder.height());
@@ -527,26 +531,31 @@ jlab.wave.validateOptions = function () {
         jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
     }
 };
-$(document).on("click", ".chart-close-button", function () {
-    var $placeholderDiv = $(this).closest(".chart"),
-            id = $placeholderDiv.attr("id"),
-            chart = jlab.wave.idToChartMap[id],
-            pvs = chart.pvs;
-
-    $placeholderDiv.remove();
-    delete chart;
-
+jlab.wave.deletePvs = function (pvs) {
     var uri = new URI();
 
-    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.splice when creating a multi-pv chart*/
+    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.slice*/
+    pvs = pvs.slice(); /* slice (not splice) makes a copy */
+
     for (var i = 0; i < pvs.length; i++) {
         var pv = pvs[i];
+        
+        var chart = jlab.wave.pvToChartMap[pv];
+        var index = chart.pvs.indexOf(pv);
+        chart.pvs.splice(index, 1);
+        
+        if(chart.pvs.length < 1) {
+            console.log('deleting chart');
+            chart.$placeholderDiv.remove();
+            delete chart;
+        }
+        
         delete jlab.wave.pvToChartMap[pv];
         delete jlab.wave.pvToDataMap[pv];
         delete jlab.wave.pvToMetadataMap[pv];
 
-        var index = jlab.wave.pvs.indexOf(pv);
-        jlab.wave.pvs.splice(index, 1);
+        var index2 = jlab.wave.pvs.indexOf(pv);
+        jlab.wave.pvs.splice(index2, 1);
 
         uri.removeQuery("pv", pv);
     }
@@ -557,9 +566,19 @@ $(document).on("click", ".chart-close-button", function () {
         $("#chart-container").css("border", "1px dashed black");
     }
 
-
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
+};
+$(document).on("click", ".chart-close-button", function () {
+    var $placeholderDiv = $(this).closest(".chart"),
+            id = $placeholderDiv.attr("id"),
+            chart = jlab.wave.idToChartMap[id],
+            pvs = chart.pvs;
+
+    /*$placeholderDiv.remove();
+    delete chart;*/
+
+    jlab.wave.deletePvs(pvs);
 });
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
@@ -712,6 +731,30 @@ $(document).on("pagecontainershow", function () {
         });
 
     }, 200);
+});
+$(document).on("click", "#pv-visibility-toggle-button", function () {
+    var e = jlab.wave.selectedSeries;
+
+    if (typeof jlab.wave.selectedSeries !== 'undefined') {
+        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+            e.dataSeries.visible = false;
+            $("#pv-visibility-toggle-button").text("Show");
+        } else {
+            e.dataSeries.visible = true;
+            $("#pv-visibility-toggle-button").text("Hide");
+        }
+
+        e.chart.render();
+    }
+});
+$(document).on("click", "#pv-delete-button", function () {
+    var e = jlab.wave.selectedSeries;
+
+    if (typeof jlab.wave.selectedSeries !== 'undefined') {
+        jlab.wave.deletePvs([e.dataSeries.pv]);
+        $("#pv-panel").panel("close");
+        
+    }
 });
 jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
     'maxDur': 86399,

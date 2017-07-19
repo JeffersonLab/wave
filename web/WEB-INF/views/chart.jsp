@@ -35,12 +35,24 @@
                     <option value="3">Same Chart Separate Axis</option>
                 </select>
                 <hr id="options-hr"/>
-                <button type="button" id="update-options-button">Update</button>
+                <button type="button" id="update-options-button" class="ui-btn ui-icon-check ui-btn-icon-left">Update</button>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
             </div>
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="pv-panel">
                 <h2>PV Menu</h2>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
+                <h3>Info</h3>
+                <ul id="pv-info-list" data-role="listview" data-inset="true">
+                    <li><a href="#metadata-popup" data-rel="popup" data-position-to="window">Metadata</a></li>
+                    <li><a href="#" class="ui-state-disabled">Statistics</a></li>
+                </ul>
+                <h3>Actions</h3>
+                <button type="button" class="ui-btn ui-icon-eye ui-btn-icon-left" id="pv-visibility-toggle-button">Hide</button>
+                <hr id="options-hr"/>
+                <button type="button" class="ui-btn ui-icon-minus ui-btn-icon-left" id="pv-delete-button">Delete</button>
+            </div>
+            <div id="metadata-popup" data-role="popup" class="ui-content" data-theme="b">
+                Hello World
             </div>
             <div id="chart-container"></div>
         </div>
