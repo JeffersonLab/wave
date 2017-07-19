@@ -19,7 +19,7 @@
             <input type="text" id="pv-input" placeholder="PV Names"/>
         </div>          
         <div data-role="page" id="chart-page">  
-            <div data-role="panel" data-position="left" data-display="overlay" id="options-panel">
+            <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="options-panel">
                 <h2>Time Interval</h2>
                 <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
