@@ -14,27 +14,6 @@
     left: 0;
     right: 0;
 }
-.chart-body {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;    
-}
-.chart-title-bar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 2;                
-}
-.chart-title-bar .chart-title {
-    background-color: white;
-    padding: 0 1em;
-}
-.chart-close-button {
-    float: right;
-}
 #version {
     float: right;
     margin: 0.5em;
@@ -54,9 +33,6 @@ h3 {
 .endpoint-header {
     font-size: 1.2em;
     font-style: italic;
-}
-.canvasjs-chart-toolbar {
-    top: 50px !important;
 }
 #options-hr {
     margin-top: 3em;

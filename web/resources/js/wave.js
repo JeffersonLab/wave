@@ -207,8 +207,7 @@ jlab.wave.Chart = function (pvs) {
     this.$placeholderDiv = null;
 
     jlab.wave.Chart.prototype.createCanvasJsChart = function (separateYAxis) {
-        var chartId = 'chart-' + jlab.wave.chartIdSequence,
-                chartBodyId = 'chart-body-' + jlab.wave.chartIdSequence++,
+        var chartId = 'chart-' + jlab.wave.chartIdSequence++,
                 labels = [],
                 data = [],
                 axisY = [];
@@ -254,13 +253,13 @@ jlab.wave.Chart = function (pvs) {
             title = title + ", " + labels[i];
         }
 
-        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"><div class="chart-title-bar"><button type="button" class="chart-close-button" title="Close">X</button></div><div id="' + chartBodyId + '" class="chart-body"></div></div>');
+        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
         jlab.wave.chartHolder.append(this.$placeholderDiv);
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
                 maxDate = jlab.wave.endDateAndTime;
 
-        this.canvasjsChart = new CanvasJS.Chart(chartBodyId, {
+        this.canvasjsChart = new CanvasJS.Chart(chartId, {
             zoomEnabled: true,
             exportEnabled: true,
             title: {
@@ -297,28 +296,28 @@ jlab.wave.Chart = function (pvs) {
                 },
                 itemmouseover: function (e) {
                     $(e.chart._canvasJSContainer).attr("title", "PV Menu");
-                    
+
                     /*Sure would be nice to change style of label, but it is too slow since it renders entire chart again*/
-                    
+
                     /*e.chart.legend.set("fontColor", 'white');
-                    e.chart.legend.set("backgroundColor", 'black');
-                    e.chart.legend.set("borderColor", 'gray');
-                    e.chart.legend.set("borderThickness", 1);
-                    e.chart.legend.set("fontStyle", 'italic');
-                    e.chart.legend.set("fontWeight", 'bold');
-                    console.time("legend render");
-                    e.chart.render();
-                    console.timeEnd("legend render");*/
+                     e.chart.legend.set("backgroundColor", 'black');
+                     e.chart.legend.set("borderColor", 'gray');
+                     e.chart.legend.set("borderThickness", 1);
+                     e.chart.legend.set("fontStyle", 'italic');
+                     e.chart.legend.set("fontWeight", 'bold');
+                     console.time("legend render");
+                     e.chart.render();
+                     console.timeEnd("legend render");*/
                 },
                 itemmouseout: function (e) {
-                    $(e.chart._canvasJSContainer).removeAttr("title");                    
+                    $(e.chart._canvasJSContainer).removeAttr("title");
                     /*e.chart.legend.set("fontColor", 'black');
-                    e.chart.legend.set("backgroundColor", 'transparent');
-                    e.chart.legend.set("borderColor", 'transparent');
-                    e.chart.legend.set("borderThickness", 0);
-                    e.chart.legend.set("fontStyle", 'normal');
-                    e.chart.legend.set("fontWeight", 'normal'); 
-                    e.chart.render();*/
+                     e.chart.legend.set("backgroundColor", 'transparent');
+                     e.chart.legend.set("borderColor", 'transparent');
+                     e.chart.legend.set("borderThickness", 0);
+                     e.chart.legend.set("fontStyle", 'normal');
+                     e.chart.legend.set("fontWeight", 'normal'); 
+                     e.chart.render();*/
                 }
             },
             axisY: axisY,
@@ -610,17 +609,6 @@ jlab.wave.deletePvs = function (pvs) {
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
 };
-$(document).on("click", ".chart-close-button", function () {
-    var $placeholderDiv = $(this).closest(".chart"),
-            id = $placeholderDiv.attr("id"),
-            chart = jlab.wave.idToChartMap[id],
-            pvs = chart.pvs;
-
-    /*$placeholderDiv.remove();
-     delete chart;*/
-
-    jlab.wave.deletePvs(pvs);
-});
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
 });
