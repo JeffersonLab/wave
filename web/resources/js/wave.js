@@ -161,6 +161,127 @@ jlab.wave.parseUserTime = function (x) {
             second = parseInt(x.substring(6, 9));
     return new Date(2000, 0, 1, hour, minute, second);
 };
+jlab.wave.multiplePvAction = function (pvs, add) {
+    if (pvs.length > 0) {
+        var action;
+
+        if (add) {
+            action = jlab.wave.addPv;
+        } else {
+            action = jlab.wave.getData;
+        }
+
+        $.mobile.loading("show", {textVisible: true, theme: "b"});
+
+        var promises = [];
+
+        for (var i = 0; i < pvs.length; i++) {
+            var promise = action(pvs[i], true);
+
+            promises.push(promise);
+        }
+
+        $.whenAll.apply($, promises).always(function () {
+            $.mobile.loading("hide");
+            jlab.wave.doLayout();
+        });
+    }
+};
+/*jQuery 'when' will fire 'always' callback immediately upon first fail so we need a whenAll that waits until all requests complete
+ * https://github.com/galbi101/jquery-whenall */
+(function (factory) {
+    if (typeof define === "function" && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(["jquery"], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
+    $.whenAll = function () {
+        var masterDeferred = $.Deferred(),
+                deferreds = [],
+                progressDeferreds = [],
+                allFulfilled = false,
+                initialProgress = true,
+                notifyMasterDeferred = function () {
+                    masterDeferred.notify.apply(
+                            masterDeferred,
+                            progressDeferreds.length > 1 ?
+                            $.makeArray(progressDeferreds).map(function (progressDeferred) {
+                        return progressDeferred.__latestArgs__.length > 1 ?
+                                $.makeArray(progressDeferred.__latestArgs__)
+                                : (progressDeferred.__latestArgs__.length == 1 ? progressDeferred.__latestArgs__[0] : void 0);
+                    })
+                            : arguments
+                            );
+                },
+                hasRejected = false;
+        $.each(arguments, function (i, promise) {
+            var deferred = $.Deferred();
+            var progressDeferred = $.Deferred();
+            if (promise && promise.then) {
+                var afterFulfillment = function () {
+                    deferred.resolve.apply(deferred, arguments);
+                    if (initialProgress) {
+                        progressDeferred.__latestArgs__ = arguments;
+                        progressDeferred.resolve.apply(progressDeferred, arguments);
+                    }
+                };
+                promise.then(
+                        // done
+                        afterFulfillment,
+                        // fail
+                                function () {
+                                    hasRejected = true;
+                                    afterFulfillment.apply(this, arguments);
+                                },
+                                // progress
+                                        function () {
+                                            // if progress received while there are still promises who aren't fulfilled/progressed
+                                            progressDeferred.__latestArgs__ = arguments;
+                                            if (initialProgress) {
+                                                progressDeferred.resolve.apply(progressDeferred, arguments);
+                                            }
+                                            // if all promises are either fulfilled or progressed
+                                            else {
+                                                notifyMasterDeferred.apply(null, arguments);
+                                            }
+                                        }
+                                );
+                            } else {
+                        deferred.resolve(promise);
+                        progressDeferred.__latestArgs__ = [promise];
+                        progressDeferred.resolve(promise);
+                    }
+                    deferreds.push(deferred);
+                    progressDeferreds.push(progressDeferred);
+                });
+        /*
+         when all the promises are in final state (resolved/rejected) - if even
+         one of the promises is rejected, the returned master promise is rejected iff one or more of the promises are rejected.
+         otherwise, it's resolved.
+         */
+        $.when.apply($, deferreds).done(function () {
+            allFulfilled = true;
+            masterDeferred[hasRejected ? 'reject' : 'resolve'].apply(masterDeferred, arguments);
+        });
+        /*
+         when at least one of the promises has "progressed", while
+         all the others are resolved/rejected - the returned master promise
+         is notifying a "progress".
+         For each further "progress" notification coming from the unsettled promises, a further notification will be
+         called on the master promise.
+         */
+        $.when.apply($, progressDeferreds).done(function () {
+            if (!allFulfilled) {
+                notifyMasterDeferred.apply(null, arguments);
+                initialProgress = false;
+            }
+        });
+        return masterDeferred.promise();
+    };
+}));
 jlab.wave.Chart = function (pvs) {
     this.pvs = pvs;
     this.canvasjsChart = null;
@@ -216,7 +337,7 @@ jlab.wave.Chart = function (pvs) {
         jlab.wave.chartHolder.append(this.$placeholderDiv);
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
-                maxDate = jlab.wave.endDateAndTime; 
+                maxDate = jlab.wave.endDateAndTime;
 
         this.canvasjsChart = new CanvasJS.Chart(chartBodyId, {
             zoomEnabled: true,
@@ -258,22 +379,7 @@ jlab.wave.refresh = function () {
 
     console.log('refresh');
 
-    var promiseArray = [];
-
-    $.mobile.loading("show", {textVisible: true, theme: "b"});
-
-    for (var i = 0; i < jlab.wave.pvs.length; i++) {
-        var pv = jlab.wave.pvs[i],
-                promise = jlab.wave.getData(pv, true);
-
-        promiseArray.push(promise);
-    }
-
-    $.when.apply($, promiseArray).done(function () {
-        $.mobile.loading("hide");
-        jlab.wave.doLayout();
-    });
-
+    jlab.wave.multiplePvAction(jlab.wave.pvs, false); /*false means getData only*/
 };
 
 jlab.wave.addPv = function (pv, multiple) {
@@ -363,10 +469,10 @@ jlab.wave.getData = function (pv, multiple) {
         var makeStepLine = true; /*Since we are using dashed line for sampled we probably should step line too*/
 
         /*if (json.sampled === true) {
-            makeStepLine = false;
-        } else {
-            makeStepLine = true;
-        }*/
+         makeStepLine = false;
+         } else {
+         makeStepLine = true;
+         }*/
 
         var formattedData = [],
                 prev = null;
@@ -439,6 +545,11 @@ jlab.wave.getData = function (pv, multiple) {
         alert('Unable to perform request: ' + message);
     });
     promise.always(function () {
+        /*Need to figure out how to include series in legend even if no data; until then we'll just always add a point if empty*/
+        if(jlab.wave.pvToDataMap[pv].length === 0) {
+            jlab.wave.pvToDataMap[pv] = [{x: jlab.wave.startDateAndTime, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
+        }
+        
         if (!multiple) {
             $.mobile.loading("hide");
             jlab.wave.doLayout();
@@ -533,20 +644,7 @@ $(document).on("keyup", "#pv-input", function (e) {
             /*Replace all commas with space, split on any whitespace, filter out empty strings*/
             var tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
 
-            var promiseArray = [];
-
-            $.mobile.loading("show", {textVisible: true, theme: "b"});
-
-            for (var i = 0; i < tokens.length; i++) {
-                var promise = jlab.wave.addPv(tokens[i], true);
-
-                promiseArray.push(promise);
-            }
-
-            $.when.apply($, promiseArray).done(function () {
-                $.mobile.loading("hide");
-                jlab.wave.doLayout();
-            });
+            jlab.wave.multiplePvAction(tokens, true); /*true means add*/
         }
         return false; /*Don't do default action*/
     }
@@ -671,20 +769,7 @@ $(document).on("pagecontainershow", function () {
             pvs = [pvs];
         }
 
-        var promiseArray = [];
-
-        $.mobile.loading("show", {textVisible: true, theme: "b"});
-
-        for (var i = 0; i < pvs.length; i++) {
-            var promise = jlab.wave.addPv(pvs[i], true);
-
-            promiseArray.push(promise);
-        }
-
-        $.when.apply($, promiseArray).done(function () {
-            $.mobile.loading("hide");
-            jlab.wave.doLayout();
-        });
+        jlab.wave.multiplePvAction(pvs, true); /*true means add*/
 
         /*Don't register resize event until after page load*/
         $(window).on("resize", function () {
