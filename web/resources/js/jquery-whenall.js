@@ -1,5 +1,6 @@
 /**
  * Created by galbi on 5/6/2016.
+ * https://github.com/galbi101/jquery-whenall
  */
 (function(factory) {
 	if ( typeof define === "function" && define.amd ) {
