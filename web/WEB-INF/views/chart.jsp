@@ -20,14 +20,15 @@
         </div>          
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="options-panel">
-                <h2>Time Interval</h2>
+                <h2>Viewer Options</h2>
+                <h3>Time Interval</h3>
                 <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="start-time-input" placeholder="Start Time"/>
                 <div class="endpoint-header">End</div>
                 <input type="text" id="end-date-input" placeholder="End Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="end-time-input" placeholder="End Time"/>
-                <h2>Multiple PVs</h2>
+                <h3>Multiple PVs</h3>
                 <select id="multiple-pv-mode-select">
                     <option value="1">Separate Chart</option>
                     <option value="2">Same Chart Same Axis</option>
@@ -35,7 +36,11 @@
                 </select>
                 <hr id="options-hr"/>
                 <button type="button" id="update-options-button">Update</button>
-                <a id="cancel-datepicker" href="#">Cancel</a>
+                <a class="cancel-panel-button" href="#">Cancel</a>
+            </div>
+            <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="pv-panel">
+                <h2>PV Menu</h2>
+                <a class="cancel-panel-button" href="#">Cancel</a>
             </div>
             <div id="chart-container"></div>
         </div>

@@ -266,13 +266,14 @@ jlab.wave.Chart = function (pvs) {
                 verticalAlign: "top",
                 cursor: "pointer",
                 itemclick: function (e) {
-                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    $("#pv-panel").panel("open");
+                    /*if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                         e.dataSeries.visible = false;
                     } else {
                         e.dataSeries.visible = true;
                     }
 
-                    e.chart.render();
+                    e.chart.render();*/
                 }
             },
             axisY: axisY,
@@ -575,8 +576,8 @@ $(document).on("keyup", "#pv-input", function (e) {
         return false; /*Don't do default action*/
     }
 });
-$(document).on("click", "#cancel-datepicker", function () {
-    $("#options-panel").panel("close");
+$(document).on("click", ".cancel-panel-button", function () {
+    $(this).closest(".ui-panel").panel("close");
     return false;
 });
 $(document).on("panelbeforeopen", "#options-panel", function () {
