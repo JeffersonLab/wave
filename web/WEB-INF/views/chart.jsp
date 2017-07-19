@@ -52,7 +52,37 @@
                 <button type="button" class="ui-btn ui-icon-minus ui-btn-icon-left" id="pv-delete-button">Delete</button>
             </div>
             <div id="metadata-popup" data-role="popup" class="ui-content" data-theme="b">
-                Hello World
+                <div data-role="header" data-theme="a">
+                    <h2>PV</h2>
+                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Datatype:</th>
+                            <td id="metadata-datatype"></td>
+                        </tr>
+                        <tr>
+                            <th>Host:</th>
+                            <td id="metadata-host"></td>
+                        </tr>
+                        <tr>
+                            <th>Event Count:</th>
+                            <td id="metadata-count"></td>
+                        </tr> 
+                        <tr>
+                            <th>Sampled:</th>
+                            <td id="metadata-sampled"></td>
+                        </tr> 
+                        <tr>
+                            <th>Sampled Event Count:</th>
+                            <td id="metadata-sampled-count"></td>
+                        </tr>   
+                        <tr>
+                            <th>Stepped Points Count:</th>
+                            <td id="metadata-stepped-count"></td>
+                        </tr>                           
+                    </tbody>
+                </table>
             </div>
             <div id="chart-container"></div>
         </div>

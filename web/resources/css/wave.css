@@ -61,3 +61,12 @@ h3 {
 #options-hr {
     margin-top: 3em;
 }
+#metadata-popup {
+    padding: 0;
+}
+#metadata-popup table {
+    padding: 1em;
+}
+#metadata-popup th {
+    text-align: right;
+}

@@ -34,6 +34,9 @@ jlab.wave.pad = function (n, width, z) {
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
+jlab.wave.intToStringWithCommas = function (x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 jlab.wave.toIsoDateTimeString = function (x) {
     var year = x.getFullYear(),
             month = x.getMonth() + 1,
@@ -277,6 +280,19 @@ jlab.wave.Chart = function (pvs) {
                         $("#pv-visibility-toggle-button").text("Show");
                     }
 
+                    $("#pv-panel h2").text(e.dataSeries.pv);
+
+                    /*BEGIN PART THAT COULD BE DEFERRED*/
+                    $("#metadata-popup h2").text(e.dataSeries.pv);
+                    var metadata = jlab.wave.pvToMetadataMap[e.dataSeries.pv];
+                    $("#metadata-datatype").text(metadata.datatype);
+                    $("#metadata-host").text(metadata.datahost);
+                    $("#metadata-count").text(jlab.wave.intToStringWithCommas(metadata.count));
+                    $("#metadata-sampled").text(metadata.sampled);
+                    $("#metadata-sampled-count").text(jlab.wave.intToStringWithCommas(metadata.sampledcount));
+                    $("#metadata-stepped-count").text(jlab.wave.intToStringWithCommas(metadata.steppedcount));
+                    /*END PART THAT COULD BE DEFERRED*/
+
                     $("#pv-panel").panel("open");
                 }
             },
@@ -363,9 +379,7 @@ jlab.wave.getData = function (pv, multiple) {
     promise.done(function (json) {
         console.timeEnd("fetch " + pv);
         /*console.log(json);*/
-
-        jlab.wave.pvToMetadataMap[pv] = {'datatype': json.datatype, 'datasize': json.datasize, 'sampled': json.sampled, 'count': json.count};
-
+        
         if (typeof json.datatype === 'undefined') {
             alert('PV ' + pv + ' not found');
             return;
@@ -434,6 +448,8 @@ jlab.wave.getData = function (pv, multiple) {
                 formattedData.push(point);
             }
         }
+
+        jlab.wave.pvToMetadataMap[pv] = {'datatype': json.datatype, 'datasize': json.datasize, 'datahost': json.datahost, 'sampled': json.sampled, 'count': json.count, 'sampledcount': json.sampled ? json.data.length : 'N/A', 'steppedcount': formattedData.length};
 
         jlab.wave.pvToDataMap[pv] = formattedData;
 
