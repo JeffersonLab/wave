@@ -268,12 +268,12 @@ jlab.wave.Chart = function (pvs) {
                 itemclick: function (e) {
                     $("#pv-panel").panel("open");
                     /*if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                        e.dataSeries.visible = false;
-                    } else {
-                        e.dataSeries.visible = true;
-                    }
-
-                    e.chart.render();*/
+                     e.dataSeries.visible = false;
+                     } else {
+                     e.dataSeries.visible = true;
+                     }
+                     
+                     e.chart.render();*/
                 }
             },
             axisY: axisY,
@@ -617,7 +617,7 @@ $(document).on("click", "#update-options-button", function () {
 
     jlab.wave.validateOptions();
 
-    if(oldStartMillis !== jlab.wave.startDateAndTime.getTime() || oldEndMillis !== jlab.wave.endDateAndTime.getTime()) {
+    if (oldStartMillis !== jlab.wave.startDateAndTime.getTime() || oldEndMillis !== jlab.wave.endDateAndTime.getTime()) {
         fetchRequired = true;
     }
 
@@ -626,13 +626,13 @@ $(document).on("click", "#update-options-button", function () {
     uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
     uri.setQuery("multiplePvMode", jlab.wave.multiplePvMode);
     window.history.replaceState({}, 'Set start and end', uri.href());
-    
-    if(fetchRequired) {
+
+    if (fetchRequired) {
         jlab.wave.refresh();
     } else {
         jlab.wave.doLayout();
     }
-    
+
     $("#options-panel").panel("close");
 });
 
@@ -651,7 +651,12 @@ $(function () {
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
 });
-
+/*I want button on right so this is a hack to switch it on pop-up 'open' - todo: just change the damn source code of 3rd-party lib*/
+$(document).on('datebox', function (e, passed) {
+    if (passed.method === 'open') {
+        $(".ui-datebox-container .ui-btn-left").removeClass("ui-btn-left").addClass("ui-btn-right");
+    }
+});
 $(document).on("pagecontainershow", function () {
 
     var $page = $(".ui-page-active"),
