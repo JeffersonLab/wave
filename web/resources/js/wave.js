@@ -360,13 +360,13 @@ jlab.wave.getData = function (pv, multiple) {
             return;
         }
 
-        var makeStepLine;
+        var makeStepLine = true; /*Since we are using dashed line for sampled we probably should step line too*/
 
-        if (json.sampled === true) {
+        /*if (json.sampled === true) {
             makeStepLine = false;
         } else {
             makeStepLine = true;
-        }
+        }*/
 
         var formattedData = [],
                 prev = null;
