@@ -289,14 +289,9 @@ jlab.wave.Chart = function (pvs) {
         return this.$placeholderDiv;
     };
 };
-
 jlab.wave.refresh = function () {
-
-    console.log('refresh');
-
     jlab.wave.multiplePvAction(jlab.wave.pvs, false); /*false means getData only*/
 };
-
 jlab.wave.addPv = function (pv, multiple) {
     if (jlab.wave.pvs.indexOf(pv) !== -1) {
         alert('Already charting pv: ' + pv);
@@ -593,7 +588,10 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
 });
 $(document).on("click", "#update-options-button", function () {
 
-    var startDateStr = $("#start-date-input").val(),
+    var fetchRequired = false,
+            oldStartMillis = jlab.wave.startDateAndTime.getTime(),
+            oldEndMillis = jlab.wave.endDateAndTime.getTime(),
+            startDateStr = $("#start-date-input").val(),
             startTimeStr = $("#start-time-input").val(),
             endDateStr = $("#end-date-input").val(),
             endTimeStr = $("#end-time-input").val(),
@@ -618,12 +616,22 @@ $(document).on("click", "#update-options-button", function () {
 
     jlab.wave.validateOptions();
 
+    if(oldStartMillis !== jlab.wave.startDateAndTime.getTime() || oldEndMillis !== jlab.wave.endDateAndTime.getTime()) {
+        fetchRequired = true;
+    }
+
     var uri = new URI();
     uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
     uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
     uri.setQuery("multiplePvMode", jlab.wave.multiplePvMode);
     window.history.replaceState({}, 'Set start and end', uri.href());
-    jlab.wave.refresh();
+    
+    if(fetchRequired) {
+        jlab.wave.refresh();
+    } else {
+        jlab.wave.doLayout();
+    }
+    
     $("#options-panel").panel("close");
 });
 
