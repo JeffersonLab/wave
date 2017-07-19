@@ -244,7 +244,7 @@ jlab.wave.Chart = function (pvs) {
             }
 
             data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
-        
+
             jlab.wave.pvToChartMap[pv] = this;
         }
 
@@ -294,6 +294,31 @@ jlab.wave.Chart = function (pvs) {
                     /*END PART THAT COULD BE DEFERRED*/
 
                     $("#pv-panel").panel("open");
+                },
+                itemmouseover: function (e) {
+                    $(e.chart._canvasJSContainer).attr("title", "PV Menu");
+                    
+                    /*Sure would be nice to change style of label, but it is too slow since it renders entire chart again*/
+                    
+                    /*e.chart.legend.set("fontColor", 'white');
+                    e.chart.legend.set("backgroundColor", 'black');
+                    e.chart.legend.set("borderColor", 'gray');
+                    e.chart.legend.set("borderThickness", 1);
+                    e.chart.legend.set("fontStyle", 'italic');
+                    e.chart.legend.set("fontWeight", 'bold');
+                    console.time("legend render");
+                    e.chart.render();
+                    console.timeEnd("legend render");*/
+                },
+                itemmouseout: function (e) {
+                    $(e.chart._canvasJSContainer).removeAttr("title");                    
+                    /*e.chart.legend.set("fontColor", 'black');
+                    e.chart.legend.set("backgroundColor", 'transparent');
+                    e.chart.legend.set("borderColor", 'transparent');
+                    e.chart.legend.set("borderThickness", 0);
+                    e.chart.legend.set("fontStyle", 'normal');
+                    e.chart.legend.set("fontWeight", 'normal'); 
+                    e.chart.render();*/
                 }
             },
             axisY: axisY,
@@ -379,7 +404,7 @@ jlab.wave.getData = function (pv, multiple) {
     promise.done(function (json) {
         console.timeEnd("fetch " + pv);
         /*console.log(json);*/
-        
+
         if (typeof json.datatype === 'undefined') {
             alert('PV ' + pv + ' not found');
             return;
@@ -555,17 +580,17 @@ jlab.wave.deletePvs = function (pvs) {
 
     for (var i = 0; i < pvs.length; i++) {
         var pv = pvs[i];
-        
+
         var chart = jlab.wave.pvToChartMap[pv];
         var index = chart.pvs.indexOf(pv);
         chart.pvs.splice(index, 1);
-        
-        if(chart.pvs.length < 1) {
+
+        if (chart.pvs.length < 1) {
             console.log('deleting chart');
             chart.$placeholderDiv.remove();
             delete chart;
         }
-        
+
         delete jlab.wave.pvToChartMap[pv];
         delete jlab.wave.pvToDataMap[pv];
         delete jlab.wave.pvToMetadataMap[pv];
@@ -592,7 +617,7 @@ $(document).on("click", ".chart-close-button", function () {
             pvs = chart.pvs;
 
     /*$placeholderDiv.remove();
-    delete chart;*/
+     delete chart;*/
 
     jlab.wave.deletePvs(pvs);
 });
@@ -769,7 +794,7 @@ $(document).on("click", "#pv-delete-button", function () {
     if (typeof jlab.wave.selectedSeries !== 'undefined') {
         jlab.wave.deletePvs([e.dataSeries.pv]);
         $("#pv-panel").panel("close");
-        
+
     }
 });
 jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
