@@ -15,7 +15,7 @@
     <body>
         <div id="header-panel" data-role="header" data-position="fixed" data-theme="a">
             <h1>WAVE</h1>
-            <button type="button" data-icon="gear" data-iconpos="notext" id="options-button"></button>
+            <button type="button" data-icon="gear" data-iconpos="notext" id="options-button" title="Viewer Options"></button>
             <input type="text" id="pv-input" placeholder="PV Names"/>
         </div>          
         <div data-role="page" id="chart-page">  
@@ -36,11 +36,11 @@
                 </select>
                 <hr id="options-hr"/>
                 <button type="button" id="update-options-button">Update</button>
-                <a class="cancel-panel-button" href="#">Cancel</a>
+                <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
             </div>
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="pv-panel">
                 <h2>PV Menu</h2>
-                <a class="cancel-panel-button" href="#">Cancel</a>
+                <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
             </div>
             <div id="chart-container"></div>
         </div>

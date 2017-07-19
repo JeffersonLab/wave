@@ -40,12 +40,6 @@
     margin: 0.5em;
     font-size: 0.60em;
 }
-.cancel-panel-button {
-    text-align: center;
-    position: absolute;
-    bottom: 1em;
-    left: 1em;
-}
 .ui-panel-inner {
     margin-bottom: 3em;
 }
