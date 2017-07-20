@@ -535,6 +535,8 @@ jlab.wave.doSingleChartLayout = function () {
         console.time("render");
         c.canvasjsChart.render();
         console.timeEnd("render");
+
+        jlab.wave.addCsvButton();
     }
 };
 jlab.wave.doSeparateChartLayout = function () {
@@ -553,7 +555,60 @@ jlab.wave.doSeparateChartLayout = function () {
         console.time("render");
         c.canvasjsChart.render();
         console.timeEnd("render");
+
+        jlab.wave.addCsvButton();
     }
+};
+jlab.wave.csvexport = function () {
+    var data = '',
+            filename = 'chart.csv',
+            type = 'text/csv';
+
+    /*TODO: figure out which chart is being export and only get pvs from it*/
+    for (var i = 0; i < jlab.wave.pvs.length; i++) {
+        var pv = jlab.wave.pvs[i],
+                series = jlab.wave.pvToDataMap[pv];
+
+        data = data + '--- ' + pv + ' ---\r\n';
+        for (var j = 0; j < series.length; j++) {
+            if(!(j % 2)) { /*Only output even to skip stepped points */
+                data = data + jlab.wave.toIsoDateTimeString(new Date(series[j].x)) + ',' + series[j].y + '\r\n';
+            }
+        }
+    }
+
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+};
+jlab.wave.addCsvButton = function () {
+    $(".csv-menu-item").remove();
+    $(".canvasjs-chart-toolbar > div").each(function () {
+        var $div = $('<div class="csv-menu-item" style="padding: 2px 15px 2px 10px; background-color: transparent;">Save as CSV</div>');
+        $(this).append($div);
+        $div.mouseover(function () {
+            this.style.backgroundColor = '#EEEEEE';
+        });
+        $div.mouseout(function () {
+            this.style.backgroundColor = 'transparent';
+        });
+        $div.click(function () {
+            jlab.wave.csvexport();
+            $(this).parent().hide();
+        });
+    });
 };
 jlab.wave.validateOptions = function () {
     /*Verify valid number*/
@@ -683,22 +738,6 @@ $(document).on("click", "#update-options-button", function () {
 
     $("#options-panel").panel("close");
 });
-
-$(function () {
-    $("#header-panel").toolbar({theme: "a", tapToggle: false});
-    $("#footer-panel").toolbar({theme: "a", tapToggle: false});
-    if (jlab.wave.hasTouch()) {
-        $("#start-date-input").datebox({mode: "flipbox"});
-        $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
-        $("#end-date-input").datebox({mode: "flipbox"});
-        $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
-    } else {
-        $("#start-date-input").datebox({mode: "calbox"});
-        $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
-        $("#end-date-input").datebox({mode: "calbox"});
-        $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
-    }
-});
 /*I want button on right so this is a hack to switch it on pop-up 'open' - todo: just change the damn source code of 3rd-party lib*/
 $(document).on('datebox', function (e, passed) {
     if (passed.method === 'open') {
@@ -783,6 +822,21 @@ $(document).on("click", "#pv-delete-button", function () {
         jlab.wave.deletePvs([e.dataSeries.pv]);
         $("#pv-panel").panel("close");
 
+    }
+});
+$(function () {
+    $("#header-panel").toolbar({theme: "a", tapToggle: false});
+    $("#footer-panel").toolbar({theme: "a", tapToggle: false});
+    if (jlab.wave.hasTouch()) {
+        $("#start-date-input").datebox({mode: "flipbox"});
+        $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+        $("#end-date-input").datebox({mode: "flipbox"});
+        $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+    } else {
+        $("#start-date-input").datebox({mode: "calbox"});
+        $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+        $("#end-date-input").datebox({mode: "calbox"});
+        $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
 });
 jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
