@@ -76,7 +76,7 @@ jlab.wave.toUserDateTimeString = function (x) {
             second = x.getSeconds();
     return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
-jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
+jlab.wave.toDynamicDateTimeRangeInfo = function (start, end) {
     var sameYear = false,
             sameMonth = false,
             sameDay = false,
@@ -105,18 +105,22 @@ jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
         d.setDate(start.getDate() + 1);
         oneDaySpecial = d.getTime() === end.getTime();
 
-        if (!oneDaySpecial) { /*Check for one month special*/
+        if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
             d = new Date(start.getTime());
             d.setMonth(start.getMonth() + 1);
             oneMonthSpecial = d.getTime() === end.getTime();
 
-            if (!oneMonthSpecial) { /*Check for one year special*/
+            if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
                 d = new Date(start.getTime());
                 d.setFullYear(start.getFullYear() + 1);
                 oneYearSpecial = d.getTime() === end.getTime();
             }
         }
     }
+
+    sameYear = start.getFullYear() === end.getFullYear();
+    sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
+    sameDay = sameMonth ? start.getDate() === end.getDate() : false;
 
     if (oneDaySpecial) {
         result = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
@@ -125,16 +129,10 @@ jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
     } else if (oneYearSpecial) {
         result = start.getFullYear();
     } else {
-        sameYear = start.getFullYear() === end.getFullYear();
-
         if (sameYear) {
-            sameMonth = start.getMonth() === end.getMonth();
-
             formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
 
             if (sameMonth) {
-                sameDay = start.getDate() === end.getDate();
-
                 if (sameDay) {
                     formattedEndDate = ', ' + end.getFullYear();
                 } else { /*Days differ*/
@@ -151,7 +149,7 @@ jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
         result = formattedStartDate + formattedEndDate + formattedTime;
     }
 
-    return result;
+    return {rangeString: result, impliedYear: sameYear || oneYearSpecial, impliedYearMonth: sameMonth || oneMonthSpecial, impliedYearMonthDay: sameDay || oneDaySpecial};
 };
 jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
@@ -201,6 +199,98 @@ jlab.wave.multiplePvAction = function (pvs, add) {
         });
     }
 };
+jlab.wave.zoomRangeChange = function (e) {
+    var viewportMinimum = e.axisX[0].viewportMinimum,
+            viewportMaximum = e.axisX[0].viewportMaximum,
+            timeInfo = e.chart.options.timeInfo;
+
+            console.log(e);
+
+    if (!e.chart.options.axisX)
+        e.chart.options.axisX = {};
+
+    if (e.trigger === "reset") {
+        e.chart.options.axisX.valueFormatString = e.chart.options.baseXAxisFormat;
+    } else if (e.trigger === "zoom") {
+        e.chart.options.axisX.valueFormatString = jlab.wave.dynamicXAxisFormatter(viewportMinimum, viewportMaximum, timeInfo);
+    }
+};
+jlab.wave.dynamicXAxisFormatter = function (minMillis, maxMillis, timeInfo) {
+    var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
+
+    if (!timeInfo.impliedYear) {
+        formatter.year = true;
+    }
+
+    if (!timeInfo.impliedYearMonth) {
+        formatter.month = true;
+    }
+
+    if (!timeInfo.impliedYearMonthDay) {
+        formatter.day = true;
+    }
+
+    console.log('dynamic formatting of x-axis tick labels: ');
+    console.log(formatter);
+    var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
+            millisPerHour = millisPerMinute * 60,
+            millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
+            millisPerMonth = millisPerDay * 30, /*Approximate*/
+            millisPerYear = millisPerMonth * 12,
+            rangeMillis = (maxMillis - minMillis);
+
+    // Less than a few minutes
+    if ((rangeMillis / millisPerMinute) < 5) {
+        formatter.hour = true;
+        formatter.minute = true;
+        formatter.second = true;
+    }
+    // Less than a few hours
+    else if ((rangeMillis / millisPerHour) < 12) {
+        formatter.hour = true;
+        formatter.minute = true;
+    }
+    // Less than a few days
+    else if (rangeMillis / (millisPerDay) < 7) {
+        formatter.hour = true;
+    }
+    // Less than a few months
+    else if ((rangeMillis / millisPerMonth) < 6) {
+        formatter.day = true;
+    }
+    // Less than a few years
+    else if ((rangeMillis / millisPerYear) < 3) {
+        formatter.month = true;
+    }
+    
+    var result = "";
+    
+    if(formatter.month) {
+        result = result + "MMM";
+    }
+    
+    if(formatter.day) {
+        result = result + " DD";
+    }
+    
+    if(formatter.year) {
+        result = result + " YYYY";
+    }
+    
+    if(formatter.hour || formatter.minute) {
+        result = result + " HH:mm";
+    }
+    
+    if(formatter.second) {
+        result = result + ":ss";
+    }
+    
+    result = result.trim();
+    
+    console.log("format: " + result);
+    
+    return result;
+};
 jlab.wave.Chart = function (pvs) {
     this.pvs = pvs;
     this.canvasjsChart = null;
@@ -215,7 +305,8 @@ jlab.wave.Chart = function (pvs) {
         if (!separateYAxis) {
             axisY.push({
                 title: '',
-                margin: 30
+                margin: 30,
+                tickLength: 20
             });
         }
 
@@ -239,7 +330,7 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 30, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
+                axisY.push({title: pv + ' Value', margin: 30, tickLength: 20, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
             data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
@@ -257,13 +348,18 @@ jlab.wave.Chart = function (pvs) {
         jlab.wave.chartHolder.append(this.$placeholderDiv);
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
-                maxDate = jlab.wave.endDateAndTime;
+                maxDate = jlab.wave.endDateAndTime,
+                timeInfo = jlab.wave.toDynamicDateTimeRangeInfo(minDate, maxDate),
+                baseXAxisFormat = jlab.wave.dynamicXAxisFormatter(minDate.getTime(), maxDate.getTime(), timeInfo);
 
         this.canvasjsChart = new CanvasJS.Chart(chartId, {
             zoomEnabled: true,
             exportEnabled: true,
+            rangeChanging: jlab.wave.zoomRangeChange,
+            timeInfo: timeInfo,
+            baseXAxisFormat: baseXAxisFormat,
             title: {
-                text: jlab.wave.toDynamicDateTimeRangeString(jlab.wave.startDateAndTime, jlab.wave.endDateAndTime)
+                text: timeInfo.rangeString
                         /*text: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime)*/
             },
             legend: {
@@ -322,8 +418,8 @@ jlab.wave.Chart = function (pvs) {
             },
             axisY: axisY,
             axisX: {
-                /*title: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime),*/
-                /*valueFormatString: "MMM DD YYYY HH:mm:ss",*/
+                tickLength: 20,
+                valueFormatString: baseXAxisFormat,
                 labelAngle: -45,
                 minimum: minDate,
                 maximum: maxDate
@@ -571,7 +667,7 @@ jlab.wave.csvexport = function () {
 
         data = data + '--- ' + pv + ' ---\r\n';
         for (var j = 0; j < series.length; j++) {
-            if(!(j % 2)) { /*Only output even to skip stepped points */
+            if (!(j % 2)) { /*Only output even to skip stepped points */
                 data = data + jlab.wave.toIsoDateTimeString(new Date(series[j].x)) + ',' + series[j].y + '\r\n';
             }
         }
