@@ -413,6 +413,8 @@ jlab.wave.Chart = function (pvs) {
             },
             axisY: axisY,
             axisX: {
+                labelWrap: true,
+                labelMaxWidth: 200,
                 tickLength: 20,
                 valueFormatString: baseXAxisFormat,
                 labelAngle: -45,
