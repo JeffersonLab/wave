@@ -196,6 +196,8 @@ jlab.wave.TimeInfo = function (start, end) {
         // Less than a few days
         else if (rangeMillis / (millisPerDay) < 7) {
             formatter.hour = true;
+            /*this.interval = Math.max(Math.round((rangeMillis / millisPerHour) / 12), 1);
+            this.intervalType = 'hour';*/
         }
         // Less than a few months
         else if ((rangeMillis / millisPerMonth) < 6) {
@@ -207,7 +209,7 @@ jlab.wave.TimeInfo = function (start, end) {
             formatter.day = false;
             this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
             this.intervalType = 'month';
-        } 
+        }
         // Many years
         else {
             formatter.year = true;
@@ -309,7 +311,7 @@ jlab.wave.zoomRangeChange = function (e) {
     } else if (e.trigger === "zoom") {
         e.chart.options.axisX.valueFormatString = timeInfo.adjustForViewportZoom(viewportMinimum, viewportMaximum);
         e.chart.options.axisX.interval = timeInfo.interval;
-        e.chart.options.axisX.intervalType = timeInfo.intervalType;        
+        e.chart.options.axisX.intervalType = timeInfo.intervalType;
     }
 };
 jlab.wave.Chart = function (pvs) {
@@ -372,8 +374,6 @@ jlab.wave.Chart = function (pvs) {
         var minDate = jlab.wave.startDateAndTime,
                 maxDate = jlab.wave.endDateAndTime,
                 timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
-
-        console.log(timeInfo);
 
         this.canvasjsChart = new CanvasJS.Chart(chartId, {
             zoomEnabled: true,
