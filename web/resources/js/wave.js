@@ -76,7 +76,7 @@ jlab.wave.toUserDateTimeString = function (x) {
             second = x.getSeconds();
     return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
-jlab.wave.toDynamicDateTimeRangeInfo = function (start, end) {
+jlab.wave.TimeInfo = function (start, end) {
     var sameYear = false,
             sameMonth = false,
             sameDay = false,
@@ -87,8 +87,12 @@ jlab.wave.toDynamicDateTimeRangeInfo = function (start, end) {
             endTimeNonZero = false,
             formattedTime = '',
             formattedStartDate,
-            formattedEndDate,
-            result;
+            formattedEndDate;
+
+    this.title = '';
+    this.tickFormat = null;
+    this.interval = null;
+    this.intervalType = null;
 
     if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
         startTimeNonZero = true;
@@ -123,11 +127,11 @@ jlab.wave.toDynamicDateTimeRangeInfo = function (start, end) {
     sameDay = sameMonth ? start.getDate() === end.getDate() : false;
 
     if (oneDaySpecial) {
-        result = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
     } else if (oneMonthSpecial) {
-        result = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
     } else if (oneYearSpecial) {
-        result = start.getFullYear();
+        this.title = start.getFullYear();
     } else {
         if (sameYear) {
             formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
@@ -146,10 +150,101 @@ jlab.wave.toDynamicDateTimeRangeInfo = function (start, end) {
             formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
         }
 
-        result = formattedStartDate + formattedEndDate + formattedTime;
+        this.title = formattedStartDate + formattedEndDate + formattedTime;
     }
 
-    return {rangeString: result, impliedYear: sameYear || oneYearSpecial, impliedYearMonth: sameMonth || oneMonthSpecial, impliedYearMonthDay: sameDay || oneDaySpecial};
+    var impliedYear = sameYear || oneYearSpecial,
+            impliedYearMonth = sameMonth || oneMonthSpecial,
+            impliedYearMonthDay = sameDay || oneDaySpecial;
+
+    jlab.wave.TimeInfo.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
+        var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
+
+        this.intervalType = null;
+        this.interval = null;
+
+        if (!impliedYear) {
+            formatter.year = true;
+        }
+
+        if (!impliedYearMonth) {
+            formatter.month = true;
+        }
+
+        if (!impliedYearMonthDay) {
+            formatter.day = true;
+        }
+
+        var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
+                millisPerHour = millisPerMinute * 60,
+                millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
+                millisPerMonth = millisPerDay * 30, /*Approximate*/
+                millisPerYear = millisPerMonth * 12,
+                rangeMillis = (maxMillis - minMillis);
+
+        // Less than a few minutes
+        if ((rangeMillis / millisPerMinute) < 5) {
+            formatter.hour = true;
+            formatter.minute = true;
+            formatter.second = true;
+        }
+        // Less than a few hours
+        else if ((rangeMillis / millisPerHour) < 12) {
+            formatter.hour = true;
+            formatter.minute = true;
+        }
+        // Less than a few days
+        else if (rangeMillis / (millisPerDay) < 7) {
+            formatter.hour = true;
+        }
+        // Less than a few months
+        else if ((rangeMillis / millisPerMonth) < 6) {
+            formatter.day = true;
+        }
+        // Less than a few years
+        else if ((rangeMillis / millisPerYear) < 3) {
+            formatter.month = true;
+            formatter.day = false;
+            this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
+            this.intervalType = 'month';
+        } 
+        // Many years
+        else {
+            formatter.year = true;
+            formatter.month = true;
+            formatter.day = false;
+        }
+
+        this.tickFormat = '';
+
+        if (formatter.month) {
+            this.tickFormat = this.tickFormat + "MMM";
+        }
+
+        if (formatter.day) {
+            this.tickFormat = this.tickFormat + " DD";
+        }
+
+        if (formatter.year) {
+            this.tickFormat = this.tickFormat + " YYYY";
+        }
+
+        if (formatter.hour || formatter.minute) {
+            this.tickFormat = this.tickFormat + " HH:mm";
+        }
+
+        if (formatter.second) {
+            this.tickFormat = this.tickFormat + ":ss";
+        }
+
+        this.tickFormat = this.tickFormat.trim();
+
+        return this.tickFormat;
+    };
+
+    this.startingTickFormat = this.adjustForViewportZoom(start.getTime(), end.getTime());
+    this.startingInterval = this.interval;
+    this.startingIntervalType = this.intervalType;
 };
 jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
@@ -208,82 +303,14 @@ jlab.wave.zoomRangeChange = function (e) {
         e.chart.options.axisX = {};
 
     if (e.trigger === "reset") {
-        e.chart.options.axisX.valueFormatString = e.chart.options.baseXAxisFormat;
+        e.chart.options.axisX.valueFormatString = timeInfo.startingTickFormat;
+        e.chart.options.axisX.interval = timeInfo.startingInterval;
+        e.chart.options.axisX.intervalType = timeInfo.startingIntervalType;
     } else if (e.trigger === "zoom") {
-        e.chart.options.axisX.valueFormatString = jlab.wave.dynamicXAxisFormatter(viewportMinimum, viewportMaximum, timeInfo);
+        e.chart.options.axisX.valueFormatString = timeInfo.adjustForViewportZoom(viewportMinimum, viewportMaximum);
+        e.chart.options.axisX.interval = timeInfo.interval;
+        e.chart.options.axisX.intervalType = timeInfo.intervalType;        
     }
-};
-jlab.wave.dynamicXAxisFormatter = function (minMillis, maxMillis, timeInfo) {
-    var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
-
-    if (!timeInfo.impliedYear) {
-        formatter.year = true;
-    }
-
-    if (!timeInfo.impliedYearMonth) {
-        formatter.month = true;
-    }
-
-    if (!timeInfo.impliedYearMonthDay) {
-        formatter.day = true;
-    }
-
-    var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
-            millisPerHour = millisPerMinute * 60,
-            millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
-            millisPerMonth = millisPerDay * 30, /*Approximate*/
-            millisPerYear = millisPerMonth * 12,
-            rangeMillis = (maxMillis - minMillis);
-
-    // Less than a few minutes
-    if ((rangeMillis / millisPerMinute) < 5) {
-        formatter.hour = true;
-        formatter.minute = true;
-        formatter.second = true;
-    }
-    // Less than a few hours
-    else if ((rangeMillis / millisPerHour) < 12) {
-        formatter.hour = true;
-        formatter.minute = true;
-    }
-    // Less than a few days
-    else if (rangeMillis / (millisPerDay) < 7) {
-        formatter.hour = true;
-    }
-    // Less than a few months
-    else if ((rangeMillis / millisPerMonth) < 6) {
-        formatter.day = true;
-    }
-    // Less than a few years
-    else if ((rangeMillis / millisPerYear) < 3) {
-        formatter.month = true;
-    }
-    
-    var result = "";
-    
-    if(formatter.month) {
-        result = result + "MMM";
-    }
-    
-    if(formatter.day) {
-        result = result + " DD";
-    }
-    
-    if(formatter.year) {
-        result = result + " YYYY";
-    }
-    
-    if(formatter.hour || formatter.minute) {
-        result = result + " HH:mm";
-    }
-    
-    if(formatter.second) {
-        result = result + ":ss";
-    }
-    
-    result = result.trim();
-    
-    return result;
 };
 jlab.wave.Chart = function (pvs) {
     this.pvs = pvs;
@@ -344,18 +371,17 @@ jlab.wave.Chart = function (pvs) {
         jlab.wave.idToChartMap[chartId] = this;
         var minDate = jlab.wave.startDateAndTime,
                 maxDate = jlab.wave.endDateAndTime,
-                timeInfo = jlab.wave.toDynamicDateTimeRangeInfo(minDate, maxDate),
-                baseXAxisFormat = jlab.wave.dynamicXAxisFormatter(minDate.getTime(), maxDate.getTime(), timeInfo);
+                timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
+
+        console.log(timeInfo);
 
         this.canvasjsChart = new CanvasJS.Chart(chartId, {
             zoomEnabled: true,
             exportEnabled: true,
             rangeChanging: jlab.wave.zoomRangeChange,
             timeInfo: timeInfo,
-            baseXAxisFormat: baseXAxisFormat,
             title: {
-                text: timeInfo.rangeString
-                        /*text: jlab.wave.toUserDateTimeString(jlab.wave.startDateAndTime) + ' - ' + jlab.wave.toUserDateTimeString(jlab.wave.endDateAndTime)*/
+                text: timeInfo.title
             },
             legend: {
                 horizontalAlign: "center",
@@ -416,7 +442,9 @@ jlab.wave.Chart = function (pvs) {
                 labelWrap: true,
                 labelMaxWidth: 200,
                 tickLength: 20,
-                valueFormatString: baseXAxisFormat,
+                valueFormatString: timeInfo.startingTickFormat,
+                interval: timeInfo.startingInterval,
+                intervalType: timeInfo.startingIntervalType,
                 labelAngle: -45,
                 minimum: minDate,
                 maximum: maxDate
