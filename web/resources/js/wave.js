@@ -204,8 +204,6 @@ jlab.wave.zoomRangeChange = function (e) {
             viewportMaximum = e.axisX[0].viewportMaximum,
             timeInfo = e.chart.options.timeInfo;
 
-            console.log(e);
-
     if (!e.chart.options.axisX)
         e.chart.options.axisX = {};
 
@@ -230,8 +228,6 @@ jlab.wave.dynamicXAxisFormatter = function (minMillis, maxMillis, timeInfo) {
         formatter.day = true;
     }
 
-    console.log('dynamic formatting of x-axis tick labels: ');
-    console.log(formatter);
     var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
             millisPerHour = millisPerMinute * 60,
             millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
@@ -287,8 +283,6 @@ jlab.wave.dynamicXAxisFormatter = function (minMillis, maxMillis, timeInfo) {
     
     result = result.trim();
     
-    console.log("format: " + result);
-    
     return result;
 };
 jlab.wave.Chart = function (pvs) {
@@ -305,8 +299,9 @@ jlab.wave.Chart = function (pvs) {
         if (!separateYAxis) {
             axisY.push({
                 title: '',
-                margin: 30,
-                tickLength: 20
+                margin: 40,
+                tickLength: 20,
+                includeZero: false
             });
         }
 
@@ -330,7 +325,7 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 30, tickLength: 20, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
+                axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
             data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
@@ -573,9 +568,9 @@ jlab.wave.getData = function (pv, multiple) {
 
         jlab.wave.pvToDataMap[pv] = formattedData;
 
-        console.log('database event count: ' + json.count);
-        console.log('transferred points: ' + json.data.length);
-        console.log('total points (includes steps): ' + formattedData.length);
+        console.log('database event count: ' + jlab.wave.intToStringWithCommas(json.count));
+        console.log('transferred points: ' + jlab.wave.intToStringWithCommas(json.data.length));
+        console.log('total points (includes steps): ' + jlab.wave.intToStringWithCommas(formattedData.length));
     });
     promise.error(function (xhr, t, m) {
         var json;
