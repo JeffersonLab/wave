@@ -141,7 +141,7 @@ jlab.wave.toDynamicDateTimeRangeString = function (start, end) {
                     formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
                 }
             } else { /*Months differ*/
-                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[start.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
             }
         } else { /*Years differ*/
             formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
