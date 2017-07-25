@@ -435,6 +435,10 @@ jlab.wave.Chart = function (pvs) {
                     $("#metadata-sampled").text(metadata.sampled);
                     $("#metadata-sampled-count").text(jlab.wave.intToStringWithCommas(metadata.sampledcount));
                     $("#metadata-stepped-count").text(jlab.wave.intToStringWithCommas(metadata.steppedcount));
+                    
+                    $("#statistics-popup h2").text(e.dataSeries.pv);                    
+                    $("#metadata-max").text(jlab.wave.intToStringWithCommas(metadata.max));                    
+                    $("#metadata-min").text(jlab.wave.intToStringWithCommas(metadata.min));
                     /*END PART THAT COULD BE DEFERRED*/
 
                     $("#pv-panel").panel("open");
@@ -577,7 +581,9 @@ jlab.wave.getData = function (pv, multiple) {
          }*/
 
         var formattedData = [],
-                prev = null;
+                prev = null,
+                minY = Number.POSITIVE_INFINITY,
+                maxY = Number.NEGATIVE_INFINITY;
 
         if (makeStepLine) {
             for (var i = 0; i < json.data.length; i++) {
@@ -585,6 +591,13 @@ jlab.wave.getData = function (pv, multiple) {
                         timestamp = record.d,
                         value = parseFloat(record.v),
                         point;
+
+                if (value < minY) {
+                    minY = value;
+                }
+                if (value > maxY) {
+                    maxY = value;
+                }
 
                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                 if (value !== value) {
@@ -609,6 +622,13 @@ jlab.wave.getData = function (pv, multiple) {
                         value = parseFloat(record.v),
                         point;
 
+                if (value < minY) {
+                    minY = value;
+                }
+                if (value > maxY) {
+                    maxY = value;
+                }
+
                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                 if (value !== value) {
                     formattedData.push({x: timestamp, y: null});
@@ -622,7 +642,17 @@ jlab.wave.getData = function (pv, multiple) {
             }
         }
 
-        jlab.wave.pvToMetadataMap[pv] = {'datatype': json.datatype, 'datasize': json.datasize, 'datahost': json.datahost, 'sampled': json.sampled, 'count': json.count, 'sampledcount': json.sampled ? json.data.length : 'N/A', 'steppedcount': formattedData.length};
+        jlab.wave.pvToMetadataMap[pv] = {
+            'datatype': json.datatype,
+            'datasize': json.datasize,
+            'datahost': json.datahost,
+            'sampled': json.sampled,
+            'count': json.count,
+            'sampledcount': json.sampled ? json.data.length : 'N/A',
+            'steppedcount': formattedData.length,
+            'max': maxY,
+            'min': minY
+        };
 
         jlab.wave.pvToDataMap[pv] = formattedData;
 
@@ -823,6 +853,9 @@ jlab.wave.deletePvs = function (pvs) {
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
 };
+$(document).on("click", "#pv-info-list a", function() {
+    $("#pv-panel").panel("close");
+});
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
 });

@@ -37,12 +37,12 @@ h3 {
 #options-hr {
     margin-top: 3em;
 }
-#metadata-popup {
+.info-popup {
     padding: 0;
 }
-#metadata-popup table {
+.info-popup table {
     padding: 1em;
 }
-#metadata-popup th {
+.info-popup th {
     text-align: right;
 }

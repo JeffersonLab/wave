@@ -44,14 +44,15 @@
                 <h3>Info</h3>
                 <ul id="pv-info-list" data-role="listview" data-inset="true">
                     <li><a href="#metadata-popup" data-rel="popup" data-position-to="window">Metadata</a></li>
-                    <li><a href="#" class="ui-state-disabled">Statistics</a></li>
+                    <li><a href="#statistics-popup" data-rel="popup" data-position-to="window">Statistics</a></li>
                 </ul>
                 <h3>Actions</h3>
                 <button type="button" class="ui-btn ui-icon-eye ui-btn-icon-left" id="pv-visibility-toggle-button">Hide</button>
                 <hr id="options-hr"/>
                 <button type="button" class="ui-btn ui-icon-minus ui-btn-icon-left" id="pv-delete-button">Delete</button>
             </div>
-            <div id="metadata-popup" data-role="popup" class="ui-content" data-theme="b">
+            <div id="metadata-popup" data-role="popup" class="info-popup ui-content" data-theme="b" data-dismissible="false">
+                <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
                 <div data-role="header" data-theme="a">
                     <h2>PV</h2>
                 </div>
@@ -84,6 +85,24 @@
                     </tbody>
                 </table>
             </div>
+            <div id="statistics-popup" data-role="popup" class="info-popup ui-content" data-theme="b" data-dismissible="false">
+                <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                <div data-role="header" data-theme="a">
+                    <h2>PV</h2>
+                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Max:</th>
+                            <td id="metadata-max"></td>
+                        </tr>                           
+                        <tr>
+                            <th>Min:</th>
+                            <td id="metadata-min"></td>
+                        </tr>                    
+                    </tbody>
+                </table>
+            </div>            
             <div id="chart-container"></div>
         </div>
         <div id="footer-panel" data-role="footer" data-position="fixed" data-theme="a">
