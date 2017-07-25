@@ -381,7 +381,7 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
+                axisY.push({minimum: metadata.min, maximum: metadata.max, title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
             }
 
             data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
