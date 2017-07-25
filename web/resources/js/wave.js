@@ -1,5 +1,10 @@
+/* jlab.wave 'NAMESPACE' */
+
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
+
+/* VARIABLES */
+
 jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 jlab.wave.fullMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -21,6 +26,8 @@ jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
 jlab.wave.chartHolder = $("#chart-container");
+
+/* UTILITY FUNCTIONS */
 
 jlab.wave.hasTouch = function () {
     try {
@@ -77,178 +84,6 @@ jlab.wave.toUserDateTimeString = function (x) {
             second = x.getSeconds();
     return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
 };
-jlab.wave.TimeInfo = function (start, end) {
-    var sameYear = false,
-            sameMonth = false,
-            sameDay = false,
-            oneDaySpecial = false,
-            oneMonthSpecial = false,
-            oneYearSpecial = false,
-            startTimeNonZero = false,
-            endTimeNonZero = false,
-            formattedTime = '',
-            formattedStartDate,
-            formattedEndDate;
-
-    this.title = '';
-    this.tickFormat = null;
-    this.interval = null;
-    this.intervalType = null;
-
-    if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
-        startTimeNonZero = true;
-    }
-
-    if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
-        endTimeNonZero = true;
-    }
-
-    if (startTimeNonZero || endTimeNonZero) {
-        formattedTime = ' (' + jlab.wave.toUserTimeString(start) + ' - ' + jlab.wave.toUserTimeString(end) + ')';
-    } else { /*Check for no-time special cases*/
-        var d = new Date(start.getTime());
-        d.setDate(start.getDate() + 1);
-        oneDaySpecial = d.getTime() === end.getTime();
-
-        if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
-            d = new Date(start.getTime());
-            d.setMonth(start.getMonth() + 1);
-            oneMonthSpecial = d.getTime() === end.getTime();
-
-            if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
-                d = new Date(start.getTime());
-                d.setFullYear(start.getFullYear() + 1);
-                oneYearSpecial = d.getTime() === end.getTime();
-            }
-        }
-    }
-
-    sameYear = start.getFullYear() === end.getFullYear();
-    sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
-    sameDay = sameMonth ? start.getDate() === end.getDate() : false;
-
-    if (oneDaySpecial) {
-        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-    } else if (oneMonthSpecial) {
-        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
-    } else if (oneYearSpecial) {
-        this.title = start.getFullYear();
-    } else {
-        if (sameYear) {
-            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
-
-            if (sameMonth) {
-                if (sameDay) {
-                    formattedEndDate = ', ' + end.getFullYear();
-                } else { /*Days differ*/
-                    formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
-                }
-            } else { /*Months differ*/
-                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
-            }
-        } else { /*Years differ*/
-            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-            formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
-        }
-
-        this.title = formattedStartDate + formattedEndDate + formattedTime;
-    }
-
-    var impliedYear = sameYear || oneYearSpecial,
-            impliedYearMonth = sameMonth || oneMonthSpecial,
-            impliedYearMonthDay = sameDay || oneDaySpecial;
-
-    jlab.wave.TimeInfo.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
-        var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
-
-        this.intervalType = null;
-        this.interval = null;
-
-        if (!impliedYear) {
-            formatter.year = true;
-        }
-
-        if (!impliedYearMonth) {
-            formatter.month = true;
-        }
-
-        if (!impliedYearMonthDay) {
-            formatter.day = true;
-        }
-
-        var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
-                millisPerHour = millisPerMinute * 60,
-                millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
-                millisPerMonth = millisPerDay * 30, /*Approximate*/
-                millisPerYear = millisPerMonth * 12,
-                rangeMillis = (maxMillis - minMillis);
-
-        // Less than a few minutes
-        if ((rangeMillis / millisPerMinute) < 5) {
-            formatter.hour = true;
-            formatter.minute = true;
-            formatter.second = true;
-        }
-        // Less than a few hours
-        else if ((rangeMillis / millisPerHour) < 12) {
-            formatter.hour = true;
-            formatter.minute = true;
-        }
-        // Less than a few days
-        else if (rangeMillis / (millisPerDay) < 7) {
-            formatter.hour = true;
-            /*this.interval = Math.max(Math.round((rangeMillis / millisPerHour) / 12), 1);
-             this.intervalType = 'hour';*/
-        }
-        // Less than a few months
-        else if ((rangeMillis / millisPerMonth) < 6) {
-            formatter.day = true;
-        }
-        // Less than a few years
-        else if ((rangeMillis / millisPerYear) < 3) {
-            formatter.month = true;
-            formatter.day = false;
-            this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
-            this.intervalType = 'month';
-        }
-        // Many years
-        else {
-            formatter.year = true;
-            formatter.month = true;
-            formatter.day = false;
-        }
-
-        this.tickFormat = '';
-
-        if (formatter.month) {
-            this.tickFormat = this.tickFormat + "MMM";
-        }
-
-        if (formatter.day) {
-            this.tickFormat = this.tickFormat + " DD";
-        }
-
-        if (formatter.year) {
-            this.tickFormat = this.tickFormat + " YYYY";
-        }
-
-        if (formatter.hour || formatter.minute) {
-            this.tickFormat = this.tickFormat + " HH:mm";
-        }
-
-        if (formatter.second) {
-            this.tickFormat = this.tickFormat + ":ss";
-        }
-
-        this.tickFormat = this.tickFormat.trim();
-
-        return this.tickFormat;
-    };
-
-    this.startingTickFormat = this.adjustForViewportZoom(start.getTime(), end.getTime());
-    this.startingInterval = this.interval;
-    this.startingIntervalType = this.intervalType;
-};
 jlab.wave.parseUserDate = function (x) {
     var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
             day = parseInt(x.substring(4, 6)),
@@ -297,7 +132,10 @@ jlab.wave.multiplePvAction = function (pvs, add) {
         });
     }
 };
-/*Sync zoom of all charts and update chart tick label format and tick interval*/
+
+/* Event Actions */
+
+/* Sync zoom of all charts and update chart tick label format and tick interval */
 jlab.wave.zoomRangeChange = function (e) {
 
     var viewportMinimum = e.axisX[0].viewportMinimum,
@@ -340,148 +178,6 @@ jlab.wave.zoomRangeChange = function (e) {
             }
         }
     }
-};
-jlab.wave.Chart = function (pvs) {
-    this.pvs = pvs.slice(); /* slice (not splice) makes a copy */
-    this.canvasjsChart = null;
-    this.$placeholderDiv = null;
-
-    jlab.wave.Chart.prototype.createCanvasJsChart = function (separateYAxis) {
-        var chartId = 'chart-' + jlab.wave.chartIdSequence++,
-                labels = [],
-                data = [],
-                axisY = [];
-
-        if (!separateYAxis) {
-            axisY.push({
-                title: '',
-                margin: 40,
-                tickLength: 20,
-                includeZero: false
-            });
-        }
-
-        for (var i = 0; i < this.pvs.length; i++) {
-            var pv = this.pvs[i],
-                    metadata = jlab.wave.pvToMetadataMap[pv],
-                    lineDashType = "solid",
-                    axisYIndex = 0,
-                    color = metadata.color;
-
-            if (metadata.sampled === true) {
-                labels[i] = pv + ' (Sampled)';
-                lineDashType = "dot";
-            } else {
-                labels[i] = pv;
-            }
-
-            if (separateYAxis) {
-                axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
-            }
-
-            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
-
-            jlab.wave.pvToChartMap[pv] = this;
-        }
-
-        var title = labels[0];
-
-        for (var i = 1; i < labels.length; i++) {
-            title = title + ", " + labels[i];
-        }
-
-        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
-        jlab.wave.chartHolder.append(this.$placeholderDiv);
-        jlab.wave.charts.push(this);
-        /*jlab.wave.idToChartMap[chartId] = this;*/
-        var minDate = jlab.wave.startDateAndTime,
-                maxDate = jlab.wave.endDateAndTime,
-                timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
-
-        this.canvasjsChart = new CanvasJS.Chart(chartId, {
-            zoomEnabled: true,
-            exportEnabled: true,
-            rangeChanging: jlab.wave.zoomRangeChange,
-            timeInfo: timeInfo,
-            title: {
-                text: timeInfo.title
-            },
-            legend: {
-                horizontalAlign: "center",
-                verticalAlign: "top",
-                cursor: "pointer",
-                itemclick: function (e) {
-                    jlab.wave.selectedSeries = e;
-
-                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                        $("#pv-visibility-toggle-button").text("Hide");
-                    } else {
-                        $("#pv-visibility-toggle-button").text("Show");
-                    }
-
-                    $("#pv-panel h2").text(e.dataSeries.pv);
-
-                    /*BEGIN PART THAT COULD BE DEFERRED*/
-                    $("#metadata-popup h2").text(e.dataSeries.pv);
-                    var metadata = jlab.wave.pvToMetadataMap[e.dataSeries.pv];
-                    $("#metadata-datatype").text(metadata.datatype);
-                    $("#metadata-host").text(metadata.datahost);
-                    $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
-                    $("#metadata-sampled").text(metadata.sampled);
-                    $("#metadata-sampled-count").text(metadata.sampledcount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : 'N/A');
-                    $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.intToStringWithCommas(metadata.steppedcount) : '');
-
-                    $("#statistics-popup h2").text(e.dataSeries.pv);
-                    $("#metadata-max").text(metadata.max ? jlab.wave.intToStringWithCommas(metadata.max) : '');
-                    $("#metadata-min").text(metadata.min ? jlab.wave.intToStringWithCommas(metadata.min) : '');
-                    /*END PART THAT COULD BE DEFERRED*/
-
-                    $("#pv-panel").panel("open");
-                },
-                itemmouseover: function (e) {
-                    $(e.chart._canvasJSContainer).attr("title", "PV Menu");
-
-                    /*Sure would be nice to change style of label, but it is too slow since it renders entire chart again*/
-
-                    /*e.chart.legend.set("fontColor", 'white');
-                     e.chart.legend.set("backgroundColor", 'black');
-                     e.chart.legend.set("borderColor", 'gray');
-                     e.chart.legend.set("borderThickness", 1);
-                     e.chart.legend.set("fontStyle", 'italic');
-                     e.chart.legend.set("fontWeight", 'bold');
-                     console.time("legend render");
-                     e.chart.render();
-                     console.timeEnd("legend render");*/
-                },
-                itemmouseout: function (e) {
-                    $(e.chart._canvasJSContainer).removeAttr("title");
-                    /*e.chart.legend.set("fontColor", 'black');
-                     e.chart.legend.set("backgroundColor", 'transparent');
-                     e.chart.legend.set("borderColor", 'transparent');
-                     e.chart.legend.set("borderThickness", 0);
-                     e.chart.legend.set("fontStyle", 'normal');
-                     e.chart.legend.set("fontWeight", 'normal'); 
-                     e.chart.render();*/
-                }
-            },
-            axisY: axisY,
-            axisX: {
-                labelWrap: true,
-                labelMaxWidth: 200,
-                tickLength: 20,
-                valueFormatString: timeInfo.startingTickFormat,
-                interval: timeInfo.startingInterval,
-                intervalType: timeInfo.startingIntervalType,
-                labelAngle: -45,
-                minimum: minDate,
-                maximum: maxDate
-            },
-            data: data
-        });
-
-        return this.$placeholderDiv;
-    };
 };
 jlab.wave.refresh = function () {
     jlab.wave.multiplePvAction(jlab.wave.pvs, false); /*false means getData only*/
@@ -688,7 +384,6 @@ jlab.wave.getData = function (pv, multiple) {
     });
     return promise;
 };
-
 jlab.wave.doLayout = function () {
     jlab.wave.chartHolder.empty();
 
@@ -824,7 +519,7 @@ jlab.wave.deletePvs = function (pvs) {
                 color = metadata.color,
                 chart = jlab.wave.pvToChartMap[pv],
                 index = chart.pvs.indexOf(pv);
-        
+
         chart.pvs.splice(index, 1);
 
         if (chart.pvs.length < 1) {
@@ -855,6 +550,326 @@ jlab.wave.deletePvs = function (pvs) {
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
 };
+
+/* 'CLASSES' */
+
+jlab.wave.TimeInfo = function (start, end) {
+    var sameYear = false,
+            sameMonth = false,
+            sameDay = false,
+            oneDaySpecial = false,
+            oneMonthSpecial = false,
+            oneYearSpecial = false,
+            startTimeNonZero = false,
+            endTimeNonZero = false,
+            formattedTime = '',
+            formattedStartDate,
+            formattedEndDate;
+
+    this.title = '';
+    this.tickFormat = null;
+    this.interval = null;
+    this.intervalType = null;
+
+    if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
+        startTimeNonZero = true;
+    }
+
+    if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
+        endTimeNonZero = true;
+    }
+
+    if (startTimeNonZero || endTimeNonZero) {
+        formattedTime = ' (' + jlab.wave.toUserTimeString(start) + ' - ' + jlab.wave.toUserTimeString(end) + ')';
+    } else { /*Check for no-time special cases*/
+        var d = new Date(start.getTime());
+        d.setDate(start.getDate() + 1);
+        oneDaySpecial = d.getTime() === end.getTime();
+
+        if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
+            d = new Date(start.getTime());
+            d.setMonth(start.getMonth() + 1);
+            oneMonthSpecial = d.getTime() === end.getTime();
+
+            if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
+                d = new Date(start.getTime());
+                d.setFullYear(start.getFullYear() + 1);
+                oneYearSpecial = d.getTime() === end.getTime();
+            }
+        }
+    }
+
+    sameYear = start.getFullYear() === end.getFullYear();
+    sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
+    sameDay = sameMonth ? start.getDate() === end.getDate() : false;
+
+    if (oneDaySpecial) {
+        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+    } else if (oneMonthSpecial) {
+        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+    } else if (oneYearSpecial) {
+        this.title = start.getFullYear();
+    } else {
+        if (sameYear) {
+            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
+
+            if (sameMonth) {
+                if (sameDay) {
+                    formattedEndDate = ', ' + end.getFullYear();
+                } else { /*Days differ*/
+                    formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
+                }
+            } else { /*Months differ*/
+                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+            }
+        } else { /*Years differ*/
+            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+            formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+        }
+
+        this.title = formattedStartDate + formattedEndDate + formattedTime;
+    }
+
+    var impliedYear = sameYear || oneYearSpecial,
+            impliedYearMonth = sameMonth || oneMonthSpecial,
+            impliedYearMonthDay = sameDay || oneDaySpecial;
+
+    jlab.wave.TimeInfo.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
+        var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
+
+        this.intervalType = null;
+        this.interval = null;
+
+        if (!impliedYear) {
+            formatter.year = true;
+        }
+
+        if (!impliedYearMonth) {
+            formatter.month = true;
+        }
+
+        if (!impliedYearMonthDay) {
+            formatter.day = true;
+        }
+
+        var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
+                millisPerHour = millisPerMinute * 60,
+                millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
+                millisPerMonth = millisPerDay * 30, /*Approximate*/
+                millisPerYear = millisPerMonth * 12,
+                rangeMillis = (maxMillis - minMillis);
+
+        // Less than a few minutes
+        if ((rangeMillis / millisPerMinute) < 5) {
+            formatter.hour = true;
+            formatter.minute = true;
+            formatter.second = true;
+        }
+        // Less than a few hours
+        else if ((rangeMillis / millisPerHour) < 12) {
+            formatter.hour = true;
+            formatter.minute = true;
+        }
+        // Less than a few days
+        else if (rangeMillis / (millisPerDay) < 7) {
+            formatter.hour = true;
+            /*this.interval = Math.max(Math.round((rangeMillis / millisPerHour) / 12), 1);
+             this.intervalType = 'hour';*/
+        }
+        // Less than a few months
+        else if ((rangeMillis / millisPerMonth) < 6) {
+            formatter.day = true;
+        }
+        // Less than a few years
+        else if ((rangeMillis / millisPerYear) < 3) {
+            formatter.month = true;
+            formatter.day = false;
+            this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
+            this.intervalType = 'month';
+        }
+        // Many years
+        else {
+            formatter.year = true;
+            formatter.month = true;
+            formatter.day = false;
+        }
+
+        this.tickFormat = '';
+
+        if (formatter.month) {
+            this.tickFormat = this.tickFormat + "MMM";
+        }
+
+        if (formatter.day) {
+            this.tickFormat = this.tickFormat + " DD";
+        }
+
+        if (formatter.year) {
+            this.tickFormat = this.tickFormat + " YYYY";
+        }
+
+        if (formatter.hour || formatter.minute) {
+            this.tickFormat = this.tickFormat + " HH:mm";
+        }
+
+        if (formatter.second) {
+            this.tickFormat = this.tickFormat + ":ss";
+        }
+
+        this.tickFormat = this.tickFormat.trim();
+
+        return this.tickFormat;
+    };
+
+    this.startingTickFormat = this.adjustForViewportZoom(start.getTime(), end.getTime());
+    this.startingInterval = this.interval;
+    this.startingIntervalType = this.intervalType;
+};
+jlab.wave.Chart = function (pvs) {
+    this.pvs = pvs.slice(); /* slice (not splice) makes a copy */
+    this.canvasjsChart = null;
+    this.$placeholderDiv = null;
+
+    jlab.wave.Chart.prototype.createCanvasJsChart = function (separateYAxis) {
+        var chartId = 'chart-' + jlab.wave.chartIdSequence++,
+                labels = [],
+                data = [],
+                axisY = [];
+
+        if (!separateYAxis) {
+            axisY.push({
+                title: '',
+                margin: 40,
+                tickLength: 20,
+                includeZero: false
+            });
+        }
+
+        for (var i = 0; i < this.pvs.length; i++) {
+            var pv = this.pvs[i],
+                    metadata = jlab.wave.pvToMetadataMap[pv],
+                    lineDashType = "solid",
+                    axisYIndex = 0,
+                    color = metadata.color;
+
+            if (metadata.sampled === true) {
+                labels[i] = pv + ' (Sampled)';
+                lineDashType = "dot";
+            } else {
+                labels[i] = pv;
+            }
+
+            if (separateYAxis) {
+                axisYIndex = i;
+                axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+            }
+
+            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+
+            jlab.wave.pvToChartMap[pv] = this;
+        }
+
+        var title = labels[0];
+
+        for (var i = 1; i < labels.length; i++) {
+            title = title + ", " + labels[i];
+        }
+
+        this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
+        jlab.wave.chartHolder.append(this.$placeholderDiv);
+        jlab.wave.charts.push(this);
+        /*jlab.wave.idToChartMap[chartId] = this;*/
+        var minDate = jlab.wave.startDateAndTime,
+                maxDate = jlab.wave.endDateAndTime,
+                timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
+
+        this.canvasjsChart = new CanvasJS.Chart(chartId, {
+            zoomEnabled: true,
+            exportEnabled: true,
+            rangeChanging: jlab.wave.zoomRangeChange,
+            timeInfo: timeInfo,
+            title: {
+                text: timeInfo.title
+            },
+            legend: {
+                horizontalAlign: "center",
+                verticalAlign: "top",
+                cursor: "pointer",
+                itemclick: function (e) {
+                    jlab.wave.selectedSeries = e;
+
+                    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        $("#pv-visibility-toggle-button").text("Hide");
+                    } else {
+                        $("#pv-visibility-toggle-button").text("Show");
+                    }
+
+                    $("#pv-panel h2").text(e.dataSeries.pv);
+
+                    /*BEGIN PART THAT COULD BE DEFERRED*/
+                    $("#metadata-popup h2").text(e.dataSeries.pv);
+                    var metadata = jlab.wave.pvToMetadataMap[e.dataSeries.pv];
+                    $("#metadata-datatype").text(metadata.datatype);
+                    $("#metadata-host").text(metadata.datahost);
+                    $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
+                    $("#metadata-sampled").text(metadata.sampled);
+                    $("#metadata-sampled-count").text(metadata.sampledcount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : 'N/A');
+                    $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.intToStringWithCommas(metadata.steppedcount) : '');
+
+                    $("#statistics-popup h2").text(e.dataSeries.pv);
+                    $("#metadata-max").text(metadata.max ? jlab.wave.intToStringWithCommas(metadata.max) : '');
+                    $("#metadata-min").text(metadata.min ? jlab.wave.intToStringWithCommas(metadata.min) : '');
+                    /*END PART THAT COULD BE DEFERRED*/
+
+                    $("#pv-panel").panel("open");
+                },
+                itemmouseover: function (e) {
+                    $(e.chart._canvasJSContainer).attr("title", "PV Menu");
+
+                    /*Sure would be nice to change style of label, but it is too slow since it renders entire chart again*/
+
+                    /*e.chart.legend.set("fontColor", 'white');
+                     e.chart.legend.set("backgroundColor", 'black');
+                     e.chart.legend.set("borderColor", 'gray');
+                     e.chart.legend.set("borderThickness", 1);
+                     e.chart.legend.set("fontStyle", 'italic');
+                     e.chart.legend.set("fontWeight", 'bold');
+                     console.time("legend render");
+                     e.chart.render();
+                     console.timeEnd("legend render");*/
+                },
+                itemmouseout: function (e) {
+                    $(e.chart._canvasJSContainer).removeAttr("title");
+                    /*e.chart.legend.set("fontColor", 'black');
+                     e.chart.legend.set("backgroundColor", 'transparent');
+                     e.chart.legend.set("borderColor", 'transparent');
+                     e.chart.legend.set("borderThickness", 0);
+                     e.chart.legend.set("fontStyle", 'normal');
+                     e.chart.legend.set("fontWeight", 'normal'); 
+                     e.chart.render();*/
+                }
+            },
+            axisY: axisY,
+            axisX: {
+                labelWrap: true,
+                labelMaxWidth: 200,
+                tickLength: 20,
+                valueFormatString: timeInfo.startingTickFormat,
+                interval: timeInfo.startingInterval,
+                intervalType: timeInfo.startingIntervalType,
+                labelAngle: -45,
+                minimum: minDate,
+                maximum: maxDate
+            },
+            data: data
+        });
+
+        return this.$placeholderDiv;
+    };
+};
+
+/* Event Listeners */
+
 $(document).on("click", "#pv-info-list a", function () {
     $("#pv-panel").panel("close");
 });
@@ -1008,7 +1023,7 @@ $(document).on("click", "#pv-visibility-toggle-button", function () {
 
         e.chart.render();
     }
-    
+
     $("#pv-panel").panel("close");
 });
 $(document).on("click", "#pv-delete-button", function () {
@@ -1020,6 +1035,9 @@ $(document).on("click", "#pv-delete-button", function () {
 
     }
 });
+
+/* PAGE READY EVENT */
+
 $(function () {
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
@@ -1035,6 +1053,9 @@ $(function () {
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
 });
+
+/* DATE-TIME-CHOOSER CONFIGURATION */
+
 jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
     'maxDur': 86399,
     'lockInput': false
