@@ -753,7 +753,7 @@ jlab.wave.Chart = function (pvs) {
         if (!separateYAxis) {
             axisY.push({
                 title: '',
-                margin: 40,
+                margin: 60,
                 tickLength: 20,
                 includeZero: false
             });
@@ -777,7 +777,7 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+                axisY.push({title: pv + ' Value', margin: 60, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
             }
 
             data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data});
@@ -868,8 +868,9 @@ jlab.wave.Chart = function (pvs) {
             },
             axisY: axisY,
             axisX: {
-                labelWrap: true,
-                labelMaxWidth: 200,
+                labelAutoFit: true,
+                labelWrap: false,
+                /*labelMaxWidth: 200,*/
                 tickLength: 20,
                 valueFormatString: timeInfo.startingTickFormat,
                 interval: timeInfo.startingInterval,
