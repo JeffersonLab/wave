@@ -342,7 +342,7 @@ jlab.wave.zoomRangeChange = function (e) {
     }
 };
 jlab.wave.Chart = function (pvs) {
-    this.pvs = pvs;
+    this.pvs = pvs.slice(); /* slice (not splice) makes a copy */
     this.canvasjsChart = null;
     this.$placeholderDiv = null;
 
@@ -435,9 +435,9 @@ jlab.wave.Chart = function (pvs) {
                     $("#metadata-sampled").text(metadata.sampled);
                     $("#metadata-sampled-count").text(jlab.wave.intToStringWithCommas(metadata.sampledcount));
                     $("#metadata-stepped-count").text(jlab.wave.intToStringWithCommas(metadata.steppedcount));
-                    
-                    $("#statistics-popup h2").text(e.dataSeries.pv);                    
-                    $("#metadata-max").text(jlab.wave.intToStringWithCommas(metadata.max));                    
+
+                    $("#statistics-popup h2").text(e.dataSeries.pv);
+                    $("#metadata-max").text(jlab.wave.intToStringWithCommas(metadata.max));
                     $("#metadata-min").text(jlab.wave.intToStringWithCommas(metadata.min));
                     /*END PART THAT COULD BE DEFERRED*/
 
@@ -853,7 +853,7 @@ jlab.wave.deletePvs = function (pvs) {
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
 };
-$(document).on("click", "#pv-info-list a", function() {
+$(document).on("click", "#pv-info-list a", function () {
     $("#pv-panel").panel("close");
 });
 $(document).on("click", "#options-button", function () {
