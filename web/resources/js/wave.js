@@ -431,14 +431,14 @@ jlab.wave.Chart = function (pvs) {
                     var metadata = jlab.wave.pvToMetadataMap[e.dataSeries.pv];
                     $("#metadata-datatype").text(metadata.datatype);
                     $("#metadata-host").text(metadata.datahost);
-                    $("#metadata-count").text(jlab.wave.intToStringWithCommas(metadata.count));
+                    $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
                     $("#metadata-sampled").text(metadata.sampled);
-                    $("#metadata-sampled-count").text(jlab.wave.intToStringWithCommas(metadata.sampledcount));
-                    $("#metadata-stepped-count").text(jlab.wave.intToStringWithCommas(metadata.steppedcount));
+                    $("#metadata-sampled-count").text(metadata.sampledCount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : '');
+                    $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.intToStringWithCommas(metadata.steppedcount) : '');
 
                     $("#statistics-popup h2").text(e.dataSeries.pv);
-                    $("#metadata-max").text(jlab.wave.intToStringWithCommas(metadata.max));
-                    $("#metadata-min").text(jlab.wave.intToStringWithCommas(metadata.min));
+                    $("#metadata-max").text(metadata.max ? jlab.wave.intToStringWithCommas(metadata.max) : '');
+                    $("#metadata-min").text(metadata.min ? jlab.wave.intToStringWithCommas(metadata.min) : '');
                     /*END PART THAT COULD BE DEFERRED*/
 
                     $("#pv-panel").panel("open");
@@ -840,6 +840,10 @@ jlab.wave.deletePvs = function (pvs) {
 
         var index2 = jlab.wave.pvs.indexOf(pv);
         jlab.wave.pvs.splice(index2, 1);
+        
+        /*Remove color and put it in back of array for re-use*/
+        var color = jlab.wave.colors.splice(index2, 1);
+        jlab.wave.colors.push(color);
 
         uri.removeQuery("pv", pv);
     }
