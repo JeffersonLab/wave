@@ -366,11 +366,7 @@ jlab.wave.Chart = function (pvs) {
                     metadata = jlab.wave.pvToMetadataMap[pv],
                     lineDashType = "solid",
                     axisYIndex = 0,
-                    colorIndex = i;
-
-            if (this.pvs.length === 1) {
-                colorIndex = jlab.wave.pvs.indexOf(pv);
-            }
+                    color = metadata.color;
 
             if (metadata.sampled === true) {
                 labels[i] = pv + ' (Sampled)';
@@ -381,10 +377,10 @@ jlab.wave.Chart = function (pvs) {
 
             if (separateYAxis) {
                 axisYIndex = i;
-                axisY.push({minimum: metadata.min, maximum: metadata.max, title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: jlab.wave.colors[colorIndex], labelFontColor: jlab.wave.colors[colorIndex], titleFontColor: jlab.wave.colors[colorIndex]});
+                axisY.push({minimum: metadata.min, maximum: metadata.max, title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
             }
 
-            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: jlab.wave.colors[colorIndex], type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYindex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
 
             jlab.wave.pvToChartMap[pv] = this;
         }
@@ -643,15 +639,16 @@ jlab.wave.getData = function (pv, multiple) {
         }
 
         jlab.wave.pvToMetadataMap[pv] = {
-            'datatype': json.datatype,
-            'datasize': json.datasize,
-            'datahost': json.datahost,
-            'sampled': json.sampled,
-            'count': json.count,
-            'sampledcount': json.sampled ? json.data.length : 'N/A',
-            'steppedcount': formattedData.length,
-            'max': maxY,
-            'min': minY
+            datatype: json.datatype,
+            datasize: json.datasize,
+            datahost: json.datahost,
+            sampled: json.sampled,
+            count: json.count,
+            sampledcount: json.sampled ? json.data.length : 'N/A',
+            steppedcount: formattedData.length,
+            max: maxY,
+            min: minY,
+            color: jlab.wave.colors.shift()
         };
 
         jlab.wave.pvToDataMap[pv] = formattedData;
@@ -822,10 +819,12 @@ jlab.wave.deletePvs = function (pvs) {
     pvs = pvs.slice(); /* slice (not splice) makes a copy */
 
     for (var i = 0; i < pvs.length; i++) {
-        var pv = pvs[i];
-
-        var chart = jlab.wave.pvToChartMap[pv];
-        var index = chart.pvs.indexOf(pv);
+        var pv = pvs[i],
+                metadata = jlab.wave.pvToMetadataMap[pv],
+                color = metadata.color,
+                chart = jlab.wave.pvToChartMap[pv],
+                index = chart.pvs.indexOf(pv);
+        
         chart.pvs.splice(index, 1);
 
         if (chart.pvs.length < 1) {
@@ -840,9 +839,8 @@ jlab.wave.deletePvs = function (pvs) {
 
         var index2 = jlab.wave.pvs.indexOf(pv);
         jlab.wave.pvs.splice(index2, 1);
-        
-        /*Remove color and put it in back of array for re-use*/
-        var color = jlab.wave.colors.splice(index2, 1);
+
+        /*Put color back in array for re-use*/
         jlab.wave.colors.push(color);
 
         uri.removeQuery("pv", pv);
