@@ -7,8 +7,9 @@ jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME
 jlab.wave.pvToChartMap = {};
 jlab.wave.pvToMetadataMap = {};
 jlab.wave.pvToDataMap = {};
-jlab.wave.idToChartMap = {};
+/*jlab.wave.idToChartMap = {};*/
 jlab.wave.pvs = [];
+jlab.wave.charts = [];
 jlab.wave.chartIdSequence = 0;
 jlab.wave.selectedSeries; /*When you click on series label in legend*/
 /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
@@ -296,22 +297,48 @@ jlab.wave.multiplePvAction = function (pvs, add) {
         });
     }
 };
+/*Sync zoom of all charts and update chart tick label format and tick interval*/
 jlab.wave.zoomRangeChange = function (e) {
+
     var viewportMinimum = e.axisX[0].viewportMinimum,
             viewportMaximum = e.axisX[0].viewportMaximum,
-            timeInfo = e.chart.options.timeInfo;
+            timeInfo = e.chart.options.timeInfo,
+            valueFmtString = timeInfo.adjustForViewportZoom(viewportMinimum, viewportMaximum);
 
-    if (!e.chart.options.axisX)
-        e.chart.options.axisX = {};
+    for (var i = 0; i < jlab.wave.charts.length; i++) {
+        var c = jlab.wave.charts[i].canvasjsChart;
 
-    if (e.trigger === "reset") {
-        e.chart.options.axisX.valueFormatString = timeInfo.startingTickFormat;
-        e.chart.options.axisX.interval = timeInfo.startingInterval;
-        e.chart.options.axisX.intervalType = timeInfo.startingIntervalType;
-    } else if (e.trigger === "zoom") {
-        e.chart.options.axisX.valueFormatString = timeInfo.adjustForViewportZoom(viewportMinimum, viewportMaximum);
-        e.chart.options.axisX.interval = timeInfo.interval;
-        e.chart.options.axisX.intervalType = timeInfo.intervalType;
+        if (!c.options.axisX) {
+            c.options.axisX = {};
+        }
+
+        if (e.trigger === "reset") {
+            c.options.axisX.viewportMinimum = c.options.axisX.viewportMaximum = null;
+
+            c.options.axisX.valueFormatString = timeInfo.startingTickFormat;
+            c.options.axisX.interval = timeInfo.startingInterval;
+            c.options.axisX.intervalType = timeInfo.startingIntervalType;
+
+            if (c !== e.chart) {
+                c.render();
+            }
+        } else {
+            if (c !== e.chart) {
+                c.options.axisX.viewportMinimum = viewportMinimum;
+                c.options.axisX.viewportMaximum = viewportMaximum;
+            }
+
+            /*Don't update tick labels and interval for pan; only for zoom*/
+            if (e.trigger === "zoom") {
+                c.options.axisX.valueFormatString = valueFmtString;
+                c.options.axisX.interval = timeInfo.interval;
+                c.options.axisX.intervalType = timeInfo.intervalType;
+            }
+
+            if (c !== e.chart) {
+                c.render();
+            }
+        }
     }
 };
 jlab.wave.Chart = function (pvs) {
@@ -370,7 +397,8 @@ jlab.wave.Chart = function (pvs) {
 
         this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
         jlab.wave.chartHolder.append(this.$placeholderDiv);
-        jlab.wave.idToChartMap[chartId] = this;
+        jlab.wave.charts.push(this);
+        /*jlab.wave.idToChartMap[chartId] = this;*/
         var minDate = jlab.wave.startDateAndTime,
                 maxDate = jlab.wave.endDateAndTime,
                 timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
@@ -771,7 +799,7 @@ jlab.wave.deletePvs = function (pvs) {
         chart.pvs.splice(index, 1);
 
         if (chart.pvs.length < 1) {
-            console.log('deleting chart');
+            jlab.wave.charts.splice(jlab.wave.charts.indexOf(chart), 1);
             chart.$placeholderDiv.remove();
             delete chart;
         }
