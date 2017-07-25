@@ -429,7 +429,7 @@ jlab.wave.Chart = function (pvs) {
                     $("#metadata-host").text(metadata.datahost);
                     $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
                     $("#metadata-sampled").text(metadata.sampled);
-                    $("#metadata-sampled-count").text(metadata.sampledCount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : '');
+                    $("#metadata-sampled-count").text(metadata.sampledcount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : 'N/A');
                     $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.intToStringWithCommas(metadata.steppedcount) : '');
 
                     $("#statistics-popup h2").text(e.dataSeries.pv);
