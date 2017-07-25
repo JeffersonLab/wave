@@ -1008,6 +1008,8 @@ $(document).on("click", "#pv-visibility-toggle-button", function () {
 
         e.chart.render();
     }
+    
+    $("#pv-panel").panel("close");
 });
 $(document).on("click", "#pv-delete-button", function () {
     var e = jlab.wave.selectedSeries;
