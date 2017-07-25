@@ -106,32 +106,6 @@ jlab.wave.parseUserTime = function (x) {
 
     return new Date(2000, 0, 1, hour, minute, second);
 };
-jlab.wave.multiplePvAction = function (pvs, add) {
-    if (pvs.length > 0) {
-        var action;
-
-        if (add) {
-            action = jlab.wave.addPv;
-        } else {
-            action = jlab.wave.getData;
-        }
-
-        $.mobile.loading("show", {textVisible: true, theme: "b"});
-
-        var promises = [];
-
-        for (var i = 0; i < pvs.length; i++) {
-            var promise = action(pvs[i], true);
-
-            promises.push(promise);
-        }
-
-        $.whenAll.apply($, promises).always(function () {
-            $.mobile.loading("hide");
-            jlab.wave.doLayout();
-        });
-    }
-};
 
 /* Event Actions */
 
@@ -549,6 +523,32 @@ jlab.wave.deletePvs = function (pvs) {
 
     var url = uri.href();
     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
+};
+jlab.wave.multiplePvAction = function (pvs, add) {
+    if (pvs.length > 0) {
+        var action;
+
+        if (add) {
+            action = jlab.wave.addPv;
+        } else {
+            action = jlab.wave.getData;
+        }
+
+        $.mobile.loading("show", {textVisible: true, theme: "b"});
+
+        var promises = [];
+
+        for (var i = 0; i < pvs.length; i++) {
+            var promise = action(pvs[i], true);
+
+            promises.push(promise);
+        }
+
+        $.whenAll.apply($, promises).always(function () {
+            $.mobile.loading("hide");
+            jlab.wave.doLayout();
+        });
+    }
 };
 
 /* 'CLASSES' */
