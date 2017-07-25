@@ -23,15 +23,16 @@
     margin-bottom: 3em;
 }
 h2 {
+    font-size: 1.1em;
     margin-top: 0;
 }
 h3 {
     margin: 1em 0 0 0;
     padding: 0 0 10px 0;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 .endpoint-header {
-    font-size: 1.2em;
+    font-size: 0.75em;
     font-style: italic;
 }
 #options-hr {
@@ -39,6 +40,7 @@ h3 {
 }
 .info-popup {
     padding: 0;
+    min-width: 250px;
 }
 .info-popup table {
     padding: 1em;
