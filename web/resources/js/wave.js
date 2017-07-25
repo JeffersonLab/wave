@@ -8,10 +8,9 @@ jlab.wave = jlab.wave || {};
 jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 jlab.wave.fullMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+jlab.wave.viewerModeEnum = {ARCHIVE: 1, STRIP: 2, WAVEFORM: 3};
 jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3};
-jlab.wave.pvToChartMap = {};
-jlab.wave.pvToMetadataMap = {};
-jlab.wave.pvToDataMap = {};
+jlab.wave.pvToSeriesMap = {};
 /*jlab.wave.idToChartMap = {};*/
 jlab.wave.pvs = [];
 jlab.wave.charts = [];
@@ -171,6 +170,14 @@ jlab.wave.addPv = function (pv, multiple) {
 
     jlab.wave.pvs.sort();
 
+    var series = new jlab.wave.Series(pv);
+
+    jlab.wave.pvToSeriesMap[pv] = series;
+
+    series.preferences = {
+        color: jlab.wave.colors.shift()
+    };
+
     var promise = jlab.wave.getData(pv, multiple);
 
     $("#pv-input").val("");
@@ -196,8 +203,9 @@ jlab.wave.addPv = function (pv, multiple) {
 };
 jlab.wave.getData = function (pv, multiple) {
     /*In case things go wrong we set to empty*/
-    jlab.wave.pvToMetadataMap[pv] = {};
-    jlab.wave.pvToDataMap[pv] = [];
+    var series = jlab.wave.pvToSeriesMap[pv];
+    series.metadata = {};
+    series.data = [];
 
     var url = '/myget/jmyapi-span-data',
             data = {
@@ -308,7 +316,7 @@ jlab.wave.getData = function (pv, multiple) {
             }
         }
 
-        jlab.wave.pvToMetadataMap[pv] = {
+        series.metadata = {
             datatype: json.datatype,
             datasize: json.datasize,
             datahost: json.datahost,
@@ -317,11 +325,10 @@ jlab.wave.getData = function (pv, multiple) {
             sampledcount: json.sampled ? json.data.length : 'N/A',
             steppedcount: formattedData.length,
             max: maxY,
-            min: minY,
-            color: jlab.wave.colors.shift()
+            min: minY
         };
 
-        jlab.wave.pvToDataMap[pv] = formattedData;
+        series.data = formattedData;
 
         console.log('database event count: ' + jlab.wave.intToStringWithCommas(json.count));
         console.log('transferred points: ' + jlab.wave.intToStringWithCommas(json.data.length));
@@ -347,8 +354,8 @@ jlab.wave.getData = function (pv, multiple) {
     });
     promise.always(function () {
         /*Need to figure out how to include series in legend even if no data; until then we'll just always add a point if empty*/
-        if (jlab.wave.pvToDataMap[pv].length === 0) {
-            jlab.wave.pvToDataMap[pv] = [{x: jlab.wave.startDateAndTime, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
+        if (series.data.length === 0) {
+            series.data = [{x: jlab.wave.startDateAndTime, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
         }
 
         if (!multiple) {
@@ -412,12 +419,13 @@ jlab.wave.csvexport = function () {
     /*TODO: figure out which chart is being export and only get pvs from it*/
     for (var i = 0; i < jlab.wave.pvs.length; i++) {
         var pv = jlab.wave.pvs[i],
-                series = jlab.wave.pvToDataMap[pv];
+                series = jlab.wave.pvToSeriesMap[pv],
+                d = series.data;
 
         data = data + '--- ' + pv + ' ---\r\n';
-        for (var j = 0; j < series.length; j++) {
+        for (var j = 0; j < d.length; j++) {
             if (!(j % 2)) { /*Only output even to skip stepped points */
-                data = data + jlab.wave.toIsoDateTimeString(new Date(series[j].x)) + ',' + series[j].y + '\r\n';
+                data = data + jlab.wave.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
             }
         }
     }
@@ -489,9 +497,10 @@ jlab.wave.deletePvs = function (pvs) {
 
     for (var i = 0; i < pvs.length; i++) {
         var pv = pvs[i],
-                metadata = jlab.wave.pvToMetadataMap[pv],
+                series = jlab.wave.pvToSeriesMap[pv],
+                metadata = series.metadata,
                 color = metadata.color,
-                chart = jlab.wave.pvToChartMap[pv],
+                chart = series.chart,
                 index = chart.pvs.indexOf(pv);
 
         chart.pvs.splice(index, 1);
@@ -502,9 +511,7 @@ jlab.wave.deletePvs = function (pvs) {
             delete chart;
         }
 
-        delete jlab.wave.pvToChartMap[pv];
-        delete jlab.wave.pvToDataMap[pv];
-        delete jlab.wave.pvToMetadataMap[pv];
+        delete jlab.wave.pvToSeriesMap[pv];
 
         var index2 = jlab.wave.pvs.indexOf(pv);
         jlab.wave.pvs.splice(index2, 1);
@@ -517,7 +524,7 @@ jlab.wave.deletePvs = function (pvs) {
 
     jlab.wave.doLayout();
 
-    if (Object.keys(jlab.wave.pvToChartMap).length === 0) {
+    if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
         $("#chart-container").css("border", "1px dashed black");
     }
 
@@ -553,6 +560,13 @@ jlab.wave.multiplePvAction = function (pvs, add) {
 
 /* 'CLASSES' */
 
+jlab.wave.Series = function (pv) {
+    this.pv = pv;
+    this.data = null;
+    this.chart = null;
+    this.metadata = null;
+    this.preferences = null; /*Unlike metadata, this is maintained across fetch refreshes*/
+};
 jlab.wave.TimeInfo = function (start, end) {
     var sameYear = false,
             sameMonth = false,
@@ -747,10 +761,12 @@ jlab.wave.Chart = function (pvs) {
 
         for (var i = 0; i < this.pvs.length; i++) {
             var pv = this.pvs[i],
-                    metadata = jlab.wave.pvToMetadataMap[pv],
+                    series = jlab.wave.pvToSeriesMap[pv],
+                    metadata = series.metadata,
+                    preferences = series.preferences,
                     lineDashType = "solid",
                     axisYIndex = 0,
-                    color = metadata.color;
+                    color = preferences.color;
 
             if (metadata.sampled === true) {
                 labels[i] = pv + ' (Sampled)';
@@ -764,9 +780,9 @@ jlab.wave.Chart = function (pvs) {
                 axisY.push({title: pv + ' Value', margin: 40, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
             }
 
-            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: jlab.wave.pvToDataMap[pvs[i]]});
+            data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data});
 
-            jlab.wave.pvToChartMap[pv] = this;
+            series.chart = this;
         }
 
         var title = labels[0];
@@ -808,7 +824,8 @@ jlab.wave.Chart = function (pvs) {
 
                     /*BEGIN PART THAT COULD BE DEFERRED*/
                     $("#metadata-popup h2").text(e.dataSeries.pv);
-                    var metadata = jlab.wave.pvToMetadataMap[e.dataSeries.pv];
+                    var series = jlab.wave.pvToSeriesMap[e.dataSeries.pv],
+                            metadata = series.metadata;
                     $("#metadata-datatype").text(metadata.datatype);
                     $("#metadata-host").text(metadata.datahost);
                     $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
