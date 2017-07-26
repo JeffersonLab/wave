@@ -379,10 +379,10 @@ jlab.wave.doLayout = function () {
 };
 jlab.wave.doSingleChartLayout = function () {
     if (jlab.wave.pvs.length > 0) {
-        var c = new jlab.wave.Chart(jlab.wave.pvs),
-                $placeholderDiv = c.createCanvasJsChart(jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
-        $placeholderDiv.css("top", 0);
-        $placeholderDiv.height(jlab.wave.chartHolder.height());
+        var c = new jlab.wave.Chart(jlab.wave.pvs, jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
+        
+        c.$placeholderDiv.css("top", 0);
+        c.$placeholderDiv.height(jlab.wave.chartHolder.height());
 
         console.time("render");
         c.canvasjsChart.render();
@@ -397,12 +397,11 @@ jlab.wave.doSeparateChartLayout = function () {
     for (var i = 0; i < jlab.wave.pvs.length; i++) {
         var pv = jlab.wave.pvs[i],
                 c = new jlab.wave.Chart([pv]),
-                $placeholderDiv = c.createCanvasJsChart(),
                 chartHeight = jlab.wave.chartHolder.height() / jlab.wave.pvs.length;
 
-        $placeholderDiv.css("top", offset);
+        c.$placeholderDiv.css("top", offset);
         offset = offset + chartHeight;
-        $placeholderDiv.height(chartHeight);
+        c.$placeholderDiv.height(chartHeight);
 
         console.time("render");
         c.canvasjsChart.render();
