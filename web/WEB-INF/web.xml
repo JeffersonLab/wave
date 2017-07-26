@@ -8,6 +8,23 @@
         <param-name>releaseDate</param-name>
         <param-value>26 Jul 2017</param-value>
     </context-param>
+    <context-param>
+        <param-name>releaseNumber</param-name>
+        <param-value>@VERSION@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>releaseDate</param-name>
+        <param-value>@RELEASE_DATE@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>productionRelease</param-name>
+        <param-value>@PRODUCTION_RELEASE@</param-value>
+    </context-param>    
+    <env-entry>
+        <env-entry-name>productionRelease</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>@PRODUCTION_RELEASE@</env-entry-value>
+    </env-entry>    
     <session-config>
         <session-timeout>
             30
