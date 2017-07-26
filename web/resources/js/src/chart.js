@@ -64,7 +64,7 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
         zoomEnabled: true,
         exportEnabled: true,
-        rangeChanging: jlab.wave.zoomRangeChange,
+        rangeChanging: jlab.wave.controller.zoomRangeChange,
         timeFormatter: timeFormatter,
         title: {
             text: timeFormatter.title

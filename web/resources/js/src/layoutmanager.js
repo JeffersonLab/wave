@@ -53,7 +53,7 @@ jlab.wave.LayoutManager = function ($chartHolder) {
                 this.style.backgroundColor = 'transparent';
             });
             $div.click(function () {
-                jlab.wave.csvexport();
+                jlab.wave.controller.csvexport();
                 $(this).parent().hide();
             });
 
