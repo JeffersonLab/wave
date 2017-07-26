@@ -19,9 +19,7 @@ jlab.wave.chartNextSequenceId = 0;
  * @returns {jlab.wave.Chart} - The chart
  */
 jlab.wave.Chart = function (pvs, separateYAxis) {
-    this.pvs = pvs.slice(); /* slice (not splice) makes a copy */
-    this.canvasjsChart = null;
-    this.$placeholderDiv = null; /*$ prefix since this is a jQuery object*/
+    this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
 
     var chartId = 'chart-' + jlab.wave.chartNextSequenceId++,
             labels = [],
@@ -63,27 +61,21 @@ jlab.wave.Chart = function (pvs, separateYAxis) {
         series.chart = this;
     }
 
-    var title = labels[0];
-
-    for (var i = 1; i < labels.length; i++) {
-        title = title + ", " + labels[i];
-    }
-
     this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
     jlab.wave.chartHolder.append(this.$placeholderDiv);
     jlab.wave.charts.push(this);
     /*jlab.wave.idToChartMap[chartId] = this;*/
     var minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime,
-            timeInfo = new jlab.wave.TimeInfo(minDate, maxDate);
+            timeFormatter = new jlab.wave.ZoomableTimeFormatter(minDate, maxDate);
 
     this.canvasjsChart = new CanvasJS.Chart(chartId, {
         zoomEnabled: true,
         exportEnabled: true,
         rangeChanging: jlab.wave.zoomRangeChange,
-        timeInfo: timeInfo,
+        timeFormatter: timeFormatter,
         title: {
-            text: timeInfo.title
+            text: timeFormatter.title
         },
         legend: {
             horizontalAlign: "center",
@@ -150,9 +142,9 @@ jlab.wave.Chart = function (pvs, separateYAxis) {
             labelWrap: false,
             /*labelMaxWidth: 200,*/
             tickLength: 20,
-            valueFormatString: timeInfo.startingTickFormat,
-            interval: timeInfo.startingInterval,
-            intervalType: timeInfo.startingIntervalType,
+            valueFormatString: timeFormatter.startingTickFormat,
+            interval: timeFormatter.startingInterval,
+            intervalType: timeFormatter.startingIntervalType,
             labelAngle: -45,
             minimum: minDate,
             maximum: maxDate

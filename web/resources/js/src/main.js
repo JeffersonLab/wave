@@ -113,8 +113,9 @@ jlab.wave.zoomRangeChange = function (e) {
 
     var viewportMinimum = e.axisX[0].viewportMinimum,
             viewportMaximum = e.axisX[0].viewportMaximum,
-            timeInfo = e.chart.options.timeInfo,
-            valueFmtString = timeInfo.adjustForViewportZoom(viewportMinimum, viewportMaximum);
+            timeFormatter = e.chart.options.timeFormatter;
+    
+            timeFormatter.adjustForViewportZoom(viewportMinimum, viewportMaximum);
 
     for (var i = 0; i < jlab.wave.charts.length; i++) {
         var c = jlab.wave.charts[i].canvasjsChart;
@@ -126,9 +127,9 @@ jlab.wave.zoomRangeChange = function (e) {
         if (e.trigger === "reset") {
             c.options.axisX.viewportMinimum = c.options.axisX.viewportMaximum = null;
 
-            c.options.axisX.valueFormatString = timeInfo.startingTickFormat;
-            c.options.axisX.interval = timeInfo.startingInterval;
-            c.options.axisX.intervalType = timeInfo.startingIntervalType;
+            c.options.axisX.valueFormatString = timeFormatter.startingTickFormat;
+            c.options.axisX.interval = timeFormatter.startingInterval;
+            c.options.axisX.intervalType = timeFormatter.startingIntervalType;
 
             if (c !== e.chart) {
                 c.render();
@@ -141,9 +142,9 @@ jlab.wave.zoomRangeChange = function (e) {
 
             /*Don't update tick labels and interval for pan; only for zoom*/
             if (e.trigger === "zoom") {
-                c.options.axisX.valueFormatString = valueFmtString;
-                c.options.axisX.interval = timeInfo.interval;
-                c.options.axisX.intervalType = timeInfo.intervalType;
+                c.options.axisX.valueFormatString = timeFormatter.tickFormat;
+                c.options.axisX.interval = timeFormatter.interval;
+                c.options.axisX.intervalType = timeFormatter.intervalType;
             }
 
             if (c !== e.chart) {

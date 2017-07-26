@@ -2,15 +2,31 @@ var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /**
- * Constructor for TimeInfo object. 
+ * Constructor for ZoomableTimeFormatter object. 
  * 
- * A wave TimeInfo encapsulates all of the information associated with time.
+ * A wave ZoomableTimeFormatter encapsulates all of the tasks associated with 
+ * formatting time for a chart that can be zoomed and reset. In particular the 
+ * following public attributes are provided:
+ * 
+ * title - chart title is a concisely formatted unzoomed date range
+ * 
+ * tickFormat - tick format is as concise as possible and avoids repeating 
+ * fields implied by title, but takes into consideration zoom level
+ * 
+ * interval - CanvasJS specific: a sensible interval between ticks given the 
+ * start and end date and zoom
+ * 
+ * intervalType -CanvasJS specific: a sensible scale for the interval "month", 
+ * "week", "day", etc.
+ * 
+ * In addition there are non-changing "starting" values for tickFormat, 
+ * interval, and intervalType such that a reset is possible (zoom out).
  * 
  * @param {date} start - The start date
  * @param {date} end - The end date
- * @returns {jlab.wave.TimeInfo} - The time info
+ * @returns {jlab.wave.TimeFormatter} - The time formatter
  */
-jlab.wave.TimeInfo = function (start, end) {
+jlab.wave.ZoomableTimeFormatter = function (start, end) {
     var sameYear = false,
             sameMonth = false,
             sameDay = false,
@@ -91,7 +107,13 @@ jlab.wave.TimeInfo = function (start, end) {
             impliedYearMonth = sameMonth || oneMonthSpecial,
             impliedYearMonthDay = sameDay || oneDaySpecial;
 
-    jlab.wave.TimeInfo.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
+    /**
+     * Adjusts the tickFormat, interval, and intervalType given zoom parameters.
+     * 
+     * @param {number} minMillis - starting miliseconds from Epoch
+     * @param {number} maxMillis - ending milliseconds from Epoch
+     */
+    jlab.wave.ZoomableTimeFormatter.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
         var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
 
         this.intervalType = null;
@@ -174,11 +196,12 @@ jlab.wave.TimeInfo = function (start, end) {
         }
 
         this.tickFormat = this.tickFormat.trim();
-
-        return this.tickFormat;
     };
 
-    this.startingTickFormat = this.adjustForViewportZoom(start.getTime(), end.getTime());
+    /*Initialize*/
+    this.adjustForViewportZoom(start.getTime(), end.getTime());
+
+    this.startingTickFormat = this.tickFormat;
     this.startingInterval = this.interval;
     this.startingIntervalType = this.intervalType;
 };
