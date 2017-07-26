@@ -198,7 +198,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
         this.tickFormat = this.tickFormat.trim();
     };
 
-    /*Initialize*/
+    /*Initialize with unzoomed values*/
     this.adjustForViewportZoom(start.getTime(), end.getTime());
 
     this.startingTickFormat = this.tickFormat;
