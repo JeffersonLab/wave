@@ -1,12 +1,6 @@
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
-/** 
- * Sequence ID generator for charts (canvas JS requires DOM placeholder div
- * has ID) 
- **/
-jlab.wave.chartNextSequenceId = 0;
-
 /**
  * Constructor for LayoutManager object. 
  * 
@@ -17,6 +11,12 @@ jlab.wave.chartNextSequenceId = 0;
  */
 jlab.wave.LayoutManager = function ($chartHolder) {
     this.$chartHolder = $chartHolder;
+
+    /** 
+     * Sequence ID generator for charts (canvas JS requires DOM placeholder div
+     * has ID) 
+     **/
+    var chartNextSequenceId = 0;
 
     /*Priviledged visibility*/
     this.doLayout = function () {
@@ -33,7 +33,7 @@ jlab.wave.LayoutManager = function ($chartHolder) {
     };
     /*Private visibility*/
     var createAndAppendChartPlaceholder = function () {
-        var chartId = 'chart-' + jlab.wave.chartNextSequenceId++,
+        var chartId = 'chart-' + chartNextSequenceId++,
                 $placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
         $chartHolder.append($placeholderDiv);
         return $placeholderDiv;
