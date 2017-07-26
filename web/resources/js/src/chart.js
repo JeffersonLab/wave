@@ -1,12 +1,6 @@
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
-/** 
- * Sequence ID generator for charts (canvas JS requires DOM placeholder div
- * has ID) 
- **/
-jlab.wave.chartNextSequenceId = 0;
-
 /**
  * Constructor for Chart object. 
  * 
@@ -18,11 +12,11 @@ jlab.wave.chartNextSequenceId = 0;
  * Y axis (otherwise share a single Y axis)
  * @returns {jlab.wave.Chart} - The chart
  */
-jlab.wave.Chart = function (pvs, separateYAxis) {
+jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
+    this.$placeholderDiv = $placeholderDiv;
 
-    var chartId = 'chart-' + jlab.wave.chartNextSequenceId++,
-            labels = [],
+    var labels = [],
             data = [],
             axisY = [];
 
@@ -61,15 +55,13 @@ jlab.wave.Chart = function (pvs, separateYAxis) {
         series.chart = this;
     }
 
-    this.$placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
-    jlab.wave.chartHolder.append(this.$placeholderDiv);
     jlab.wave.charts.push(this);
     /*jlab.wave.idToChartMap[chartId] = this;*/
     var minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime,
             timeFormatter = new jlab.wave.ZoomableTimeFormatter(minDate, maxDate);
 
-    this.canvasjsChart = new CanvasJS.Chart(chartId, {
+    this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
         zoomEnabled: true,
         exportEnabled: true,
         rangeChanging: jlab.wave.zoomRangeChange,
