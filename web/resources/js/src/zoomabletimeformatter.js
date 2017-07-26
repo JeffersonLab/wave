@@ -53,7 +53,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
     }
 
     if (startTimeNonZero || endTimeNonZero) {
-        formattedTime = ' (' + jlab.wave.toUserTimeString(start) + ' - ' + jlab.wave.toUserTimeString(end) + ')';
+        formattedTime = ' (' + jlab.wave.util.toUserTimeString(start) + ' - ' + jlab.wave.util.toUserTimeString(end) + ')';
     } else { /*Check for no-time special cases*/
         var d = new Date(start.getTime());
         d.setDate(start.getDate() + 1);
@@ -77,14 +77,14 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
     sameDay = sameMonth ? start.getDate() === end.getDate() : false;
 
     if (oneDaySpecial) {
-        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+        this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
     } else if (oneMonthSpecial) {
-        this.title = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+        this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
     } else if (oneYearSpecial) {
         this.title = start.getFullYear();
     } else {
         if (sameYear) {
-            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
+            formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
 
             if (sameMonth) {
                 if (sameDay) {
@@ -93,11 +93,11 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
                     formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
                 }
             } else { /*Months differ*/
-                formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+                formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
             }
         } else { /*Years differ*/
-            formattedStartDate = jlab.wave.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-            formattedEndDate = ' - ' + jlab.wave.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+            formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
         }
 
         this.title = formattedStartDate + formattedEndDate + formattedTime;

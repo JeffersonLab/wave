@@ -90,14 +90,14 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
                         metadata = series.metadata;
                 $("#metadata-datatype").text(metadata.datatype);
                 $("#metadata-host").text(metadata.datahost);
-                $("#metadata-count").text(metadata.count ? jlab.wave.intToStringWithCommas(metadata.count) : '');
+                $("#metadata-count").text(metadata.count ? jlab.wave.util.intToStringWithCommas(metadata.count) : '');
                 $("#metadata-sampled").text(metadata.sampled);
-                $("#metadata-sampled-count").text(metadata.sampledcount ? jlab.wave.intToStringWithCommas(metadata.sampledcount) : 'N/A');
-                $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.intToStringWithCommas(metadata.steppedcount) : '');
+                $("#metadata-sampled-count").text(metadata.sampledcount ? jlab.wave.util.intToStringWithCommas(metadata.sampledcount) : 'N/A');
+                $("#metadata-stepped-count").text(metadata.steppedcount ? jlab.wave.util.intToStringWithCommas(metadata.steppedcount) : '');
 
                 $("#statistics-popup h2").text(e.dataSeries.pv);
-                $("#metadata-max").text(metadata.max ? jlab.wave.intToStringWithCommas(metadata.max) : '');
-                $("#metadata-min").text(metadata.min ? jlab.wave.intToStringWithCommas(metadata.min) : '');
+                $("#metadata-max").text(metadata.max ? jlab.wave.util.intToStringWithCommas(metadata.max) : '');
+                $("#metadata-min").text(metadata.min ? jlab.wave.util.intToStringWithCommas(metadata.min) : '');
                 /*END PART THAT COULD BE DEFERRED*/
 
                 $("#pv-panel").panel("open");

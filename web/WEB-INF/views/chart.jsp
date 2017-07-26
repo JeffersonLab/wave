@@ -119,6 +119,7 @@
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/combined.min.js?v=${initParam.releaseNumber}"></script>
             </c:when>
             <c:otherwise>
+                <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/util.js?v=${initParam.releaseNumber}"></script> 
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/chart.js?v=${initParam.releaseNumber}"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/series.js?v=${initParam.releaseNumber}"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/layoutmanager.js?v=${initParam.releaseNumber}"></script>

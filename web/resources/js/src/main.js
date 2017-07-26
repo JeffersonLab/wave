@@ -1,13 +1,8 @@
-/* jlab.wave 'NAMESPACE' */
-
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /* VARIABLES */
 
-jlab.wave.triCharMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-jlab.wave.fullMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 jlab.wave.viewerModeEnum = {ARCHIVE: 1, STRIP: 2, WAVEFORM: 3};
 jlab.wave.multiplePvModeEnum = {SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3};
 jlab.wave.pvToSeriesMap = {};
@@ -25,86 +20,6 @@ jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
 jlab.wave.viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
 jlab.wave.layoutManager = null;
-
-/* UTILITY FUNCTIONS */
-
-jlab.wave.hasTouch = function () {
-    try {
-        document.createEvent("TouchEvent");
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
-jlab.wave.pad = function (n, width, z) {
-    z = z || '0';
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-};
-jlab.wave.intToStringWithCommas = function (x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-jlab.wave.toIsoDateTimeString = function (x) {
-    var year = x.getFullYear(),
-            month = x.getMonth() + 1,
-            day = x.getDate(),
-            hour = x.getHours(),
-            minute = x.getMinutes(),
-            second = x.getSeconds();
-    return year + '-' + jlab.wave.pad(month, 2) + '-' + jlab.wave.pad(day, 2) + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
-};
-jlab.wave.parseIsoDateTimeString = function (x) {
-    var year = parseInt(x.substring(0, 4)),
-            month = parseInt(x.substring(5, 7)) - 1,
-            day = parseInt(x.substring(8, 10)),
-            hour = parseInt(x.substring(11, 13)),
-            minute = parseInt(x.substring(14, 16)),
-            second = parseInt(x.substring(17, 19));
-    return new Date(year, month, day, hour, minute, second);
-};
-jlab.wave.toUserDateString = function (x) {
-    var year = x.getFullYear(),
-            month = x.getMonth(),
-            day = x.getDate();
-    return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year;
-};
-jlab.wave.toUserTimeString = function (x) {
-    var hour = x.getHours(),
-            minute = x.getMinutes(),
-            second = x.getSeconds();
-    return jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
-};
-jlab.wave.toUserDateTimeString = function (x) {
-    var year = x.getFullYear(),
-            month = x.getMonth(),
-            day = x.getDate(),
-            hour = x.getHours(),
-            minute = x.getMinutes(),
-            second = x.getSeconds();
-    return jlab.wave.triCharMonthNames[month] + ' ' + jlab.wave.pad(day, 2) + ' ' + year + ' ' + jlab.wave.pad(hour, 2) + ':' + jlab.wave.pad(minute, 2) + ':' + jlab.wave.pad(second, 2);
-};
-jlab.wave.parseUserDate = function (x) {
-    var month = jlab.wave.triCharMonthNames.indexOf(x.substring(0, 3)),
-            day = parseInt(x.substring(4, 6)),
-            year = parseInt(x.substring(7, 11));
-    return new Date(year, month, day, 0, 0);
-};
-jlab.wave.parseUserTime = function (x) {
-
-    var hour, minute, second;
-
-    if (x.trim() === '') {
-        hour = 0;
-        minute = 0;
-        second = 0;
-    } else {
-        hour = parseInt(x.substring(0, 2));
-        minute = parseInt(x.substring(3, 5));
-        second = parseInt(x.substring(6, 9));
-    }
-
-    return new Date(2000, 0, 1, hour, minute, second);
-};
 
 /* Event Actions */
 
@@ -211,8 +126,8 @@ jlab.wave.getData = function (pv, multiple) {
     var url = '/myget/jmyapi-span-data',
             data = {
                 c: pv,
-                b: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime),
-                e: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime),
+                b: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime),
+                e: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime),
                 t: '',
                 l: jlab.wave.maxPointsPerSeries
             },
@@ -331,9 +246,9 @@ jlab.wave.getData = function (pv, multiple) {
 
         series.data = formattedData;
 
-        console.log('database event count: ' + jlab.wave.intToStringWithCommas(json.count));
-        console.log('transferred points: ' + jlab.wave.intToStringWithCommas(json.data.length));
-        console.log('total points (includes steps): ' + jlab.wave.intToStringWithCommas(formattedData.length));
+        console.log('database event count: ' + jlab.wave.util.intToStringWithCommas(json.count));
+        console.log('transferred points: ' + jlab.wave.util.intToStringWithCommas(json.data.length));
+        console.log('total points (includes steps): ' + jlab.wave.util.intToStringWithCommas(formattedData.length));
     });
     promise.error(function (xhr, t, m) {
         var json;
@@ -380,7 +295,7 @@ jlab.wave.csvexport = function () {
         data = data + '--- ' + pv + ' ---\r\n';
         for (var j = 0; j < d.length; j++) {
             if (!(j % 2)) { /*Only output even to skip stepped points */
-                data = data + jlab.wave.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
+                data = data + jlab.wave.util.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
             }
         }
     }
@@ -511,10 +426,10 @@ $(document).on("click", ".cancel-panel-button", function () {
     return false;
 });
 $(document).on("panelbeforeopen", "#options-panel", function () {
-    $("#start-date-input").val(jlab.wave.toUserDateString(jlab.wave.startDateAndTime));
-    $("#start-time-input").val(jlab.wave.toUserTimeString(jlab.wave.startDateAndTime));
-    $("#end-date-input").val(jlab.wave.toUserDateString(jlab.wave.endDateAndTime));
-    $("#end-time-input").val(jlab.wave.toUserTimeString(jlab.wave.endDateAndTime));
+    $("#start-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.startDateAndTime));
+    $("#start-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.startDateAndTime));
+    $("#end-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.endDateAndTime));
+    $("#end-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.endDateAndTime));
     $("#multiple-pv-mode-select").val(jlab.wave.multiplePvMode).change();
 });
 $(document).on("click", "#update-options-button", function () {
@@ -526,10 +441,10 @@ $(document).on("click", "#update-options-button", function () {
             startTimeStr = $("#start-time-input").val(),
             endDateStr = $("#end-date-input").val(),
             endTimeStr = $("#end-time-input").val(),
-            startDate = jlab.wave.parseUserDate(startDateStr),
-            startTime = jlab.wave.parseUserTime(startTimeStr),
-            endDate = jlab.wave.parseUserDate(endDateStr),
-            endTime = jlab.wave.parseUserTime(endTimeStr);
+            startDate = jlab.wave.util.parseUserDate(startDateStr),
+            startTime = jlab.wave.util.parseUserTime(startTimeStr),
+            endDate = jlab.wave.util.parseUserDate(endDateStr),
+            endTime = jlab.wave.util.parseUserTime(endTimeStr);
     jlab.wave.startDateAndTime.setFullYear(startDate.getFullYear());
     jlab.wave.startDateAndTime.setMonth(startDate.getMonth());
     jlab.wave.startDateAndTime.setDate(startDate.getDate());
@@ -552,8 +467,8 @@ $(document).on("click", "#update-options-button", function () {
     }
 
     var uri = new URI();
-    uri.setQuery("start", jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime));
-    uri.setQuery("end", jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime));
+    uri.setQuery("start", jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime));
+    uri.setQuery("end", jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime));
     uri.setQuery("multiplePvMode", jlab.wave.multiplePvMode);
     window.history.replaceState({}, 'Set start and end', uri.href());
 
@@ -588,16 +503,16 @@ $(document).on("pagecontainershow", function () {
         var uri = new URI(),
                 queryMap = uri.query(true);
         if (uri.hasQuery("start")) {
-            jlab.wave.startDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["start"]);
+            jlab.wave.startDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["start"]);
         } else {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.toIsoDateTimeString(jlab.wave.startDateAndTime)});
+            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime)});
             window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
         }
 
         if (uri.hasQuery("end")) {
-            jlab.wave.endDateAndTime = jlab.wave.parseIsoDateTimeString(queryMap["end"]);
+            jlab.wave.endDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["end"]);
         } else {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.toIsoDateTimeString(jlab.wave.endDateAndTime)});
+            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime)});
             window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
         }
 
@@ -659,7 +574,7 @@ $(document).on("click", "#pv-delete-button", function () {
 $(function () {
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
-    if (jlab.wave.hasTouch()) {
+    if (jlab.wave.util.hasTouch()) {
         $("#start-date-input").datebox({mode: "flipbox"});
         $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
         $("#end-date-input").datebox({mode: "flipbox"});
