@@ -14,7 +14,6 @@ jlab.wave.pvToSeriesMap = {};
 /*jlab.wave.idToChartMap = {};*/
 jlab.wave.pvs = [];
 jlab.wave.charts = [];
-jlab.wave.chartIdSequence = 0;
 jlab.wave.selectedSeries; /*When you click on series label in legend*/
 /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
 jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
@@ -24,6 +23,7 @@ jlab.wave.maxPointsPerSeries = 100000;
 jlab.wave.startDateAndTime = new Date();
 jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
+jlab.wave.viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
 jlab.wave.chartHolder = $("#chart-container");
 
 /* UTILITY FUNCTIONS */

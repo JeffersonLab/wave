@@ -1,6 +1,15 @@
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
+/**
+ * Constructor for TimeInfo object. 
+ * 
+ * A wave TimeInfo encapsulates all of the information associated with time.
+ * 
+ * @param {date} start - The start date
+ * @param {date} end - The end date
+ * @returns {jlab.wave.TimeInfo} - The time info
+ */
 jlab.wave.TimeInfo = function (start, end) {
     var sameYear = false,
             sameMonth = false,

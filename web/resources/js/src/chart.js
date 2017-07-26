@@ -1,6 +1,12 @@
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
+/** 
+ * Sequence ID generator for charts (canvas JS requires DOM placeholder div
+ * has ID) 
+ **/
+jlab.wave.chartNextSequenceId = 0;
+
 /**
  * Constructor for Chart object. 
  * 
@@ -17,7 +23,7 @@ jlab.wave.Chart = function (pvs, separateYAxis) {
     this.canvasjsChart = null;
     this.$placeholderDiv = null; /*$ prefix since this is a jQuery object*/
 
-    var chartId = 'chart-' + jlab.wave.chartIdSequence++,
+    var chartId = 'chart-' + jlab.wave.chartNextSequenceId++,
             labels = [],
             data = [],
             axisY = [];
