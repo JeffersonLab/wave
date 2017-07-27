@@ -108,61 +108,11 @@ $(document).on("keyup", "#pv-input", function (e) {
 
 /* JQUERY MOBILE UI EVENTS */
 
-$(document).on("pagecontainershow", function () {
-
-    var $page = $(".ui-page-active"),
-            id = $page.attr("id"),
-            $previousBtn = $("#previous-button");
-    if (id === 'chart-page') {
-        $previousBtn.hide();
-    } else {
-        $previousBtn.show();
-    }
-
-    setTimeout(function () { /*Stupidly I can't find an event that is triggered AFTER mobile page container div is done being sized so I just set delay!*/
-        jlab.wave.startDateAndTime.setMinutes(jlab.wave.startDateAndTime.getMinutes() - 5);
-
-        var uri = new URI(),
-                queryMap = uri.query(true);
-        if (uri.hasQuery("start")) {
-            jlab.wave.startDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["start"]);
-        } else {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime)});
-            window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
-        }
-
-        if (uri.hasQuery("end")) {
-            jlab.wave.endDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["end"]);
-        } else {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime)});
-            window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
-        }
-
-        if (uri.hasQuery("multiplePvMode")) {
-            jlab.wave.controller.setMultiplePvMode(parseInt(queryMap["multiplePvMode"]));
-        } else {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.controller.getMultiplePvMode()});
-            window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.controller.getMultiplePvMode(), url);
-        }
-
-        jlab.wave.controller.validateOptions();
-
-        var pvs = queryMap["pv"] || [];
-        if (!Array.isArray(pvs)) {
-            pvs = [pvs];
-        }
-
-        jlab.wave.controller.addPvs(pvs);
-
-        /*Don't register resize event until after page load*/
-        $(window).on("resize", function () {
-            console.log("window resize");
-            /*var pageHeight = $(window).height();
-             console.log(pageHeight);*/
-            jlab.wave.controller.doLayout();
-        });
-
-    }, 200);
+$(document).on("pagecontainertransition", function () {
+    /* We wrap in jQuery ready function since we want BOTH jquery mobile to be fully transitioned AND the DOM fully loaded*/
+    $(function () {
+        jlab.wave.pageinit();
+    });
 });
 $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#start-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.startDateAndTime));
@@ -181,9 +131,9 @@ $(document).on('datebox', function (e, passed) {
     }
 });
 
-/* PAGE READY EVENT */
+/* --- PAGE INIT ACTIONS --- */
 
-$(function () {
+jlab.wave.pageinit = function () {
     /* JQUERY MOBILE GLOBAL TOOLBAR INIT */
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
@@ -205,8 +155,47 @@ $(function () {
         $("#end-date-input").datebox({mode: "calbox"});
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
-
+    
     /* CREATE A NEW VIEWER CONTROLLER OBJECT */
     jlab.wave.controller = new jlab.wave.ViewerController();
-});
 
+    jlab.wave.startDateAndTime.setMinutes(jlab.wave.startDateAndTime.getMinutes() - 5);
+
+    var uri = new URI(),
+            queryMap = uri.query(true);
+    if (uri.hasQuery("start")) {
+        jlab.wave.startDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["start"]);
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime)});
+        window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
+    }
+
+    if (uri.hasQuery("end")) {
+        jlab.wave.endDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["end"]);
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime)});
+        window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
+    }
+
+    if (uri.hasQuery("multiplePvMode")) {
+        jlab.wave.controller.setMultiplePvMode(parseInt(queryMap["multiplePvMode"]));
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.controller.getMultiplePvMode()});
+        window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.controller.getMultiplePvMode(), url);
+    }
+
+    jlab.wave.controller.validateOptions();
+
+    var pvs = queryMap["pv"] || [];
+    if (!Array.isArray(pvs)) {
+        pvs = [pvs];
+    }
+
+    jlab.wave.controller.addPvs(pvs);
+
+    /*Don't register resize event until after page load*/
+    $(window).on("resize", function () {
+        console.log("window resize");
+        jlab.wave.controller.doLayout();
+    });    
+};

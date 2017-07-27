@@ -17,8 +17,6 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
     this.$placeholderDiv = $placeholderDiv;
 
-    console.log('separateYAxis: ' + separateYAxis);
-
     var labels = [],
             data = [],
             axisY = [];
