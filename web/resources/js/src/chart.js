@@ -8,9 +8,9 @@ jlab.wave = jlab.wave || {};
  * placeholder div in the DOM, and an array of pv names.
  * 
  * @param {string array} pvs - The PV names
- * @param {object} $placeholderDiv - jQuery object reference to placeholder
- * @param {boolean} separateYAxis - If multiple PVs should they have separate 
- * Y axis (otherwise share a single Y axis)
+ * @param {object} $placeholderDiv - jQuery object reference to placeholder div
+ * @param {boolean} separateYAxis - true if multiple PVs should they have 
+ * separate Y axis (otherwise share a single Y axis)
  * @returns {jlab.wave.Chart} - The chart
  */
 jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
@@ -105,28 +105,9 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
             },
             itemmouseover: function (e) {
                 $(e.chart._canvasJSContainer).attr("title", "PV Menu");
-
-                /*Sure would be nice to change style of label, but it is too slow since it renders entire chart again*/
-
-                /*e.chart.legend.set("fontColor", 'white');
-                 e.chart.legend.set("backgroundColor", 'black');
-                 e.chart.legend.set("borderColor", 'gray');
-                 e.chart.legend.set("borderThickness", 1);
-                 e.chart.legend.set("fontStyle", 'italic');
-                 e.chart.legend.set("fontWeight", 'bold');
-                 console.time("legend render");
-                 e.chart.render();
-                 console.timeEnd("legend render");*/
             },
             itemmouseout: function (e) {
                 $(e.chart._canvasJSContainer).removeAttr("title");
-                /*e.chart.legend.set("fontColor", 'black');
-                 e.chart.legend.set("backgroundColor", 'transparent');
-                 e.chart.legend.set("borderColor", 'transparent');
-                 e.chart.legend.set("borderThickness", 0);
-                 e.chart.legend.set("fontStyle", 'normal');
-                 e.chart.legend.set("fontWeight", 'normal'); 
-                 e.chart.render();*/
             }
         },
         axisY: axisY,

@@ -7,11 +7,11 @@ jlab.wave = jlab.wave || {};
  * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
  * but delegates the actual rendering of canvases to CanvasJS.
  * 
- * @param $chartHolder - The jQuery wrapped div placeholder for a set of charts
+ * @param $chartSetDiv - The jQuery wrapped div container for a set of charts
  * @param multiplePvMode - The layout mode
  */
-jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
-    this.$chartHolder = $chartHolder;
+jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
+    this.$chartSetDiv = $chartSetDiv;
     this.multiplePvMode = multiplePvMode;
 
     /* var functions don't have this set as expected (this.function do though) */
@@ -25,7 +25,7 @@ jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
 
     /*Priviledged visibility*/
     this.doLayout = function () {
-        $chartHolder.empty();
+        $chartSetDiv.empty();
 
         /*console.log('doLayout');
          console.log('pvs: ' + jlab.wave.pvs);*/
@@ -40,7 +40,7 @@ jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
     var createAndAppendChartPlaceholder = function () {
         var chartId = 'chart-' + chartNextSequenceId++,
                 $placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
-        $chartHolder.append($placeholderDiv);
+        $chartSetDiv.append($placeholderDiv);
         return $placeholderDiv;
     };
     /*Private visibility*/
@@ -79,7 +79,7 @@ jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
                     c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, (self.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS));
 
             $placeholderDiv.css("top", 0);
-            $placeholderDiv.height($chartHolder.height());
+            $placeholderDiv.height($chartSetDiv.height());
 
             console.time("render");
             c.canvasjsChart.render();
@@ -97,7 +97,7 @@ jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
             var $placeholderDiv = createAndAppendChartPlaceholder(),
                     pv = jlab.wave.pvs[i],
                     c = new jlab.wave.Chart([pv], $placeholderDiv),
-                    chartHeight = $chartHolder.height() / jlab.wave.pvs.length;
+                    chartHeight = $chartSetDiv.height() / jlab.wave.pvs.length;
 
             $placeholderDiv.css("top", offset);
             offset = offset + chartHeight;
@@ -111,30 +111,3 @@ jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
         }
     };
 };
-
-/*jlab.wave.SingleChartLayoutManager = function () {
- 
- jlab.wave.SingleChartLayoutManager = function ($chartHolder) {
- jlab.wave.LayoutManager.call(this, $chartHolder);
- };
- 
- jlab.wave.SingleChartLayoutManager.prototype = Object.create(jlab.wave.LayoutManager.prototype);
- jlab.wave.SingleChartLayoutManager.prototype.constructor = jlab.wave.SingleChartLayoutManager;
- 
- jlab.wave.SingleChartLayoutManager.prototype.doLayout = function () {
- if (jlab.wave.pvs.length > 0) {
- 
- var $placeholderDiv = createAndAppendChartPlaceholder(),
- c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
- 
- $placeholderDiv.css("top", 0);
- $placeholderDiv.height(this.$chartHolder.height());
- 
- console.time("render");
- c.canvasjsChart.render();
- console.timeEnd("render");
- 
- this.updateChartToolbars();
- }
- };
- };*/
