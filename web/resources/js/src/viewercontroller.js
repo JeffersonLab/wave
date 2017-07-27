@@ -16,17 +16,19 @@ jlab.wave.ViewerController = function () {
 
     var multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
         layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
+
+    const MAX_POINTS_PER_SERIES = 100000;
+    const MAX_PVS = 5; /*Max Charts too*/
+
+    /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
+    var colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/    
     
     jlab.wave.pvToSeriesMap = {};
     /*jlab.wave.idToChartMap = {};*/
     jlab.wave.pvs = [];
     jlab.wave.charts = [];
     jlab.wave.selectedSeries; /*When you click on series label in legend*/
-    /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-    jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
     /*jlab.wave.MAX_POINTS = 200;*/
-    jlab.wave.MAX_PVS = 5; /*Max Charts too*/
-    jlab.wave.maxPointsPerSeries = 100000;
     jlab.wave.startDateAndTime = new Date();
     jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
@@ -100,7 +102,7 @@ jlab.wave.ViewerController = function () {
                     b: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime),
                     e: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime),
                     t: '',
-                    l: jlab.wave.maxPointsPerSeries
+                    l: MAX_POINTS_PER_SERIES
                 },
                 dataType = "json",
                 options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 30000};
@@ -258,8 +260,8 @@ jlab.wave.ViewerController = function () {
             return;
         }
 
-        if (jlab.wave.pvs.length + 1 > jlab.wave.MAX_PVS) {
-            alert('Too many pvs; maximum number is: ' + jlab.wave.MAX_PVS);
+        if (jlab.wave.pvs.length + 1 > MAX_PVS) {
+            alert('Too many pvs; maximum number is: ' + MAX_PVS);
             return;
         }
 
@@ -272,7 +274,7 @@ jlab.wave.ViewerController = function () {
         jlab.wave.pvToSeriesMap[pv] = series;
 
         series.preferences = {
-            color: jlab.wave.colors.shift()
+            color: colors.shift()
         };
 
         var promise = getData(pv, multiple);
@@ -377,7 +379,7 @@ jlab.wave.ViewerController = function () {
             jlab.wave.pvs.splice(index2, 1);
 
             /*Put color back in array for re-use*/
-            jlab.wave.colors.push(color);
+            colors.push(color);
 
             uri.removeQuery("pv", pv);
         }
