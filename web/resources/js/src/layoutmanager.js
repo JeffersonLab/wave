@@ -7,10 +7,15 @@ jlab.wave = jlab.wave || {};
  * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
  * but delegates the actual rendering of canvases to CanvasJS.
  * 
- * @param $chartHolder The jQuery wrapped div placeholder for a set of charts
+ * @param $chartHolder - The jQuery wrapped div placeholder for a set of charts
+ * @param multiplePvMode - The layout mode
  */
-jlab.wave.LayoutManager = function ($chartHolder) {
+jlab.wave.LayoutManager = function ($chartHolder, multiplePvMode) {
     this.$chartHolder = $chartHolder;
+    this.multiplePvMode = multiplePvMode;
+
+    /* var functions don't have this set as expected (this.function do though) */
+    var self = this;
 
     /** 
      * Sequence ID generator for charts (canvas JS requires DOM placeholder div
@@ -25,7 +30,7 @@ jlab.wave.LayoutManager = function ($chartHolder) {
         /*console.log('doLayout');
          console.log('pvs: ' + jlab.wave.pvs);*/
 
-        if (jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SEPARATE_CHART) {
+        if (this.multiplePvMode === jlab.wave.multiplePvModeEnum.SEPARATE_CHART) {
             doSeparateChartLayout();
         } else {
             doSingleChartLayout();
@@ -71,7 +76,7 @@ jlab.wave.LayoutManager = function ($chartHolder) {
         if (jlab.wave.pvs.length > 0) {
 
             var $placeholderDiv = createAndAppendChartPlaceholder(),
-                    c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
+                    c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, (self.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS));
 
             $placeholderDiv.css("top", 0);
             $placeholderDiv.height($chartHolder.height());
@@ -107,3 +112,29 @@ jlab.wave.LayoutManager = function ($chartHolder) {
     };
 };
 
+/*jlab.wave.SingleChartLayoutManager = function () {
+ 
+ jlab.wave.SingleChartLayoutManager = function ($chartHolder) {
+ jlab.wave.LayoutManager.call(this, $chartHolder);
+ };
+ 
+ jlab.wave.SingleChartLayoutManager.prototype = Object.create(jlab.wave.LayoutManager.prototype);
+ jlab.wave.SingleChartLayoutManager.prototype.constructor = jlab.wave.SingleChartLayoutManager;
+ 
+ jlab.wave.SingleChartLayoutManager.prototype.doLayout = function () {
+ if (jlab.wave.pvs.length > 0) {
+ 
+ var $placeholderDiv = createAndAppendChartPlaceholder(),
+ c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, jlab.wave.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS);
+ 
+ $placeholderDiv.css("top", 0);
+ $placeholderDiv.height(this.$chartHolder.height());
+ 
+ console.time("render");
+ c.canvasjsChart.render();
+ console.timeEnd("render");
+ 
+ this.updateChartToolbars();
+ }
+ };
+ };*/

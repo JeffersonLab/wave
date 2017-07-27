@@ -1,13 +1,48 @@
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
+/*wave viewer Enums*/
+jlab.wave.viewerModeEnum = Object.freeze({ARCHIVE: 1, STRIP: 2, WAVEFORM: 3});
+jlab.wave.multiplePvModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3});
+
 /**
  * Constructor for ViewerController object. 
  * 
  * A wave ViewerController handles actions / state changes in the viewer.
  */
 jlab.wave.ViewerController = function () {
+
+    this.viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
+
+    var multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
+        layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
     
+    jlab.wave.pvToSeriesMap = {};
+    /*jlab.wave.idToChartMap = {};*/
+    jlab.wave.pvs = [];
+    jlab.wave.charts = [];
+    jlab.wave.selectedSeries; /*When you click on series label in legend*/
+    /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
+    jlab.wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
+    /*jlab.wave.MAX_POINTS = 200;*/
+    jlab.wave.MAX_PVS = 5; /*Max Charts too*/
+    jlab.wave.maxPointsPerSeries = 100000;
+    jlab.wave.startDateAndTime = new Date();
+    jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
+
+    this.getMultiplePvMode = function() {
+        return multiplePvMode;
+    };
+
+    this.setMultiplePvMode = function(mode) {
+        multiplePvMode = mode;
+        layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
+    };
+    
+    this.doLayout = function() {
+        layoutManager.doLayout();
+    };
+
     /* Sync zoom of all charts and update chart tick label format and tick interval */
     this.zoomRangeChange = function (e) {
 
@@ -212,7 +247,7 @@ jlab.wave.ViewerController = function () {
 
             if (!multiple) {
                 $.mobile.loading("hide");
-                jlab.wave.layoutManager.doLayout();
+                layoutManager.doLayout();
             }
         });
         return promise;
@@ -262,7 +297,7 @@ jlab.wave.ViewerController = function () {
         }
 
         return promise;
-    };    
+    };
     this.csvexport = function () {
         var data = '',
                 filename = 'chart.csv',
@@ -310,8 +345,8 @@ jlab.wave.ViewerController = function () {
         }
 
         /*Verify valid number*/
-        if (jlab.wave.multiplePvMode !== jlab.wave.multiplePvMode) { /*Only NaN is not equal itself*/
-            jlab.wave.multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
+        if (multiplePvMode !== multiplePvMode) { /*Only NaN is not equal itself*/
+            multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
         }
     };
     this.deletePvs = function (pvs) {
@@ -347,7 +382,7 @@ jlab.wave.ViewerController = function () {
             uri.removeQuery("pv", pv);
         }
 
-        jlab.wave.layoutManager.doLayout();
+        layoutManager.doLayout();
 
         if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
             $("#chart-container").css("border", "1px dashed black");
@@ -356,10 +391,10 @@ jlab.wave.ViewerController = function () {
         var url = uri.href();
         window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
     };
-    this.addPvs = function(pvs) {
+    this.addPvs = function (pvs) {
         multiplePvAction(pvs, true);
     };
-    this.refresh = function() {
+    this.refresh = function () {
         multiplePvAction(jlab.wave.pvs, false);
     };
     var multiplePvAction = function (pvs, add) {
@@ -384,7 +419,7 @@ jlab.wave.ViewerController = function () {
 
             $.whenAll.apply($, promises).always(function () {
                 $.mobile.loading("hide");
-                jlab.wave.layoutManager.doLayout();
+                layoutManager.doLayout();
             });
         }
     };

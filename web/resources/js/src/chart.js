@@ -8,6 +8,7 @@ jlab.wave = jlab.wave || {};
  * placeholder div in the DOM, and an array of pv names.
  * 
  * @param {string array} pvs - The PV names
+ * @param {object} $placeholderDiv - jQuery object reference to placeholder
  * @param {boolean} separateYAxis - If multiple PVs should they have separate 
  * Y axis (otherwise share a single Y axis)
  * @returns {jlab.wave.Chart} - The chart
@@ -15,6 +16,8 @@ jlab.wave = jlab.wave || {};
 jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
     this.$placeholderDiv = $placeholderDiv;
+
+    console.log('separateYAxis: ' + separateYAxis);
 
     var labels = [],
             data = [],
