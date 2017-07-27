@@ -28,7 +28,6 @@ jlab.wave.ViewerController = function () {
     jlab.wave.pvs = [];
     jlab.wave.charts = [];
     jlab.wave.selectedSeries; /*When you click on series label in legend*/
-    /*jlab.wave.MAX_POINTS = 200;*/
     jlab.wave.startDateAndTime = new Date();
     jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
