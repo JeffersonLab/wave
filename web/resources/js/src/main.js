@@ -1,11 +1,11 @@
+/* USE NAMESPACE */
+
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
-/* VARIABLES */
+/* --- EVENT WIRING --- */
 
-jlab.wave.controller = new jlab.wave.ViewerController();
-
-/* Event Listeners */
+/* MOUSE EVENTS */
 
 $(document).on("click", "#pv-info-list a", function () {
     $("#pv-panel").panel("close");
@@ -13,28 +13,9 @@ $(document).on("click", "#pv-info-list a", function () {
 $(document).on("click", "#options-button", function () {
     $("#options-panel").panel("open");
 });
-$(document).on("keyup", "#pv-input", function (e) {
-    if (e.keyCode === 13) {
-        var pv = $.trim($("#pv-input").val());
-        if (pv !== '') {
-            /*Replace all commas with space, split on any whitespace, filter out empty strings*/
-            var tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
-
-            jlab.wave.controller.addPvs(tokens);
-        }
-        return false; /*Don't do default action*/
-    }
-});
 $(document).on("click", ".cancel-panel-button", function () {
     $(this).closest(".ui-panel").panel("close");
     return false;
-});
-$(document).on("panelbeforeopen", "#options-panel", function () {
-    $("#start-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.startDateAndTime));
-    $("#start-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.startDateAndTime));
-    $("#end-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.endDateAndTime));
-    $("#end-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.endDateAndTime));
-    $("#multiple-pv-mode-select").val(jlab.wave.controller.getMultiplePvMode()).change();
 });
 $(document).on("click", "#update-options-button", function () {
 
@@ -84,12 +65,50 @@ $(document).on("click", "#update-options-button", function () {
 
     $("#options-panel").panel("close");
 });
-/*I want button on right so this is a hack to switch it on pop-up 'open' - todo: just change the damn source code of 3rd-party lib*/
-$(document).on('datebox', function (e, passed) {
-    if (passed.method === 'open') {
-        $(".ui-datebox-container .ui-btn-left").removeClass("ui-btn-left").addClass("ui-btn-right");
+$(document).on("click", "#pv-visibility-toggle-button", function () {
+    var e = jlab.wave.selectedSeries;
+
+    if (typeof jlab.wave.selectedSeries !== 'undefined') {
+        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+            e.dataSeries.visible = false;
+            $("#pv-visibility-toggle-button").text("Show");
+        } else {
+            e.dataSeries.visible = true;
+            $("#pv-visibility-toggle-button").text("Hide");
+        }
+
+        e.chart.render();
+    }
+
+    $("#pv-panel").panel("close");
+});
+$(document).on("click", "#pv-delete-button", function () {
+    var e = jlab.wave.selectedSeries;
+
+    if (typeof jlab.wave.selectedSeries !== 'undefined') {
+        jlab.wave.controller.deletePvs([e.dataSeries.pv]);
+        $("#pv-panel").panel("close");
+
     }
 });
+
+/* KEYBOARD EVENTS */
+
+$(document).on("keyup", "#pv-input", function (e) {
+    if (e.keyCode === 13) {
+        var pv = $.trim($("#pv-input").val());
+        if (pv !== '') {
+            /*Replace all commas with space, split on any whitespace, filter out empty strings*/
+            var tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
+
+            jlab.wave.controller.addPvs(tokens);
+        }
+        return false; /*Don't do default action*/
+    }
+});
+
+/* JQUERY MOBILE UI EVENTS */
+
 $(document).on("pagecontainershow", function () {
 
     var $page = $(".ui-page-active"),
@@ -146,38 +165,31 @@ $(document).on("pagecontainershow", function () {
 
     }, 200);
 });
-$(document).on("click", "#pv-visibility-toggle-button", function () {
-    var e = jlab.wave.selectedSeries;
-
-    if (typeof jlab.wave.selectedSeries !== 'undefined') {
-        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-            e.dataSeries.visible = false;
-            $("#pv-visibility-toggle-button").text("Show");
-        } else {
-            e.dataSeries.visible = true;
-            $("#pv-visibility-toggle-button").text("Hide");
-        }
-
-        e.chart.render();
-    }
-
-    $("#pv-panel").panel("close");
+$(document).on("panelbeforeopen", "#options-panel", function () {
+    $("#start-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.startDateAndTime));
+    $("#start-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.startDateAndTime));
+    $("#end-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.endDateAndTime));
+    $("#end-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.endDateAndTime));
+    $("#multiple-pv-mode-select").val(jlab.wave.controller.getMultiplePvMode()).change();
 });
-$(document).on("click", "#pv-delete-button", function () {
-    var e = jlab.wave.selectedSeries;
 
-    if (typeof jlab.wave.selectedSeries !== 'undefined') {
-        jlab.wave.controller.deletePvs([e.dataSeries.pv]);
-        $("#pv-panel").panel("close");
+/* DATEBOX EVENTS */
 
+/*I want button on right so this is a hack to switch it on pop-up 'open' - todo: just change the damn source code of 3rd-party lib*/
+$(document).on('datebox', function (e, passed) {
+    if (passed.method === 'open') {
+        $(".ui-datebox-container .ui-btn-left").removeClass("ui-btn-left").addClass("ui-btn-right");
     }
 });
 
 /* PAGE READY EVENT */
 
 $(function () {
+    /* JQUERY MOBILE GLOBAL TOOLBAR INIT */
     $("#header-panel").toolbar({theme: "a", tapToggle: false});
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
+
+    /* DATEBOX DATE-TIME PICKER INIT */
     if (jlab.wave.util.hasTouch()) {
         $("#start-date-input").datebox({mode: "flipbox"});
         $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
@@ -189,6 +201,9 @@ $(function () {
         $("#end-date-input").datebox({mode: "calbox"});
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
+
+    /* CREATE A NEW VIEWER OBJECT */
+    jlab.wave.controller = new jlab.wave.ViewerController();
 });
 
 /* DATE-TIME-CHOOSER CONFIGURATION */
