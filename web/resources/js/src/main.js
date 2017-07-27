@@ -1,5 +1,4 @@
 /* USE NAMESPACE */
-
 var jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
@@ -120,7 +119,7 @@ $(document).on("pagecontainershow", function () {
         $previousBtn.show();
     }
 
-    setTimeout(function () { /*Stupidly I can't find an event that is trigger AFTER mobile page container div is done being sized so I just set delay!*/
+    setTimeout(function () { /*Stupidly I can't find an event that is triggered AFTER mobile page container div is done being sized so I just set delay!*/
         jlab.wave.startDateAndTime.setMinutes(jlab.wave.startDateAndTime.getMinutes() - 5);
 
         var uri = new URI(),
@@ -190,6 +189,11 @@ $(function () {
     $("#footer-panel").toolbar({theme: "a", tapToggle: false});
 
     /* DATEBOX DATE-TIME PICKER INIT */
+    jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
+        'maxDur': 86399,
+        'lockInput': false
+    });
+
     if (jlab.wave.util.hasTouch()) {
         $("#start-date-input").datebox({mode: "flipbox"});
         $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
@@ -202,13 +206,7 @@ $(function () {
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
 
-    /* CREATE A NEW VIEWER OBJECT */
+    /* CREATE A NEW VIEWER CONTROLLER OBJECT */
     jlab.wave.controller = new jlab.wave.ViewerController();
 });
 
-/* DATE-TIME-CHOOSER CONFIGURATION */
-
-jQuery.extend(jQuery.jtsage.datebox.prototype.options, {
-    'maxDur': 86399,
-    'lockInput': false
-});
