@@ -108,7 +108,7 @@ $(document).on("keyup", "#pv-input", function (e) {
 
 /* JQUERY MOBILE UI EVENTS */
 
-$(document).on("pagecontainertransition", function () {
+$(document).on("pagecontainerchange", function () {
     /* We wrap in jQuery ready function since we want BOTH jquery mobile to be fully transitioned AND the DOM fully loaded*/
     $(function () {
         jlab.wave.pageinit();
@@ -155,7 +155,7 @@ jlab.wave.pageinit = function () {
         $("#end-date-input").datebox({mode: "calbox"});
         $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
     }
-    
+
     /* CREATE A NEW VIEWER CONTROLLER OBJECT */
     jlab.wave.controller = new jlab.wave.ViewerController();
 
@@ -197,5 +197,5 @@ jlab.wave.pageinit = function () {
     $(window).on("resize", function () {
         console.log("window resize");
         jlab.wave.controller.doLayout();
-    });    
+    });
 };
