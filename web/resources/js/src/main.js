@@ -44,6 +44,13 @@ $(document).on("click", "#update-options-button", function () {
 
     jlab.wave.controller.setMultiplePvMode(parseInt($("#multiple-pv-mode-select").val()));
 
+    var newMode = parseInt($("#viewer-mode-select").val()),
+            oldMode = jlab.wave.controller.getViewerMode();
+    if (newMode !== oldMode) {
+        jlab.wave.controller.setViewerMode(newMode);
+        fetchRequired = true;
+    }
+
     jlab.wave.controller.validateOptions();
 
     if (oldStartMillis !== jlab.wave.startDateAndTime.getTime() || oldEndMillis !== jlab.wave.endDateAndTime.getTime()) {
@@ -54,6 +61,7 @@ $(document).on("click", "#update-options-button", function () {
     uri.setQuery("start", jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime));
     uri.setQuery("end", jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime));
     uri.setQuery("multiplePvMode", jlab.wave.controller.getMultiplePvMode());
+    uri.setQuery("viewerMode", jlab.wave.controller.getViewerMode());
     window.history.replaceState({}, 'Set start and end', uri.href());
 
     if (fetchRequired) {
@@ -120,6 +128,7 @@ $(document).on("panelbeforeopen", "#options-panel", function () {
     $("#end-date-input").val(jlab.wave.util.toUserDateString(jlab.wave.endDateAndTime));
     $("#end-time-input").val(jlab.wave.util.toUserTimeString(jlab.wave.endDateAndTime));
     $("#multiple-pv-mode-select").val(jlab.wave.controller.getMultiplePvMode()).change();
+    $("#viewer-mode-select").val(jlab.wave.controller.getViewerMode()).change();    
 });
 
 /* DATEBOX EVENTS */
@@ -182,6 +191,13 @@ jlab.wave.pageinit = function () {
     } else {
         var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.controller.getMultiplePvMode()});
         window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.controller.getMultiplePvMode(), url);
+    }
+
+    if (uri.hasQuery("viewerMode")) {
+        jlab.wave.controller.setViewerMode(parseInt(queryMap["viewerMode"]));
+    } else {
+        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {viewerMode: jlab.wave.controller.getViewerMode()});
+        window.history.replaceState({}, 'Set viewer Mode: ' + jlab.wave.controller.getViewerMode(), url);
     }
 
     jlab.wave.controller.validateOptions();

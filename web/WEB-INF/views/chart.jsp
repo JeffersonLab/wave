@@ -21,6 +21,12 @@
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="options-panel">
                 <h2>Viewer Options</h2>
+                <h3>Mode</h3>
+                <select id="viewer-mode-select">
+                    <option value="1">Archive</option>
+                    <option value="2">Strip</option>
+                    <option value="3" disabled="disabled">Waveform</option>
+                </select>
                 <h3>Time Interval</h3>
                 <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
@@ -114,6 +120,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jtsage-datebox-4.1.1.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/uri-1.14.1.min.js"></script>   
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-whenall.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/epics2web-1.4.0.min.js"></script>
         <c:choose>
             <c:when test="${initParam.productionRelease eq 'true'}">
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/combined.min.js?v=${initParam.releaseNumber}"></script>

@@ -116,15 +116,17 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
             labelWrap: false,
             /*labelMaxWidth: 200,*/
             tickLength: 20,
+            valueFormatString: 'YYYY-MM-DD HH:mm:ss'
+            /*,
             valueFormatString: timeFormatter.startingTickFormat,
             interval: timeFormatter.startingInterval,
             intervalType: timeFormatter.startingIntervalType,
             labelAngle: -45,
             minimum: minDate,
-            maximum: maxDate
+            maximum: maxDate*/
         },
         data: data
-    });
+    }); 
 };
 
 

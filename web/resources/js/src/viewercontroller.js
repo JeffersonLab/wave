@@ -12,17 +12,17 @@ jlab.wave.multiplePvModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME
  */
 jlab.wave.ViewerController = function () {
 
-    this.viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
+    var viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
 
     var multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
-        layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
+            layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
 
     const MAX_POINTS_PER_SERIES = 100000;
     const MAX_PVS = 5; /*Max Charts too*/
 
     /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-    var colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/    
-    
+    var colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
+
     jlab.wave.pvToSeriesMap = {};
     /*jlab.wave.idToChartMap = {};*/
     jlab.wave.pvs = [];
@@ -31,16 +31,36 @@ jlab.wave.ViewerController = function () {
     jlab.wave.startDateAndTime = new Date();
     jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
-    this.getMultiplePvMode = function() {
+    /*WebSocket connection*/
+    var con = null;
+
+    this.getViewerMode = function () {
+        return viewerMode;
+    };
+
+    this.setViewerMode = function (mode) {        
+        viewerMode = mode;
+
+        if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
+            initStripchart();
+        } else if (con !== null) {
+            con.clearPvs(jlab.wave.pvs);
+            con.autoReconnect = false;
+            con.close();
+            con = null;
+        }
+    };
+
+    this.getMultiplePvMode = function () {
         return multiplePvMode;
     };
 
-    this.setMultiplePvMode = function(mode) {
+    this.setMultiplePvMode = function (mode) {
         multiplePvMode = mode;
         layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
     };
-    
-    this.doLayout = function() {
+
+    this.doLayout = function () {
         layoutManager.doLayout();
     };
 
@@ -253,7 +273,7 @@ jlab.wave.ViewerController = function () {
         });
         return promise;
     };
-    var addPv = function (pv, multiple) {
+    var addPv = function (pv) {
         if (jlab.wave.pvs.indexOf(pv) !== -1) {
             alert('Already charting pv: ' + pv);
             return;
@@ -268,6 +288,8 @@ jlab.wave.ViewerController = function () {
 
         jlab.wave.pvs.sort();
 
+        console.log('adding pv: ' + pv);
+
         var series = new jlab.wave.Series(pv);
 
         jlab.wave.pvToSeriesMap[pv] = series;
@@ -275,8 +297,6 @@ jlab.wave.ViewerController = function () {
         series.preferences = {
             color: colors.shift()
         };
-
-        var promise = getData(pv, multiple);
 
         $("#pv-input").val("");
         $("#chart-container").css("border", "none");
@@ -296,8 +316,6 @@ jlab.wave.ViewerController = function () {
             var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
             window.history.replaceState({}, 'Add pv: ' + pv, url);
         }
-
-        return promise;
     };
     this.csvexport = function () {
         var data = '',
@@ -349,6 +367,11 @@ jlab.wave.ViewerController = function () {
         if (multiplePvMode !== multiplePvMode) { /*Only NaN is not equal itself*/
             multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
         }
+        
+        /*Verify valid number*/
+        if (viewerMode !== viewerMode) { /*Only NaN is not equal itself*/
+            viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
+        }        
     };
     this.deletePvs = function (pvs) {
         var uri = new URI();
@@ -398,12 +421,15 @@ jlab.wave.ViewerController = function () {
     this.refresh = function () {
         multiplePvAction(jlab.wave.pvs, false);
     };
+    var addMonitor = function (pv) {
+        con.monitorPvs([pv]);
+    };
     var multiplePvAction = function (pvs, add) {
         if (pvs.length > 0) {
             var action;
 
-            if (add) {
-                action = addPv;
+            if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
+                action = addMonitor;
             } else {
                 action = getData;
             }
@@ -413,7 +439,13 @@ jlab.wave.ViewerController = function () {
             var promises = [];
 
             for (var i = 0; i < pvs.length; i++) {
-                var promise = action(pvs[i], true);
+                var pv = pvs[i];
+                
+                if (add) {
+                    addPv(pv);
+                }
+
+                var promise = action(pv, true);
 
                 promises.push(promise);
             }
@@ -423,6 +455,44 @@ jlab.wave.ViewerController = function () {
                 layoutManager.doLayout();
             });
         }
+    };
+
+    var doStripchartUpdate = function (pv, point, lastUpdated) {
+        var series = jlab.wave.pvToSeriesMap[pv];
+        if (typeof series !== 'undefined') {
+            series.addSteppedPoint(point, lastUpdated);
+            series.lastUpdated = lastUpdated;
+            /*series.chart.canvasjsChart.options.data[0].dataPoints = series.data;*/
+            series.chart.canvasjsChart.render();
+        } else {
+            console.log('server is updating me on a PV I am unaware of: ' + pv);
+        }
+    };
+
+    var initStripchart = function () {
+        var options = {};
+
+        con = new jlab.epics2web.ClientConnection(options);
+
+        con.onopen = function (e) {
+            if (jlab.wave.pvs.length > 0) {
+                con.monitorPvs(jlab.wave.pvs);
+            }
+        };
+
+        con.onupdate = function (e) {
+            doStripchartUpdate(e.detail.pv, e.detail.value * 1, e.detail.date);
+        };
+
+        con.oninfo = function (e) {
+            if (e.detail.connected) {
+                if (!jlab.epics2web.isNumericEpicsType(e.detail.datatype)) {
+                    alert(e.detail.pv + ' values are not numeric: ' + e.detail.datatype);
+                }
+            } else {
+                alert('Could not connect to PV: ' + e.detail.pv);
+            }
+        };
     };
 };
 
