@@ -2,8 +2,6 @@
 (function (jlab) {
     (function (wave) {
         /**
-         * Constructor for ZoomableTimeFormatter object. 
-         * 
          * A wave ZoomableTimeFormatter encapsulates all of the tasks associated with 
          * formatting time for a chart that can be zoomed and reset. In particular the 
          * following public attributes are provided:
@@ -26,184 +24,186 @@
          * @param {date} end - The end date
          * @returns {jlab.wave.TimeFormatter} - The time formatter
          */
-        wave.ZoomableTimeFormatter = function (start, end) {
-            let sameYear = false,
-                    sameMonth = false,
-                    sameDay = false,
-                    oneDaySpecial = false,
-                    oneMonthSpecial = false,
-                    oneYearSpecial = false,
-                    startTimeNonZero = false,
-                    endTimeNonZero = false,
-                    formattedTime = '',
-                    formattedStartDate,
-                    formattedEndDate;
+        wave.ZoomableTimeFormatter = class ZoomableTimeFormatter {
+            constructor(start, end) {
+                let sameYear = false,
+                        sameMonth = false,
+                        sameDay = false,
+                        oneDaySpecial = false,
+                        oneMonthSpecial = false,
+                        oneYearSpecial = false,
+                        startTimeNonZero = false,
+                        endTimeNonZero = false,
+                        formattedTime = '',
+                        formattedStartDate,
+                        formattedEndDate;
 
-            this.title = '';
-            this.tickFormat = null;
-            this.interval = null;
-            this.intervalType = null;
+                this.title = '';
+                this.tickFormat = null;
+                this.interval = null;
+                this.intervalType = null;
 
-            if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
-                startTimeNonZero = true;
-            }
+                if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
+                    startTimeNonZero = true;
+                }
 
-            if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
-                endTimeNonZero = true;
-            }
+                if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
+                    endTimeNonZero = true;
+                }
 
-            if (startTimeNonZero || endTimeNonZero) {
-                formattedTime = ' (' + jlab.wave.util.toUserTimeString(start) + ' - ' + jlab.wave.util.toUserTimeString(end) + ')';
-            } else { /*Check for no-time special cases*/
-                let d = new Date(start.getTime());
-                d.setDate(start.getDate() + 1);
-                oneDaySpecial = d.getTime() === end.getTime();
+                if (startTimeNonZero || endTimeNonZero) {
+                    formattedTime = ' (' + jlab.wave.util.toUserTimeString(start) + ' - ' + jlab.wave.util.toUserTimeString(end) + ')';
+                } else { /*Check for no-time special cases*/
+                    let d = new Date(start.getTime());
+                    d.setDate(start.getDate() + 1);
+                    oneDaySpecial = d.getTime() === end.getTime();
 
-                if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
-                    d = new Date(start.getTime());
-                    d.setMonth(start.getMonth() + 1);
-                    oneMonthSpecial = d.getTime() === end.getTime();
-
-                    if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
+                    if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
                         d = new Date(start.getTime());
-                        d.setFullYear(start.getFullYear() + 1);
-                        oneYearSpecial = d.getTime() === end.getTime();
+                        d.setMonth(start.getMonth() + 1);
+                        oneMonthSpecial = d.getTime() === end.getTime();
+
+                        if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
+                            d = new Date(start.getTime());
+                            d.setFullYear(start.getFullYear() + 1);
+                            oneYearSpecial = d.getTime() === end.getTime();
+                        }
                     }
                 }
-            }
 
-            sameYear = start.getFullYear() === end.getFullYear();
-            sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
-            sameDay = sameMonth ? start.getDate() === end.getDate() : false;
+                sameYear = start.getFullYear() === end.getFullYear();
+                sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
+                sameDay = sameMonth ? start.getDate() === end.getDate() : false;
 
-            if (oneDaySpecial) {
-                this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-            } else if (oneMonthSpecial) {
-                this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
-            } else if (oneYearSpecial) {
-                this.title = start.getFullYear();
-            } else {
-                if (sameYear) {
-                    formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
+                if (oneDaySpecial) {
+                    this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+                } else if (oneMonthSpecial) {
+                    this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+                } else if (oneYearSpecial) {
+                    this.title = start.getFullYear();
+                } else {
+                    if (sameYear) {
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
 
-                    if (sameMonth) {
-                        if (sameDay) {
-                            formattedEndDate = ', ' + end.getFullYear();
-                        } else { /*Days differ*/
-                            formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
+                        if (sameMonth) {
+                            if (sameDay) {
+                                formattedEndDate = ', ' + end.getFullYear();
+                            } else { /*Days differ*/
+                                formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
+                            }
+                        } else { /*Months differ*/
+                            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
                         }
-                    } else { /*Months differ*/
+                    } else { /*Years differ*/
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
                         formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
                     }
-                } else { /*Years differ*/
-                    formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-                    formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+
+                    this.title = formattedStartDate + formattedEndDate + formattedTime;
                 }
 
-                this.title = formattedStartDate + formattedEndDate + formattedTime;
-            }
+                let impliedYear = sameYear || oneYearSpecial,
+                        impliedYearMonth = sameMonth || oneMonthSpecial,
+                        impliedYearMonthDay = sameDay || oneDaySpecial;
 
-            let impliedYear = sameYear || oneYearSpecial,
-                    impliedYearMonth = sameMonth || oneMonthSpecial,
-                    impliedYearMonthDay = sameDay || oneDaySpecial;
+                /**
+                 * Adjusts the tickFormat, interval, and intervalType given zoom parameters.
+                 * 
+                 * @param {number} minMillis - starting miliseconds from Epoch
+                 * @param {number} maxMillis - ending milliseconds from Epoch
+                 */
+                wave.ZoomableTimeFormatter.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
+                    let formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
 
-            /**
-             * Adjusts the tickFormat, interval, and intervalType given zoom parameters.
-             * 
-             * @param {number} minMillis - starting miliseconds from Epoch
-             * @param {number} maxMillis - ending milliseconds from Epoch
-             */
-            wave.ZoomableTimeFormatter.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
-                let formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
+                    this.intervalType = null;
+                    this.interval = null;
 
-                this.intervalType = null;
-                this.interval = null;
+                    if (!impliedYear) {
+                        formatter.year = true;
 
-                if (!impliedYear) {
-                    formatter.year = true;
+                        if (!impliedYearMonth) {
+                            formatter.month = true;
 
-                    if (!impliedYearMonth) {
-                        formatter.month = true;
-
-                        if (!impliedYearMonthDay) {
-                            formatter.day = true;
+                            if (!impliedYearMonthDay) {
+                                formatter.day = true;
+                            }
                         }
                     }
-                }
 
-                let millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
-                        millisPerHour = millisPerMinute * 60,
-                        millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
-                        millisPerMonth = millisPerDay * 30, /*Approximate*/
-                        millisPerYear = millisPerMonth * 12,
-                        rangeMillis = (maxMillis - minMillis);
+                    let millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
+                            millisPerHour = millisPerMinute * 60,
+                            millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
+                            millisPerMonth = millisPerDay * 30, /*Approximate*/
+                            millisPerYear = millisPerMonth * 12,
+                            rangeMillis = (maxMillis - minMillis);
 
-                // Less than a few minutes
-                if ((rangeMillis / millisPerMinute) < 5) {
-                    formatter.hour = true;
-                    formatter.minute = true;
-                    formatter.second = true;
-                }
-                // Less than a few hours
-                else if ((rangeMillis / millisPerHour) < 12) {
-                    formatter.hour = true;
-                    formatter.minute = true;
-                }
-                // Less than a few days
-                else if (rangeMillis / (millisPerDay) < 7) {
-                    formatter.hour = true;
-                    /*this.interval = Math.max(Math.round((rangeMillis / millisPerHour) / 12), 1);
-                     this.intervalType = 'hour';*/
-                }
-                // Less than a few months
-                else if ((rangeMillis / millisPerMonth) < 6) {
-                    formatter.day = true;
-                }
-                // Less than a few years
-                else if ((rangeMillis / millisPerYear) < 3) {
-                    formatter.month = true;
-                    formatter.day = false;
-                    this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
-                    this.intervalType = 'month';
-                }
-                // Many years
-                else {
-                    formatter.year = true;
-                    formatter.month = true;
-                    formatter.day = false;
-                }
+                    // Less than a few minutes
+                    if ((rangeMillis / millisPerMinute) < 5) {
+                        formatter.hour = true;
+                        formatter.minute = true;
+                        formatter.second = true;
+                    }
+                    // Less than a few hours
+                    else if ((rangeMillis / millisPerHour) < 12) {
+                        formatter.hour = true;
+                        formatter.minute = true;
+                    }
+                    // Less than a few days
+                    else if (rangeMillis / (millisPerDay) < 7) {
+                        formatter.hour = true;
+                        /*this.interval = Math.max(Math.round((rangeMillis / millisPerHour) / 12), 1);
+                         this.intervalType = 'hour';*/
+                    }
+                    // Less than a few months
+                    else if ((rangeMillis / millisPerMonth) < 6) {
+                        formatter.day = true;
+                    }
+                    // Less than a few years
+                    else if ((rangeMillis / millisPerYear) < 3) {
+                        formatter.month = true;
+                        formatter.day = false;
+                        this.interval = Math.max(Math.round((rangeMillis / millisPerMonth) / 12), 1);
+                        this.intervalType = 'month';
+                    }
+                    // Many years
+                    else {
+                        formatter.year = true;
+                        formatter.month = true;
+                        formatter.day = false;
+                    }
 
-                this.tickFormat = '';
+                    this.tickFormat = '';
 
-                if (formatter.month) {
-                    this.tickFormat = this.tickFormat + "MMM";
-                }
+                    if (formatter.month) {
+                        this.tickFormat = this.tickFormat + "MMM";
+                    }
 
-                if (formatter.day) {
-                    this.tickFormat = this.tickFormat + " DD";
-                }
+                    if (formatter.day) {
+                        this.tickFormat = this.tickFormat + " DD";
+                    }
 
-                if (formatter.year) {
-                    this.tickFormat = this.tickFormat + " YYYY";
-                }
+                    if (formatter.year) {
+                        this.tickFormat = this.tickFormat + " YYYY";
+                    }
 
-                if (formatter.hour || formatter.minute) {
-                    this.tickFormat = this.tickFormat + " HH:mm";
-                }
+                    if (formatter.hour || formatter.minute) {
+                        this.tickFormat = this.tickFormat + " HH:mm";
+                    }
 
-                if (formatter.second) {
-                    this.tickFormat = this.tickFormat + ":ss";
-                }
+                    if (formatter.second) {
+                        this.tickFormat = this.tickFormat + ":ss";
+                    }
 
-                this.tickFormat = this.tickFormat.trim();
-            };
+                    this.tickFormat = this.tickFormat.trim();
+                };
 
-            /*Initialize with unzoomed values*/
-            this.adjustForViewportZoom(start.getTime(), end.getTime());
+                /*Initialize with unzoomed values*/
+                this.adjustForViewportZoom(start.getTime(), end.getTime());
 
-            this.startingTickFormat = this.tickFormat;
-            this.startingInterval = this.interval;
-            this.startingIntervalType = this.intervalType;
+                this.startingTickFormat = this.tickFormat;
+                this.startingInterval = this.interval;
+                this.startingIntervalType = this.intervalType;
+            }
         };
     })(jlab.wave || (jlab.wave = {}));
 })(jlab || (jlab = {}));

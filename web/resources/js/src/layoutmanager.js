@@ -2,8 +2,6 @@
 (function (jlab) {
     (function (wave) {
         /**
-         * Constructor for LayoutManager object. 
-         * 
          * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
          * but delegates the actual rendering of canvases to CanvasJS.
          * 
