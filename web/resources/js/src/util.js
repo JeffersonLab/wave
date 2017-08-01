@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 jlab.wave.util = jlab.wave.util || {};
 
@@ -23,7 +23,7 @@ jlab.wave.util.intToStringWithCommas = function (x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 jlab.wave.util.toIsoDateTimeString = function (x) {
-    var year = x.getFullYear(),
+    let year = x.getFullYear(),
             month = x.getMonth() + 1,
             day = x.getDate(),
             hour = x.getHours(),
@@ -32,7 +32,7 @@ jlab.wave.util.toIsoDateTimeString = function (x) {
     return year + '-' + jlab.wave.util.pad(month, 2) + '-' + jlab.wave.util.pad(day, 2) + ' ' + jlab.wave.util.pad(hour, 2) + ':' + jlab.wave.util.pad(minute, 2) + ':' + jlab.wave.util.pad(second, 2);
 };
 jlab.wave.util.parseIsoDateTimeString = function (x) {
-    var year = parseInt(x.substring(0, 4)),
+    let year = parseInt(x.substring(0, 4)),
             month = parseInt(x.substring(5, 7)) - 1,
             day = parseInt(x.substring(8, 10)),
             hour = parseInt(x.substring(11, 13)),
@@ -41,19 +41,19 @@ jlab.wave.util.parseIsoDateTimeString = function (x) {
     return new Date(year, month, day, hour, minute, second);
 };
 jlab.wave.util.toUserDateString = function (x) {
-    var year = x.getFullYear(),
+    let year = x.getFullYear(),
             month = x.getMonth(),
             day = x.getDate();
     return jlab.wave.util.triCharMonthNames[month] + ' ' + jlab.wave.util.pad(day, 2) + ' ' + year;
 };
 jlab.wave.util.toUserTimeString = function (x) {
-    var hour = x.getHours(),
+    let hour = x.getHours(),
             minute = x.getMinutes(),
             second = x.getSeconds();
     return jlab.wave.util.pad(hour, 2) + ':' + jlab.wave.util.pad(minute, 2) + ':' + jlab.wave.util.pad(second, 2);
 };
 jlab.wave.util.toUserDateTimeString = function (x) {
-    var year = x.getFullYear(),
+    let year = x.getFullYear(),
             month = x.getMonth(),
             day = x.getDate(),
             hour = x.getHours(),
@@ -62,14 +62,14 @@ jlab.wave.util.toUserDateTimeString = function (x) {
     return jlab.wave.util.triCharMonthNames[month] + ' ' + jlab.wave.util.pad(day, 2) + ' ' + year + ' ' + jlab.wave.util.pad(hour, 2) + ':' + jlab.wave.util.pad(minute, 2) + ':' + jlab.wave.util.pad(second, 2);
 };
 jlab.wave.util.parseUserDate = function (x) {
-    var month = jlab.wave.util.triCharMonthNames.indexOf(x.substring(0, 3)),
+    let month = jlab.wave.util.triCharMonthNames.indexOf(x.substring(0, 3)),
             day = parseInt(x.substring(4, 6)),
             year = parseInt(x.substring(7, 11));
     return new Date(year, month, day, 0, 0);
 };
 jlab.wave.util.parseUserTime = function (x) {
 
-    var hour, minute, second;
+    let hour, minute, second;
 
     if (x.trim() === '') {
         hour = 0;

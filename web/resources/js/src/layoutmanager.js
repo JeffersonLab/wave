@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /**
@@ -14,14 +14,14 @@ jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
     this.$chartSetDiv = $chartSetDiv;
     this.multiplePvMode = multiplePvMode;
 
-    /* var functions don't have this set as expected (this.function do though) */
-    var self = this;
+    /* let functions don't have this set as expected (this.function do though) */
+    let self = this;
 
     /** 
      * Sequence ID generator for charts (canvas JS requires DOM placeholder div
      * has ID) 
      **/
-    var chartNextSequenceId = 0;
+    let chartNextSequenceId = 0;
 
     /*Priviledged visibility*/
     this.doLayout = function () {
@@ -37,19 +37,19 @@ jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
         }
     };
     /*Private visibility*/
-    var createAndAppendChartPlaceholder = function () {
-        var chartId = 'chart-' + chartNextSequenceId++,
+    let createAndAppendChartPlaceholder = function () {
+        let chartId = 'chart-' + chartNextSequenceId++,
                 $placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
         $chartSetDiv.append($placeholderDiv);
         return $placeholderDiv;
     };
     /*Private visibility*/
-    var updateChartToolbars = function () {
+    let updateChartToolbars = function () {
         $(".csv-menu-item, .options-button").remove();
         $(".canvasjs-chart-toolbar").each(function () {
             /*CSV menu item*/
-            var $menu = $(this).find("> div");
-            var $div = $('<div class="csv-menu-item" style="padding: 2px 15px 2px 10px; background-color: transparent;">Save as CSV</div>');
+            let $menu = $(this).find("> div");
+            let $div = $('<div class="csv-menu-item" style="padding: 2px 15px 2px 10px; background-color: transparent;">Save as CSV</div>');
             $menu.append($div);
             $div.mouseover(function () {
                 this.style.backgroundColor = '#EEEEEE';
@@ -63,7 +63,7 @@ jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
             });
 
             /*Options button*/
-            /*var $btn = $('<button class="options-button" type="button" style="display: inline; position: relative; margin: 0px; padding: 3px 4px 0px; float: left;" title="Options"><img style="height: 16px;" alt="Options" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAYagMeiWXwAAAAJiS0dEAACqjSMyAAAACXBIWXMAAASwAAAEsACQKxcwAAAA5ElEQVQoz6XRTyvDARgH8M9momXRtMPKYRMOVhxZkQuR4gU4kbwEFxcXZzd395U7JYk3YFc7yK9mopU/Wdkyh7W2n9z2vT09z/dfD72iLzRFLZoRaPx3mjUq7kbFpH6ZNrWtMKVgVdKmEVUbjtwrdfPH3Gr6URGoa3q2HDaI2Nd0alrWobqCuEhnnXOm7MEEGHLp3ZX1Vm5IWZL24Q3UVCXkZToKcbNO1GyLYkHZuTlJiIEvJQmDjq34tCbt0ZNqd8h5LwIXahquFX3bCbcYsCUv5c6rnHG7LYO/iNlzYLjnB4bwCwNoNuHs2ZotAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE3LTA3LTI0VDE3OjAyOjUzLTA0OjAwkSlhJAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNy0wNy0yNFQxNzowMjo1My0wNDowMOB02ZgAAAAmdEVYdHN2ZzpiYXNlLXVyaQBmaWxlOi8vL3RtcC90bXBxNTRfVlAuc3ZnVTAB7AAAAABJRU5ErkJggg=="/></button>');
+            /*let $btn = $('<button class="options-button" type="button" style="display: inline; position: relative; margin: 0px; padding: 3px 4px 0px; float: left;" title="Options"><img style="height: 16px;" alt="Options" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAYagMeiWXwAAAAJiS0dEAACqjSMyAAAACXBIWXMAAASwAAAEsACQKxcwAAAA5ElEQVQoz6XRTyvDARgH8M9momXRtMPKYRMOVhxZkQuR4gU4kbwEFxcXZzd395U7JYk3YFc7yK9mopU/Wdkyh7W2n9z2vT09z/dfD72iLzRFLZoRaPx3mjUq7kbFpH6ZNrWtMKVgVdKmEVUbjtwrdfPH3Gr6URGoa3q2HDaI2Nd0alrWobqCuEhnnXOm7MEEGHLp3ZX1Vm5IWZL24Q3UVCXkZToKcbNO1GyLYkHZuTlJiIEvJQmDjq34tCbt0ZNqd8h5LwIXahquFX3bCbcYsCUv5c6rnHG7LYO/iNlzYLjnB4bwCwNoNuHs2ZotAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE3LTA3LTI0VDE3OjAyOjUzLTA0OjAwkSlhJAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNy0wNy0yNFQxNzowMjo1My0wNDowMOB02ZgAAAAmdEVYdHN2ZzpiYXNlLXVyaQBmaWxlOi8vL3RtcC90bXBxNTRfVlAuc3ZnVTAB7AAAAABJRU5ErkJggg=="/></button>');
             $(this).find("> :nth-child(2)").after($btn);
             $btn.click(function () {
                 alert('hey oh');
@@ -71,10 +71,10 @@ jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
         });
     };
     /*Private visibility*/
-    var doSingleChartLayout = function () {
+    let doSingleChartLayout = function () {
         if (jlab.wave.pvs.length > 0) {
 
-            var $placeholderDiv = createAndAppendChartPlaceholder(),
+            let $placeholderDiv = createAndAppendChartPlaceholder(),
                     c = new jlab.wave.Chart(jlab.wave.pvs, $placeholderDiv, (self.multiplePvMode === jlab.wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS));
 
             $placeholderDiv.css("top", 0);
@@ -88,12 +88,12 @@ jlab.wave.LayoutManager = function ($chartSetDiv, multiplePvMode) {
         }
     };
     /*Private visibility*/
-    var doSeparateChartLayout = function () {
-        var offset = 0;
+    let doSeparateChartLayout = function () {
+        let offset = 0;
 
-        for (var i = 0; i < jlab.wave.pvs.length; i++) {
+        for (let i = 0; i < jlab.wave.pvs.length; i++) {
 
-            var $placeholderDiv = createAndAppendChartPlaceholder(),
+            let $placeholderDiv = createAndAppendChartPlaceholder(),
                     pv = jlab.wave.pvs[i],
                     c = new jlab.wave.Chart([pv], $placeholderDiv),
                     chartHeight = $chartSetDiv.height() / jlab.wave.pvs.length;

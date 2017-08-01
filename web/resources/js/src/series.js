@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /**
@@ -18,7 +18,7 @@ jlab.wave.Series = function (pv) {
 
     const MAX_STRIPCHART_POINTS = 100;
 
-    var prev = this.data !== null && this.data.length > 0 ? this.data[this.data.length - 1] : null;
+    let prev = this.data !== null && this.data.length > 0 ? this.data[this.data.length - 1] : null;
 
     this.addSteppedPoint = function (point, lastUpdated) {
         if (this.data === null) {

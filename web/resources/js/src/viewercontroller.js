@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /*wave viewer Enums*/
@@ -12,16 +12,16 @@ jlab.wave.multiplePvModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME
  */
 jlab.wave.ViewerController = function () {
 
-    var viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
+    let viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
 
-    var multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
+    let multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
             layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
 
     const MAX_POINTS_PER_SERIES = 100000;
     const MAX_PVS = 5; /*Max Charts too*/
 
     /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-    var colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
+    let colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
 
     jlab.wave.pvToSeriesMap = {};
     /*jlab.wave.idToChartMap = {};*/
@@ -32,13 +32,13 @@ jlab.wave.ViewerController = function () {
     jlab.wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
     /*WebSocket connection*/
-    var con = null;
+    let con = null;
 
     this.getViewerMode = function () {
         return viewerMode;
     };
 
-    this.setViewerMode = function (mode) {        
+    this.setViewerMode = function (mode) {
         viewerMode = mode;
 
         console.log('set mode: ' + mode);
@@ -69,14 +69,14 @@ jlab.wave.ViewerController = function () {
     /* Sync zoom of all charts and update chart tick label format and tick interval */
     this.zoomRangeChange = function (e) {
 
-        var viewportMinimum = e.axisX[0].viewportMinimum,
+        let viewportMinimum = e.axisX[0].viewportMinimum,
                 viewportMaximum = e.axisX[0].viewportMaximum,
                 timeFormatter = e.chart.options.timeFormatter;
 
         timeFormatter.adjustForViewportZoom(viewportMinimum, viewportMaximum);
 
-        for (var i = 0; i < jlab.wave.charts.length; i++) {
-            var c = jlab.wave.charts[i].canvasjsChart;
+        for (let i = 0; i < jlab.wave.charts.length; i++) {
+            let c = jlab.wave.charts[i].canvasjsChart;
 
             if (!c.options.axisX) {
                 c.options.axisX = {};
@@ -111,13 +111,13 @@ jlab.wave.ViewerController = function () {
             }
         }
     };
-    var getData = function (pv, multiple) {
+    let getData = function (pv, multiple) {
         /*In case things go wrong we set to empty*/
-        var series = jlab.wave.pvToSeriesMap[pv];
+        let series = jlab.wave.pvToSeriesMap[pv];
         series.metadata = {};
         series.data = [];
 
-        var url = '/myget/jmyapi-span-data',
+        let url = '/myget/jmyapi-span-data',
                 data = {
                     c: pv,
                     b: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime),
@@ -136,7 +136,7 @@ jlab.wave.ViewerController = function () {
             console.time("fetch " + pv); /*This isn't perfect due to event queue running whenever*/
         };
 
-        var promise = $.ajax(options);
+        let promise = $.ajax(options);
         promise.done(function (json) {
             console.timeEnd("fetch " + pv);
             /*console.log(json);*/
@@ -156,7 +156,7 @@ jlab.wave.ViewerController = function () {
                 return;
             }
 
-            var makeStepLine = true; /*Since we are using dashed line for sampled we probably should step line too*/
+            let makeStepLine = true; /*Since we are using dashed line for sampled we probably should step line too*/
 
             /*if (json.sampled === true) {
              makeStepLine = false;
@@ -164,14 +164,14 @@ jlab.wave.ViewerController = function () {
              makeStepLine = true;
              }*/
 
-            var formattedData = [],
+            let formattedData = [],
                     prev = null,
                     minY = Number.POSITIVE_INFINITY,
                     maxY = Number.NEGATIVE_INFINITY;
 
             if (makeStepLine) {
-                for (var i = 0; i < json.data.length; i++) {
-                    var record = json.data[i],
+                for (let i = 0; i < json.data.length; i++) {
+                    let record = json.data[i],
                             timestamp = record.d,
                             value = parseFloat(record.v),
                             point;
@@ -200,8 +200,8 @@ jlab.wave.ViewerController = function () {
                     prev = value;
                 }
             } else { /*Don't step data*/
-                for (var i = 0; i < json.data.length; i++) {
-                    var record = json.data[i],
+                for (let i = 0; i < json.data.length; i++) {
+                    let record = json.data[i],
                             timestamp = record.d,
                             value = parseFloat(record.v),
                             point;
@@ -245,7 +245,7 @@ jlab.wave.ViewerController = function () {
             console.log('total points (includes steps): ' + jlab.wave.util.intToStringWithCommas(formattedData.length));
         });
         promise.error(function (xhr, t, m) {
-            var json;
+            let json;
             try {
                 if (t === "timeout") {
                     json = {error: 'Timeout while waiting for response'};
@@ -259,7 +259,7 @@ jlab.wave.ViewerController = function () {
                 json = {};
             }
 
-            var message = json.error || 'Server did not handle request';
+            let message = json.error || 'Server did not handle request';
             alert('Unable to perform request: ' + message);
         });
         promise.always(function () {
@@ -275,7 +275,7 @@ jlab.wave.ViewerController = function () {
         });
         return promise;
     };
-    var addPv = function (pv) {
+    let addPv = function (pv) {
         if (jlab.wave.pvs.indexOf(pv) !== -1) {
             alert('Already charting pv: ' + pv);
             return;
@@ -292,7 +292,7 @@ jlab.wave.ViewerController = function () {
 
         console.log('adding pv: ' + pv);
 
-        var series = new jlab.wave.Series(pv);
+        let series = new jlab.wave.Series(pv);
 
         jlab.wave.pvToSeriesMap[pv] = series;
 
@@ -302,7 +302,7 @@ jlab.wave.ViewerController = function () {
 
         $("#pv-input").val("");
         $("#chart-container").css("border", "none");
-        var uri = new URI(),
+        let uri = new URI(),
                 queryMap = uri.query(true),
                 pvs = queryMap['pv'] || [],
                 addToUrl = false;
@@ -315,34 +315,34 @@ jlab.wave.ViewerController = function () {
         }
 
         if (addToUrl) {
-            var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
+            let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
             window.history.replaceState({}, 'Add pv: ' + pv, url);
         }
     };
     this.csvexport = function () {
-        var data = '',
+        let data = '',
                 filename = 'chart.csv',
                 type = 'text/csv';
 
         /*TODO: figure out which chart is being export and only get pvs from it*/
-        for (var i = 0; i < jlab.wave.pvs.length; i++) {
-            var pv = jlab.wave.pvs[i],
+        for (let i = 0; i < jlab.wave.pvs.length; i++) {
+            let pv = jlab.wave.pvs[i],
                     series = jlab.wave.pvToSeriesMap[pv],
                     d = series.data;
 
             data = data + '--- ' + pv + ' ---\r\n';
-            for (var j = 0; j < d.length; j++) {
+            for (let j = 0; j < d.length; j++) {
                 if (!(j % 2)) { /*Only output even to skip stepped points */
                     data = data + jlab.wave.util.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
                 }
             }
         }
 
-        var file = new Blob([data], {type: type});
+        let file = new Blob([data], {type: type});
         if (window.navigator.msSaveOrOpenBlob) // IE10+
             window.navigator.msSaveOrOpenBlob(file, filename);
         else { // Others
-            var a = document.createElement("a"),
+            let a = document.createElement("a"),
                     url = URL.createObjectURL(file);
             a.href = url;
             a.download = filename;
@@ -369,20 +369,20 @@ jlab.wave.ViewerController = function () {
         if (multiplePvMode !== multiplePvMode) { /*Only NaN is not equal itself*/
             multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
         }
-        
+
         /*Verify valid number*/
         if (viewerMode !== viewerMode) { /*Only NaN is not equal itself*/
             viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
-        }        
+        }
     };
     this.deletePvs = function (pvs) {
-        var uri = new URI();
+        let uri = new URI();
 
         /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.slice*/
         pvs = pvs.slice(); /* slice (not splice) makes a copy */
 
-        for (var i = 0; i < pvs.length; i++) {
-            var pv = pvs[i],
+        for (let i = 0; i < pvs.length; i++) {
+            let pv = pvs[i],
                     series = jlab.wave.pvToSeriesMap[pv],
                     metadata = series.metadata,
                     color = metadata.color,
@@ -399,7 +399,7 @@ jlab.wave.ViewerController = function () {
 
             delete jlab.wave.pvToSeriesMap[pv];
 
-            var index2 = jlab.wave.pvs.indexOf(pv);
+            let index2 = jlab.wave.pvs.indexOf(pv);
             jlab.wave.pvs.splice(index2, 1);
 
             /*Put color back in array for re-use*/
@@ -414,21 +414,23 @@ jlab.wave.ViewerController = function () {
             $("#chart-container").css("border", "1px dashed black");
         }
 
-        var url = uri.href();
+        let url = uri.href();
         window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
     };
     this.addPvs = function (pvs) {
         multiplePvAction(pvs, true);
     };
     this.refresh = function () {
-        multiplePvAction(jlab.wave.pvs, false);
+        if (jlab.wave.controller.getViewerMode() === jlab.wave.viewerModeEnum.ARCHIVE) {
+            multiplePvAction(jlab.wave.pvs, false);
+        } /*if STRIP the onopen callback will handle this*/
     };
-    var addMonitor = function (pv) {
+    let addMonitor = function (pv) {
         con.monitorPvs([pv]);
     };
-    var multiplePvAction = function (pvs, add) {
+    let multiplePvAction = function (pvs, add) {
         if (pvs.length > 0) {
-            var action;
+            let action;
 
             if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
                 action = addMonitor;
@@ -438,16 +440,16 @@ jlab.wave.ViewerController = function () {
 
             $.mobile.loading("show", {textVisible: true, theme: "b"});
 
-            var promises = [];
+            let promises = [];
 
-            for (var i = 0; i < pvs.length; i++) {
-                var pv = pvs[i];
-                
+            for (let i = 0; i < pvs.length; i++) {
+                let pv = pvs[i];
+
                 if (add) {
                     addPv(pv);
                 }
 
-                var promise = action(pv, true);
+                let promise = action(pv, true);
 
                 promises.push(promise);
             }
@@ -459,8 +461,8 @@ jlab.wave.ViewerController = function () {
         }
     };
 
-    var doStripchartUpdate = function (pv, point, lastUpdated) {
-        var series = jlab.wave.pvToSeriesMap[pv];
+    let doStripchartUpdate = function (pv, point, lastUpdated) {
+        let series = jlab.wave.pvToSeriesMap[pv];
         if (typeof series !== 'undefined') {
             series.addSteppedPoint(point, lastUpdated);
             series.lastUpdated = lastUpdated;
@@ -471,8 +473,8 @@ jlab.wave.ViewerController = function () {
         }
     };
 
-    var initStripchart = function () {
-        var options = {};
+    let initStripchart = function () {
+        let options = {};
 
         con = new jlab.epics2web.ClientConnection(options);
 
@@ -496,8 +498,8 @@ jlab.wave.ViewerController = function () {
             }
             console.log(e);
         };
-        
-        
+
+
         console.log('init');
         console.log(con);
     };

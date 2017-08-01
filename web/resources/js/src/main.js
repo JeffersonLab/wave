@@ -1,5 +1,5 @@
 /* USE NAMESPACE */
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /* --- EVENT WIRING --- */
@@ -18,7 +18,7 @@ $(document).on("click", ".cancel-panel-button", function () {
 });
 $(document).on("click", "#update-options-button", function () {
 
-    var fetchRequired = false,
+    let fetchRequired = false,
             oldStartMillis = jlab.wave.startDateAndTime.getTime(),
             oldEndMillis = jlab.wave.endDateAndTime.getTime(),
             startDateStr = $("#start-date-input").val(),
@@ -44,7 +44,7 @@ $(document).on("click", "#update-options-button", function () {
 
     jlab.wave.controller.setMultiplePvMode(parseInt($("#multiple-pv-mode-select").val()));
 
-    var newMode = parseInt($("#viewer-mode-select").val()),
+    let newMode = parseInt($("#viewer-mode-select").val()),
             oldMode = jlab.wave.controller.getViewerMode();
     if (newMode !== oldMode) {
         jlab.wave.controller.setViewerMode(newMode);
@@ -57,7 +57,7 @@ $(document).on("click", "#update-options-button", function () {
         fetchRequired = true;
     }
 
-    var uri = new URI();
+    let uri = new URI();
     uri.setQuery("start", jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime));
     uri.setQuery("end", jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime));
     uri.setQuery("multiplePvMode", jlab.wave.controller.getMultiplePvMode());
@@ -73,7 +73,7 @@ $(document).on("click", "#update-options-button", function () {
     $("#options-panel").panel("close");
 });
 $(document).on("click", "#pv-visibility-toggle-button", function () {
-    var e = jlab.wave.selectedSeries;
+    let e = jlab.wave.selectedSeries;
 
     if (typeof jlab.wave.selectedSeries !== 'undefined') {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -90,7 +90,7 @@ $(document).on("click", "#pv-visibility-toggle-button", function () {
     $("#pv-panel").panel("close");
 });
 $(document).on("click", "#pv-delete-button", function () {
-    var e = jlab.wave.selectedSeries;
+    let e = jlab.wave.selectedSeries;
 
     if (typeof jlab.wave.selectedSeries !== 'undefined') {
         jlab.wave.controller.deletePvs([e.dataSeries.pv]);
@@ -103,10 +103,10 @@ $(document).on("click", "#pv-delete-button", function () {
 
 $(document).on("keyup", "#pv-input", function (e) {
     if (e.keyCode === 13) {
-        var pv = $.trim($("#pv-input").val());
+        let pv = $.trim($("#pv-input").val());
         if (pv !== '') {
             /*Replace all commas with space, split on any whitespace, filter out empty strings*/
-            var tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
+            let tokens = pv.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
 
             jlab.wave.controller.addPvs(tokens);
         }
@@ -170,39 +170,39 @@ jlab.wave.pageinit = function () {
 
     jlab.wave.startDateAndTime.setMinutes(jlab.wave.startDateAndTime.getMinutes() - 5);
 
-    var uri = new URI(),
+    let uri = new URI(),
             queryMap = uri.query(true);
     if (uri.hasQuery("start")) {
         jlab.wave.startDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["start"]);
     } else {
-        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime)});
+        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {start: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime)});
         window.history.replaceState({}, 'Set start: ' + jlab.wave.startDateAndTime, url);
     }
 
     if (uri.hasQuery("end")) {
         jlab.wave.endDateAndTime = jlab.wave.util.parseIsoDateTimeString(queryMap["end"]);
     } else {
-        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime)});
+        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {end: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime)});
         window.history.replaceState({}, 'Set end: ' + jlab.wave.endDateAndTime, url);
     }
 
     if (uri.hasQuery("multiplePvMode")) {
         jlab.wave.controller.setMultiplePvMode(parseInt(queryMap["multiplePvMode"]));
     } else {
-        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.controller.getMultiplePvMode()});
+        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {multiplePvMode: jlab.wave.controller.getMultiplePvMode()});
         window.history.replaceState({}, 'Set multiple PV Mode: ' + jlab.wave.controller.getMultiplePvMode(), url);
     }
 
     if (uri.hasQuery("viewerMode")) {
         jlab.wave.controller.setViewerMode(parseInt(queryMap["viewerMode"]));
     } else {
-        var url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {viewerMode: jlab.wave.controller.getViewerMode()});
+        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {viewerMode: jlab.wave.controller.getViewerMode()});
         window.history.replaceState({}, 'Set viewer Mode: ' + jlab.wave.controller.getViewerMode(), url);
     }
 
     jlab.wave.controller.validateOptions();
 
-    var pvs = queryMap["pv"] || [];
+    let pvs = queryMap["pv"] || [];
     if (!Array.isArray(pvs)) {
         pvs = [pvs];
     }

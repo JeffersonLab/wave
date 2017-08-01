@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /**
@@ -27,7 +27,7 @@ jlab.wave = jlab.wave || {};
  * @returns {jlab.wave.TimeFormatter} - The time formatter
  */
 jlab.wave.ZoomableTimeFormatter = function (start, end) {
-    var sameYear = false,
+    let sameYear = false,
             sameMonth = false,
             sameDay = false,
             oneDaySpecial = false,
@@ -55,7 +55,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
     if (startTimeNonZero || endTimeNonZero) {
         formattedTime = ' (' + jlab.wave.util.toUserTimeString(start) + ' - ' + jlab.wave.util.toUserTimeString(end) + ')';
     } else { /*Check for no-time special cases*/
-        var d = new Date(start.getTime());
+        let d = new Date(start.getTime());
         d.setDate(start.getDate() + 1);
         oneDaySpecial = d.getTime() === end.getTime();
 
@@ -103,7 +103,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
         this.title = formattedStartDate + formattedEndDate + formattedTime;
     }
 
-    var impliedYear = sameYear || oneYearSpecial,
+    let impliedYear = sameYear || oneYearSpecial,
             impliedYearMonth = sameMonth || oneMonthSpecial,
             impliedYearMonthDay = sameDay || oneDaySpecial;
 
@@ -114,7 +114,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
      * @param {number} maxMillis - ending milliseconds from Epoch
      */
     jlab.wave.ZoomableTimeFormatter.prototype.adjustForViewportZoom = function (minMillis, maxMillis) {
-        var formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
+        let formatter = {year: false, month: false, day: false, hour: false, minute: false, second: false};
 
         this.intervalType = null;
         this.interval = null;
@@ -131,7 +131,7 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
             }
         }
 
-        var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
+        let millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
                 millisPerHour = millisPerMinute * 60,
                 millisPerDay = millisPerHour * 24, /*UTC - no timezone - no daylight savings*/
                 millisPerMonth = millisPerDay * 30, /*Approximate*/

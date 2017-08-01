@@ -1,4 +1,4 @@
-var jlab = jlab || {};
+jlab = jlab || {};
 jlab.wave = jlab.wave || {};
 
 /**
@@ -17,7 +17,7 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
     this.$placeholderDiv = $placeholderDiv;
 
-    var labels = [],
+    let labels = [],
             data = [],
             axisY = [];
 
@@ -30,8 +30,8 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
         });
     }
 
-    for (var i = 0; i < this.pvs.length; i++) {
-        var pv = this.pvs[i],
+    for (let i = 0; i < this.pvs.length; i++) {
+        let pv = this.pvs[i],
                 series = jlab.wave.pvToSeriesMap[pv],
                 metadata = series.metadata,
                 preferences = series.preferences,
@@ -58,7 +58,7 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
 
     jlab.wave.charts.push(this);
     /*jlab.wave.idToChartMap[chartId] = this;*/
-    var minDate = jlab.wave.startDateAndTime,
+    let minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime,
             timeFormatter = new jlab.wave.ZoomableTimeFormatter(minDate, maxDate),
             axisX = {
@@ -107,7 +107,7 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
 
                 /*BEGIN PART THAT COULD BE DEFERRED*/
                 $("#metadata-popup h2").text(e.dataSeries.pv);
-                var series = jlab.wave.pvToSeriesMap[e.dataSeries.pv],
+                let series = jlab.wave.pvToSeriesMap[e.dataSeries.pv],
                         metadata = series.metadata;
                 $("#metadata-datatype").text(metadata.datatype);
                 $("#metadata-host").text(metadata.datahost);
