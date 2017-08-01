@@ -121,14 +121,14 @@ jlab.wave.ZoomableTimeFormatter = function (start, end) {
 
         if (!impliedYear) {
             formatter.year = true;
-        }
 
-        if (!impliedYearMonth) {
-            formatter.month = true;
-        }
+            if (!impliedYearMonth) {
+                formatter.month = true;
 
-        if (!impliedYearMonthDay) {
-            formatter.day = true;
+                if (!impliedYearMonthDay) {
+                    formatter.day = true;
+                }
+            }
         }
 
         var millisPerMinute = 1000 * 60, /*Ignore leap seconds as timestamps from Epoch do*/
