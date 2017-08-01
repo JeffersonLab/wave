@@ -41,6 +41,8 @@ jlab.wave.ViewerController = function () {
     this.setViewerMode = function (mode) {        
         viewerMode = mode;
 
+        console.log('set mode: ' + mode);
+
         if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
             initStripchart();
         } else if (con !== null) {
@@ -476,7 +478,7 @@ jlab.wave.ViewerController = function () {
 
         con.onopen = function (e) {
             if (jlab.wave.pvs.length > 0) {
-                con.monitorPvs(jlab.wave.pvs);
+                jlab.wave.controller.addPvs(jlab.wave.pvs);
             }
         };
 
@@ -492,7 +494,12 @@ jlab.wave.ViewerController = function () {
             } else {
                 alert('Could not connect to PV: ' + e.detail.pv);
             }
+            console.log(e);
         };
+        
+        
+        console.log('init');
+        console.log(con);
     };
 };
 

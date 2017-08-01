@@ -207,7 +207,9 @@ jlab.wave.pageinit = function () {
         pvs = [pvs];
     }
 
-    jlab.wave.controller.addPvs(pvs);
+    if(jlab.wave.controller.getViewerMode() === jlab.wave.viewerModeEnum.ARCHIVE) {
+        jlab.wave.controller.addPvs(pvs);
+    } /*if STRIP the onopen callback will handle this*/
 
     /*Don't register resize event until after page load*/
     $(window).on("resize", function () {

@@ -60,7 +60,27 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
     /*jlab.wave.idToChartMap[chartId] = this;*/
     var minDate = jlab.wave.startDateAndTime,
             maxDate = jlab.wave.endDateAndTime,
-            timeFormatter = new jlab.wave.ZoomableTimeFormatter(minDate, maxDate);
+            timeFormatter = new jlab.wave.ZoomableTimeFormatter(minDate, maxDate),
+            axisX = {
+                labelAutoFit: true,
+                labelWrap: false,
+                /*labelMaxWidth: 200,*/
+                tickLength: 20,
+                valueFormatString: 'YYYY-MM-DD HH:mm:ss'
+            };
+
+    if (jlab.wave.controller.getViewerMode() === jlab.wave.viewerModeEnum.ARCHIVE) {
+        axisX = $.extend(axisX, {
+            valueFormatString: timeFormatter.startingTickFormat,
+            interval: timeFormatter.startingInterval,
+            intervalType: timeFormatter.startingIntervalType,
+            labelAngle: -45,
+            minimum: minDate,
+            maximum: maxDate}
+        );
+    }
+    
+    console.log(axisX);
 
     this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
         zoomEnabled: true,
@@ -111,22 +131,9 @@ jlab.wave.Chart = function (pvs, $placeholderDiv, separateYAxis) {
             }
         },
         axisY: axisY,
-        axisX: {
-            labelAutoFit: true,
-            labelWrap: false,
-            /*labelMaxWidth: 200,*/
-            tickLength: 20,
-            valueFormatString: 'YYYY-MM-DD HH:mm:ss'
-            /*,
-            valueFormatString: timeFormatter.startingTickFormat,
-            interval: timeFormatter.startingInterval,
-            intervalType: timeFormatter.startingIntervalType,
-            labelAngle: -45,
-            minimum: minDate,
-            maximum: maxDate*/
-        },
+        axisX: axisX,
         data: data
-    }); 
+    });
 };
 
 
