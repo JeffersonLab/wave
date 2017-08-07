@@ -45,7 +45,46 @@
                 };
 
                 this.removePvs = function (pvs) {
-                    // Do nothing
+                    let uri = new URI();
+
+                    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.slice*/
+                    pvs = pvs.slice(); /* slice (not splice) makes a copy */
+
+                    for (let i = 0; i < pvs.length; i++) {
+                        let pv = pvs[i],
+                                series = jlab.wave.pvToSeriesMap[pv],
+                                metadata = series.metadata,
+                                color = metadata.color,
+                                chart = series.chart,
+                                index = chart.pvs.indexOf(pv);
+
+                        chart.pvs.splice(index, 1);
+
+                        if (chart.pvs.length < 1) {
+                            jlab.wave.charts.splice(jlab.wave.charts.indexOf(chart), 1);
+                            chart.$placeholderDiv.remove();
+                            delete series.chart;
+                        }
+
+                        delete jlab.wave.pvToSeriesMap[pv];
+
+                        let index2 = jlab.wave.pvs.indexOf(pv);
+                        jlab.wave.pvs.splice(index2, 1);
+
+                        /*Put color back in array for re-use*/
+                        colors.push(color);
+
+                        uri.removeQuery("pv", pv);
+                    }
+
+                    layoutManager.doLayout();
+
+                    if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
+                        $("#chart-container").css("border", "1px dashed black");
+                    }
+
+                    let url = uri.href();
+                    window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
                 };
 
                 this.destroy = function () {
@@ -236,6 +275,13 @@
                         });
                     }
                 };
+
+                this.refresh = function () {
+                    if (_options.viewerMode === wave.viewerModeEnum.ARCHIVE) {
+                        this.fetchMultiple(_chartManager.getPvs(), false);
+                    } /*if STRIP the onopen callback will handle this*/
+                };
+
                 /* Sync zoom of all charts and update chart tick label format and tick interval */
                 this.zoomRangeChange = function (e) {
 
@@ -338,73 +384,10 @@
                 /*WebSocket connection*/
                 let con = null;
 
-                this.prototype.destroy = function () {
-                    if (con !== null) {
-                        con.clearPvs(jlab.wave.pvs);
-                        con.autoReconnect = false;
-                        con.close();
-                        con = null;
-                    }
-                };
-            }
-        };
 
-        /**
-         * A wave ViewerController handles actions / state changes in the viewer.
-         */
-        wave.ViewerController = class ViewerController {
-            constructor() {
-                this.deletePvs = function (pvs) {
-                    let uri = new URI();
-
-                    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.slice*/
-                    pvs = pvs.slice(); /* slice (not splice) makes a copy */
-
-                    for (let i = 0; i < pvs.length; i++) {
-                        let pv = pvs[i],
-                                series = jlab.wave.pvToSeriesMap[pv],
-                                metadata = series.metadata,
-                                color = metadata.color,
-                                chart = series.chart,
-                                index = chart.pvs.indexOf(pv);
-
-                        chart.pvs.splice(index, 1);
-
-                        if (chart.pvs.length < 1) {
-                            jlab.wave.charts.splice(jlab.wave.charts.indexOf(chart), 1);
-                            chart.$placeholderDiv.remove();
-                            delete series.chart;
-                        }
-
-                        delete jlab.wave.pvToSeriesMap[pv];
-
-                        let index2 = jlab.wave.pvs.indexOf(pv);
-                        jlab.wave.pvs.splice(index2, 1);
-
-                        /*Put color back in array for re-use*/
-                        colors.push(color);
-
-                        uri.removeQuery("pv", pv);
-                    }
-
-                    layoutManager.doLayout();
-
-                    if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
-                        $("#chart-container").css("border", "1px dashed black");
-                    }
-
-                    let url = uri.href();
-                    window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
-                };
-                this.refresh = function () {
-                    if (jlab.wave.controller.getViewerMode() === jlab.wave.viewerModeEnum.ARCHIVE) {
-                        multiplePvAction(jlab.wave.pvs, false);
-                    } /*if STRIP the onopen callback will handle this*/
-                };
                 let addMonitor = function (pv) {
                     con.monitorPvs([pv]);
                 };
-
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
                     let series = jlab.wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {
@@ -417,35 +400,44 @@
                     }
                 };
 
-                let initStripchart = function () {
-                    let options = {};
 
-                    con = new jlab.epics2web.ClientConnection(options);
+                let _conOpts = {};
 
-                    con.onopen = function (e) {
-                        if (jlab.wave.pvs.length > 0) {
-                            jlab.wave.controller.addPvs(jlab.wave.pvs);
+                con = new jlab.epics2web.ClientConnection(_conOpts);
+
+                con.onopen = function (e) {
+                    if (jlab.wave.pvs.length > 0) {
+                        jlab.wave.controller.addPvs(jlab.wave.pvs);
+                    }
+                };
+
+                con.onupdate = function (e) {
+                    doStripchartUpdate(e.detail.pv, e.detail.value * 1, e.detail.date);
+                };
+
+                con.oninfo = function (e) {
+                    if (e.detail.connected) {
+                        if (!jlab.epics2web.isNumericEpicsType(e.detail.datatype)) {
+                            alert(e.detail.pv + ' values are not numeric: ' + e.detail.datatype);
                         }
-                    };
-
-                    con.onupdate = function (e) {
-                        doStripchartUpdate(e.detail.pv, e.detail.value * 1, e.detail.date);
-                    };
-
-                    con.oninfo = function (e) {
-                        if (e.detail.connected) {
-                            if (!jlab.epics2web.isNumericEpicsType(e.detail.datatype)) {
-                                alert(e.detail.pv + ' values are not numeric: ' + e.detail.datatype);
-                            }
-                        } else {
-                            alert('Could not connect to PV: ' + e.detail.pv);
-                        }
-                        console.log(e);
-                    };
+                    } else {
+                        alert('Could not connect to PV: ' + e.detail.pv);
+                    }
+                    console.log(e);
+                };
 
 
-                    console.log('init');
-                    console.log(con);
+                console.log('init');
+                console.log(con);
+
+
+                this.prototype.destroy = function () {
+                    if (con !== null) {
+                        con.clearPvs(jlab.wave.pvs);
+                        con.autoReconnect = false;
+                        con.close();
+                        con = null;
+                    }
                 };
             }
         };
