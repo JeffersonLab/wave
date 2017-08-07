@@ -3,7 +3,7 @@
     (function (wave) {
         /*public wave viewer Enums*/
         wave.viewerModeEnum = Object.freeze({ARCHIVE: 1, STRIP: 2, WAVEFORM: 3});
-        wave.multiplePvModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3});
+        wave.layoutModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3});
 
         /*TODO: should these be private?*/
         wave.pvToSeriesMap = {};
@@ -13,103 +13,47 @@
         wave.startDateAndTime = new Date();
         wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
-        /**
-         * A wave ViewerController handles actions / state changes in the viewer.
-         */
-        wave.ViewerController = class ViewerController {
-            constructor() {
-
-                let viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
-
-                let multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART,
-                        layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
+        let Viewer = class Viewer {
+            constructor(options, layoutManager) {
+                let _options = options;
+                let _layoutManager = layoutManager;
 
                 const MAX_POINTS_PER_SERIES = 100000;
                 const MAX_PVS = 5; /*Max Charts too*/
 
                 /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-                let colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
-
-                /*WebSocket connection*/
-                let con = null;
-
-                this.getViewerMode = function () {
-                    return viewerMode;
-                };
-
-                this.setViewerMode = function (mode) {
-                    viewerMode = mode;
-
-                    console.log('set mode: ' + mode);
-
-                    if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
-                        initStripchart();
-                    } else if (con !== null) {
-                        con.clearPvs(jlab.wave.pvs);
-                        con.autoReconnect = false;
-                        con.close();
-                        con = null;
-                    }
-                };
-
-                this.getMultiplePvMode = function () {
-                    return multiplePvMode;
-                };
-
-                this.setMultiplePvMode = function (mode) {
-                    multiplePvMode = mode;
-                    layoutManager = new jlab.wave.LayoutManager($("#chart-container"), multiplePvMode);
-                };
+                const colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
 
                 this.doLayout = function () {
-                    layoutManager.doLayout();
+                    _layoutManager.doLayout();
                 };
 
-                /* Sync zoom of all charts and update chart tick label format and tick interval */
-                this.zoomRangeChange = function (e) {
+                Viewer.prototype.addPv = function (pv) {
+                    console.log('(viewer) adding pv: ' + pv);
 
-                    let viewportMinimum = e.axisX[0].viewportMinimum,
-                            viewportMaximum = e.axisX[0].viewportMaximum,
-                            timeFormatter = e.chart.options.timeFormatter;
+                    let series = new wave.Series(pv);
 
-                    timeFormatter.adjustForViewportZoom(viewportMinimum, viewportMaximum);
+                    wave.pvToSeriesMap[pv] = series;
 
-                    for (let i = 0; i < jlab.wave.charts.length; i++) {
-                        let c = jlab.wave.charts[i].canvasjsChart;
+                    series.preferences = {
+                        color: colors.shift()
+                    };
+                };
 
-                        if (!c.options.axisX) {
-                            c.options.axisX = {};
-                        }
-
-                        if (e.trigger === "reset") {
-                            c.options.axisX.viewportMinimum = c.options.axisX.viewportMaximum = null;
-
-                            c.options.axisX.valueFormatString = timeFormatter.startingTickFormat;
-                            c.options.axisX.interval = timeFormatter.startingInterval;
-                            c.options.axisX.intervalType = timeFormatter.startingIntervalType;
-
-                            if (c !== e.chart) {
-                                c.render();
-                            }
-                        } else {
-                            if (c !== e.chart) {
-                                c.options.axisX.viewportMinimum = viewportMinimum;
-                                c.options.axisX.viewportMaximum = viewportMaximum;
-                            }
-
-                            /*Don't update tick labels and interval for pan; only for zoom*/
-                            if (e.trigger === "zoom") {
-                                c.options.axisX.valueFormatString = timeFormatter.tickFormat;
-                                c.options.axisX.interval = timeFormatter.interval;
-                                c.options.axisX.intervalType = timeFormatter.intervalType;
-                            }
-
-                            if (c !== e.chart) {
-                                c.render();
-                            }
-                        }
+                Viewer.prototype.addPvs = function (pvs) {
+                    for (let i = 0; i < pvs.length; i++) {
+                        Viewer.prototype.addPv(pvs[i]);
                     }
                 };
+
+                this.removePvs = function (pvs) {
+                    // Do nothing
+                };
+
+                this.destroy = function () {
+                    // Do nothing
+                };
+
                 let getData = function (pv, multiple) {
                     /*In case things go wrong we set to empty*/
                     let series = jlab.wave.pvToSeriesMap[pv];
@@ -274,48 +218,70 @@
                     });
                     return promise;
                 };
-                let addPv = function (pv) {
-                    if (jlab.wave.pvs.indexOf(pv) !== -1) {
-                        alert('Already charting pv: ' + pv);
-                        return;
+                this.fetchMultiple = function (pvs) {
+                    if (pvs.length > 0) {
+                        $.mobile.loading("show", {textVisible: true, theme: "b"});
+
+                        var promises = [];
+
+                        for (let i = 0; i < pvs.length; i++) {
+                            let pv = pvs[i];
+
+                            let promise = getData(pv, true);
+
+                            promises.push(promise);
+                        }
+
+                        $.whenAll.apply($, promises).always(function () {
+                            $.mobile.loading("hide");
+                            console.log(_layoutManager);
+                            _layoutManager.doLayout();
+                        });
                     }
+                };
+                /* Sync zoom of all charts and update chart tick label format and tick interval */
+                this.zoomRangeChange = function (e) {
 
-                    if (jlab.wave.pvs.length + 1 > MAX_PVS) {
-                        alert('Too many pvs; maximum number is: ' + MAX_PVS);
-                        return;
-                    }
+                    let viewportMinimum = e.axisX[0].viewportMinimum,
+                            viewportMaximum = e.axisX[0].viewportMaximum,
+                            timeFormatter = e.chart.options.timeFormatter;
 
-                    jlab.wave.pvs.push(pv);
+                    timeFormatter.adjustForViewportZoom(viewportMinimum, viewportMaximum);
 
-                    jlab.wave.pvs.sort();
+                    for (let i = 0; i < jlab.wave.charts.length; i++) {
+                        let c = jlab.wave.charts[i].canvasjsChart;
 
-                    console.log('adding pv: ' + pv);
+                        if (!c.options.axisX) {
+                            c.options.axisX = {};
+                        }
 
-                    let series = new jlab.wave.Series(pv);
+                        if (e.trigger === "reset") {
+                            c.options.axisX.viewportMinimum = c.options.axisX.viewportMaximum = null;
 
-                    jlab.wave.pvToSeriesMap[pv] = series;
+                            c.options.axisX.valueFormatString = timeFormatter.startingTickFormat;
+                            c.options.axisX.interval = timeFormatter.startingInterval;
+                            c.options.axisX.intervalType = timeFormatter.startingIntervalType;
 
-                    series.preferences = {
-                        color: colors.shift()
-                    };
+                            if (c !== e.chart) {
+                                c.render();
+                            }
+                        } else {
+                            if (c !== e.chart) {
+                                c.options.axisX.viewportMinimum = viewportMinimum;
+                                c.options.axisX.viewportMaximum = viewportMaximum;
+                            }
 
-                    $("#pv-input").val("");
-                    $("#chart-container").css("border", "none");
-                    let uri = new URI(),
-                            queryMap = uri.query(true),
-                            pvs = queryMap['pv'] || [],
-                            addToUrl = false;
-                    if (!Array.isArray(pvs)) {
-                        pvs = [pvs];
-                    }
+                            /*Don't update tick labels and interval for pan; only for zoom*/
+                            if (e.trigger === "zoom") {
+                                c.options.axisX.valueFormatString = timeFormatter.tickFormat;
+                                c.options.axisX.interval = timeFormatter.interval;
+                                c.options.axisX.intervalType = timeFormatter.intervalType;
+                            }
 
-                    if ($.inArray(pv, pvs) === -1) {
-                        addToUrl = true;
-                    }
-
-                    if (addToUrl) {
-                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {pv: pv});
-                        window.history.replaceState({}, 'Add pv: ' + pv, url);
+                            if (c !== e.chart) {
+                                c.render();
+                            }
+                        }
                     }
                 };
                 this.csvexport = function () {
@@ -353,27 +319,45 @@
                         }, 0);
                     }
                 };
-                this.validateOptions = function () {
-                    /*Verify valid number*/
-                    if (jlab.wave.startDateAndTime.getTime() !== jlab.wave.startDateAndTime.getTime()) { /*Only NaN is not equal itself*/
-                        jlab.wave.startDateAndTime = new Date();
-                    }
 
-                    /*Verify valid number*/
-                    if (jlab.wave.endDateAndTime.getTime() !== jlab.wave.endDateAndTime.getTime()) { /*Only NaN is not equal itself*/
-                        jlab.wave.endDateAndTime = new Date();
-                    }
+            }
+        }
+        ;
+                wave.ArchiveViewer = class ArchiveViewer extends Viewer {
+            constructor(options, layoutManager) {
+                super(options, layoutManager);
 
-                    /*Verify valid number*/
-                    if (multiplePvMode !== multiplePvMode) { /*Only NaN is not equal itself*/
-                        multiplePvMode = jlab.wave.multiplePvModeEnum.SEPARATE_CHART;
-                    }
+                wave.ArchiveViewer.prototype.addPvs = function (pvs) {
+                    Viewer.prototype.addPvs(pvs);
 
-                    /*Verify valid number*/
-                    if (viewerMode !== viewerMode) { /*Only NaN is not equal itself*/
-                        viewerMode = jlab.wave.viewerModeEnum.ARCHIVE;
+                    this.fetchMultiple(pvs);
+                };
+            }
+        };
+
+        wave.StripViewer = class StripViewer extends Viewer {
+            constructor(options, layoutManager) {
+                super(options, layoutManager);
+
+                /*WebSocket connection*/
+                let con = null;
+
+                this.prototype.destroy = function () {
+                    if (con !== null) {
+                        con.clearPvs(jlab.wave.pvs);
+                        con.autoReconnect = false;
+                        con.close();
+                        con = null;
                     }
                 };
+            }
+        };
+
+        /**
+         * A wave ViewerController handles actions / state changes in the viewer.
+         */
+        wave.ViewerController = class ViewerController {
+            constructor() {
                 this.deletePvs = function (pvs) {
                     let uri = new URI();
 
@@ -416,9 +400,6 @@
                     let url = uri.href();
                     window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
                 };
-                this.addPvs = function (pvs) {
-                    multiplePvAction(pvs, true);
-                };
                 this.refresh = function () {
                     if (jlab.wave.controller.getViewerMode() === jlab.wave.viewerModeEnum.ARCHIVE) {
                         multiplePvAction(jlab.wave.pvs, false);
@@ -426,38 +407,6 @@
                 };
                 let addMonitor = function (pv) {
                     con.monitorPvs([pv]);
-                };
-                let multiplePvAction = function (pvs, add) {
-                    if (pvs.length > 0) {
-                        let action;
-
-                        if (viewerMode === jlab.wave.viewerModeEnum.STRIP) {
-                            action = addMonitor;
-                        } else {
-                            action = getData;
-                        }
-
-                        $.mobile.loading("show", {textVisible: true, theme: "b"});
-
-                        let promises = [];
-
-                        for (let i = 0; i < pvs.length; i++) {
-                            let pv = pvs[i];
-
-                            if (add) {
-                                addPv(pv);
-                            }
-
-                            let promise = action(pv, true);
-
-                            promises.push(promise);
-                        }
-
-                        $.whenAll.apply($, promises).always(function () {
-                            $.mobile.loading("hide");
-                            layoutManager.doLayout();
-                        });
-                    }
                 };
 
                 let doStripchartUpdate = function (pv, point, lastUpdated) {

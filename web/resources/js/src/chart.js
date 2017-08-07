@@ -12,9 +12,10 @@
          * @returns {jlab.wave.Chart} - The chart
          */
         wave.Chart = class Chart {
-            constructor(pvs, $placeholderDiv, separateYAxis) {
-                this.pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
-                this.$placeholderDiv = $placeholderDiv;
+            constructor(chartManager, pvs, $placeholderDiv, separateYAxis) {
+                let _chartManager = chartManager;
+                let _pvs = pvs.slice(0); /* slice (not splice) makes a copy as we may be removing PVs */
+                let _$placeholderDiv = $placeholderDiv;
                 let labels = [],
                         data = [],
                         axisY = [];
@@ -27,8 +28,8 @@
                     });
                 }
 
-                for (let i = 0; i < this.pvs.length; i++) {
-                    let pv = this.pvs[i],
+                for (let i = 0; i < _pvs.length; i++) {
+                    let pv = _pvs[i],
                             series = wave.pvToSeriesMap[pv],
                             metadata = series.metadata,
                             preferences = series.preferences,
@@ -62,7 +63,7 @@
                             tickLength: 20,
                             valueFormatString: 'YYYY-MM-DD HH:mm:ss'
                         };
-                if (wave.controller.getViewerMode() === wave.viewerModeEnum.ARCHIVE) {
+                if (_chartManager.getOptions.viewerMode === wave.viewerModeEnum.ARCHIVE) {
                     axisX = $.extend(axisX, {
                         valueFormatString: timeFormatter.startingTickFormat,
                         interval: timeFormatter.startingInterval,
@@ -77,7 +78,7 @@
                 this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
                     zoomEnabled: true,
                     exportEnabled: true,
-                    rangeChanging: wave.controller.zoomRangeChange,
+                    rangeChanging: _chartManager.zoomRangeChange,
                     timeFormatter: timeFormatter,
                     title: {
                         text: timeFormatter.title

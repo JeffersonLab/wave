@@ -1,6 +1,7 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
+
         /**
          * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
          * but delegates the actual rendering of canvases to CanvasJS.
@@ -8,42 +9,28 @@
          * @param $chartSetDiv - The jQuery wrapped div container for a set of charts
          * @param multiplePvMode - The layout mode
          */
-        wave.LayoutManager = class LayoutManager {
-            constructor($chartSetDiv, multiplePvMode) {
-                this.$chartSetDiv = $chartSetDiv;
-                this.multiplePvMode = multiplePvMode;
+        let LayoutManager = class LayoutManager {
+            constructor(chartManager) {
+                let _chartManager = chartManager;
 
-                /* let functions don't have this set as expected (this.function do though) */
-                let self = this;
+                LayoutManager.prototype.doLayout = function () {
+                    _chartManager.getOptions().$chartSetDiv.empty();
+                };
 
                 /** 
                  * Sequence ID generator for charts (canvas JS requires DOM placeholder div
                  * has ID) 
                  **/
-                let chartNextSequenceId = 0;
+                this.chartNextSequenceId = 0;
 
-                /*Priviledged visibility*/
-                this.doLayout = function () {
-                    $chartSetDiv.empty();
-
-                    /*console.log('doLayout');
-                     console.log('pvs: ' + wave.pvs);*/
-
-                    if (this.multiplePvMode === wave.multiplePvModeEnum.SEPARATE_CHART) {
-                        doSeparateChartLayout();
-                    } else {
-                        doSingleChartLayout();
-                    }
-                };
-                /*Private visibility*/
-                let createAndAppendChartPlaceholder = function () {
-                    let chartId = 'chart-' + chartNextSequenceId++,
+                this.createAndAppendChartPlaceholder = function () {
+                    let chartId = 'chart-' + this.chartNextSequenceId++,
                             $placeholderDiv = $('<div id="' + chartId + '" class="chart"></div>');
-                    $chartSetDiv.append($placeholderDiv);
+                    _chartManager.getOptions().$chartSetDiv.append($placeholderDiv);
                     return $placeholderDiv;
                 };
                 /*Private visibility*/
-                let updateChartToolbars = function () {
+                this.updateChartToolbars = function () {
                     $(".csv-menu-item, .options-button").remove();
                     $(".canvasjs-chart-toolbar").each(function () {
                         /*CSV menu item*/
@@ -69,33 +56,60 @@
                          });*/
                     });
                 };
-                /*Private visibility*/
-                let doSingleChartLayout = function () {
-                    if (wave.pvs.length > 0) {
+            }
+        }
 
-                        let $placeholderDiv = createAndAppendChartPlaceholder(),
-                                c = new wave.Chart(jlab.wave.pvs, $placeholderDiv, (self.multiplePvMode === wave.multiplePvModeEnum.SAME_CHART_SEPARATE_AXIS));
+        wave.SingleChartLayoutManager = class SingleChartLayoutManager extends LayoutManager {
+            constructor(chartManager) {
+                super(chartManager);
+
+                let _chartManager = chartManager;
+
+                wave.SingleChartLayoutManager.prototype.doLayout = function () {
+                    LayoutManager.prototype.doLayout();
+
+                    if (_chartManager.getPvs().length > 0) {
+
+                        let $placeholderDiv = this.createAndAppendChartPlaceholder(),
+                                c = new wave.Chart(_chartManager, _chartManager.getPvs(), $placeholderDiv, (_chartManager.getOptions().layoutMode === wave.layoutModeEnum.SAME_CHART_SEPARATE_AXIS));
 
                         $placeholderDiv.css("top", 0);
-                        $placeholderDiv.height($chartSetDiv.height());
+                        $placeholderDiv.height(_chartManager.getOptions().$chartSetDiv.height());
 
                         console.time("render");
                         c.canvasjsChart.render();
                         console.timeEnd("render");
 
-                        updateChartToolbars();
+                        this.updateChartToolbars();
                     }
                 };
-                /*Private visibility*/
-                let doSeparateChartLayout = function () {
+            }
+        };
+
+        wave.SeparateChartLayoutManager = class SeparateChartLayoutManager extends LayoutManager {
+            constructor(chartManager) {
+                super(chartManager);
+
+                let _chartManager = chartManager;
+
+                wave.SeparateChartLayoutManager.prototype.doLayout = function () {
+                    LayoutManager.prototype.doLayout();
+
+                    console.log('do separate layout');
+
                     let offset = 0;
+                    let pvs = _chartManager.getPvs();
 
-                    for (let i = 0; i < wave.pvs.length; i++) {
+                    console.log(pvs);
 
-                        let $placeholderDiv = createAndAppendChartPlaceholder(),
-                                pv = wave.pvs[i],
-                                c = new wave.Chart([pv], $placeholderDiv),
-                                chartHeight = $chartSetDiv.height() / wave.pvs.length;
+                    for (let i = 0; i < pvs.length; i++) {
+                        
+                        console.log('layout pv: ' + pvs[i]);
+
+                        let $placeholderDiv = this.createAndAppendChartPlaceholder(),
+                                pv = pvs[i],
+                                c = new wave.Chart(_chartManager, [pv], $placeholderDiv),
+                                chartHeight = _chartManager.getOptions().$chartSetDiv.height() / pvs.length;
 
                         $placeholderDiv.css("top", offset);
                         offset = offset + chartHeight;
@@ -105,7 +119,7 @@
                         c.canvasjsChart.render();
                         console.timeEnd("render");
 
-                        updateChartToolbars();
+                        this.updateChartToolbars();
                     }
                 };
             }
