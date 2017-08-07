@@ -74,7 +74,6 @@
                     );
                 }
 
-                console.log(axisX);
                 this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
                     zoomEnabled: true,
                     exportEnabled: true,

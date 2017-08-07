@@ -29,8 +29,6 @@
                 };
 
                 Viewer.prototype.addPv = function (pv) {
-                    console.log('(viewer) adding pv: ' + pv);
-
                     let series = new wave.Series(pv);
 
                     wave.pvToSeriesMap[pv] = series;
@@ -234,7 +232,6 @@
 
                         $.whenAll.apply($, promises).always(function () {
                             $.mobile.loading("hide");
-                            console.log(_layoutManager);
                             _layoutManager.doLayout();
                         });
                     }
@@ -319,11 +316,10 @@
                         }, 0);
                     }
                 };
-
             }
         }
-        ;
-                wave.ArchiveViewer = class ArchiveViewer extends Viewer {
+
+        wave.ArchiveViewer = class ArchiveViewer extends Viewer {
             constructor(options, layoutManager) {
                 super(options, layoutManager);
 

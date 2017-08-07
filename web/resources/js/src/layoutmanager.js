@@ -95,17 +95,10 @@
                 wave.SeparateChartLayoutManager.prototype.doLayout = function () {
                     LayoutManager.prototype.doLayout();
 
-                    console.log('do separate layout');
-
                     let offset = 0;
                     let pvs = _chartManager.getPvs();
 
-                    console.log(pvs);
-
                     for (let i = 0; i < pvs.length; i++) {
-                        
-                        console.log('layout pv: ' + pvs[i]);
-
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
                                 pv = pvs[i],
                                 c = new wave.Chart(_chartManager, [pv], $placeholderDiv),
