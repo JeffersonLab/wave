@@ -7,15 +7,13 @@
 
         /*TODO: should these be private?*/
         wave.pvToSeriesMap = {};
-        wave.pvs = [];
         wave.charts = [];
         wave.selectedSeries; /*When you click on series label in legend*/
-        wave.startDateAndTime = new Date();
-        wave.endDateAndTime = new Date(jlab.wave.startDateAndTime.getTime());
 
         let Viewer = class Viewer {
-            constructor(options, layoutManager) {
-                let _options = options;
+            constructor(chartManager, layoutManager) {
+                let _chartManager = chartManager;
+                let _options = chartManager.getOptions();
                 let _layoutManager = layoutManager;
 
                 const MAX_POINTS_PER_SERIES = 100000;
@@ -281,93 +279,12 @@
                         this.fetchMultiple(_chartManager.getPvs(), false);
                     } /*if STRIP the onopen callback will handle this*/
                 };
-
-                /* Sync zoom of all charts and update chart tick label format and tick interval */
-                this.zoomRangeChange = function (e) {
-
-                    let viewportMinimum = e.axisX[0].viewportMinimum,
-                            viewportMaximum = e.axisX[0].viewportMaximum,
-                            timeFormatter = e.chart.options.timeFormatter;
-
-                    timeFormatter.adjustForViewportZoom(viewportMinimum, viewportMaximum);
-
-                    for (let i = 0; i < jlab.wave.charts.length; i++) {
-                        let c = jlab.wave.charts[i].canvasjsChart;
-
-                        if (!c.options.axisX) {
-                            c.options.axisX = {};
-                        }
-
-                        if (e.trigger === "reset") {
-                            c.options.axisX.viewportMinimum = c.options.axisX.viewportMaximum = null;
-
-                            c.options.axisX.valueFormatString = timeFormatter.startingTickFormat;
-                            c.options.axisX.interval = timeFormatter.startingInterval;
-                            c.options.axisX.intervalType = timeFormatter.startingIntervalType;
-
-                            if (c !== e.chart) {
-                                c.render();
-                            }
-                        } else {
-                            if (c !== e.chart) {
-                                c.options.axisX.viewportMinimum = viewportMinimum;
-                                c.options.axisX.viewportMaximum = viewportMaximum;
-                            }
-
-                            /*Don't update tick labels and interval for pan; only for zoom*/
-                            if (e.trigger === "zoom") {
-                                c.options.axisX.valueFormatString = timeFormatter.tickFormat;
-                                c.options.axisX.interval = timeFormatter.interval;
-                                c.options.axisX.intervalType = timeFormatter.intervalType;
-                            }
-
-                            if (c !== e.chart) {
-                                c.render();
-                            }
-                        }
-                    }
-                };
-                this.csvexport = function () {
-                    let data = '',
-                            filename = 'chart.csv',
-                            type = 'text/csv';
-
-                    /*TODO: figure out which chart is being export and only get pvs from it*/
-                    for (let i = 0; i < jlab.wave.pvs.length; i++) {
-                        let pv = jlab.wave.pvs[i],
-                                series = jlab.wave.pvToSeriesMap[pv],
-                                d = series.data;
-
-                        data = data + '--- ' + pv + ' ---\r\n';
-                        for (let j = 0; j < d.length; j++) {
-                            if (!(j % 2)) { /*Only output even to skip stepped points */
-                                data = data + jlab.wave.util.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
-                            }
-                        }
-                    }
-
-                    let file = new Blob([data], {type: type});
-                    if (window.navigator.msSaveOrOpenBlob) // IE10+
-                        window.navigator.msSaveOrOpenBlob(file, filename);
-                    else { // Others
-                        let a = document.createElement("a"),
-                                url = URL.createObjectURL(file);
-                        a.href = url;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        setTimeout(function () {
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(url);
-                        }, 0);
-                    }
-                };
             }
         }
 
         wave.ArchiveViewer = class ArchiveViewer extends Viewer {
-            constructor(options, layoutManager) {
-                super(options, layoutManager);
+            constructor(chartManager, layoutManager) {
+                super(chartManager, layoutManager);
 
                 wave.ArchiveViewer.prototype.addPvs = function (pvs) {
                     Viewer.prototype.addPvs(pvs);
@@ -378,16 +295,18 @@
         };
 
         wave.StripViewer = class StripViewer extends Viewer {
-            constructor(options, layoutManager) {
-                super(options, layoutManager);
+            constructor(chartManager, layoutManager) {
+                super(chartManager, layoutManager);
 
                 /*WebSocket connection*/
                 let con = null;
 
+                wave.StripViewer.prototype.addPvs = function (pvs) {
+                    Viewer.prototype.addPvs(pvs);
 
-                let addMonitor = function (pv) {
-                    con.monitorPvs([pv]);
+                    con.monitorPvs(pvs);
                 };
+
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
                     let series = jlab.wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {

@@ -54,17 +54,15 @@
                 $(document).on("click", "#update-options-button", function () {
 
                     let fetchRequired = false,
-                            _options = _chartManager.getOptions(),
-                            oldStartMillis = _options.start.getTime(),
-                            oldEndMillis = _options.end.getTime(),
+                            _options = new wave.ApplicationOptions(),
                             startDateStr = $("#start-date-input").val(),
                             startTimeStr = $("#start-time-input").val(),
                             endDateStr = $("#end-date-input").val(),
                             endTimeStr = $("#end-time-input").val(),
-                            startDate = jlab.wave.util.parseUserDate(startDateStr),
-                            startTime = jlab.wave.util.parseUserTime(startTimeStr),
-                            endDate = jlab.wave.util.parseUserDate(endDateStr),
-                            endTime = jlab.wave.util.parseUserTime(endTimeStr);
+                            startDate = wave.util.parseUserDate(startDateStr),
+                            startTime = wave.util.parseUserTime(startTimeStr),
+                            endDate = wave.util.parseUserDate(endDateStr),
+                            endTime = wave.util.parseUserTime(endTimeStr);
 
                     _options.start.setFullYear(startDate.getFullYear());
                     _options.start.setMonth(startDate.getMonth());

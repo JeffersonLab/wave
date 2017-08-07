@@ -53,8 +53,8 @@
                 }
 
                 jlab.wave.charts.push(this);
-                let minDate = wave.startDateAndTime,
-                        maxDate = wave.endDateAndTime,
+                let minDate = _chartManager.getOptions().start,
+                        maxDate = _chartManager.getOptions().end,
                         timeFormatter = new wave.ZoomableTimeFormatter(minDate, maxDate),
                         axisX = {
                             labelAutoFit: true,

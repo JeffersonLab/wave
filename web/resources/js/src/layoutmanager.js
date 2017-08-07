@@ -44,7 +44,7 @@
                             this.style.backgroundColor = 'transparent';
                         });
                         $div.click(function () {
-                            wave.controller.csvexport();
+                            _chartManager.csvexport();
                             $(this).parent().hide();
                         });
 
