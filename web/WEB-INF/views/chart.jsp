@@ -131,7 +131,9 @@
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/series.js?v=${initParam.releaseNumber}"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/layoutmanager.js?v=${initParam.releaseNumber}"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/chartmanager.js?v=${initParam.releaseNumber}"></script>                
-                <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/guimanager.js?v=${initParam.releaseNumber}"></script>                
+                <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/guimanager.js?v=${initParam.releaseNumber}"></script>  
+                <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/options.js?v=${initParam.releaseNumber}"></script>
+                <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/urlmanager.js?v=${initParam.releaseNumber}"></script>                
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/viewer.js?v=${initParam.releaseNumber}"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/zoomabletimeformatter.js?v=${initParam.releaseNumber}"></script>                 
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/main.js?v=${initParam.releaseNumber}"></script>                
