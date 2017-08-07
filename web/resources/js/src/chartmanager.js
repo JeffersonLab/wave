@@ -85,18 +85,12 @@
                 let _layoutManager;
 
                 let updateLayoutManager = function () {
-                    console.log(_options.layoutMode);
                     if (_options.layoutMode === wave.layoutModeEnum.SEPARATE_CHART) {
-                        console.log('multiple');
                         _layoutManager = new wave.SeparateChartLayoutManager(self);
                     } else {
-                        console.log('single');
                         _layoutManager = new wave.SingleChartLayoutManager(self);
                     }
-                }();
-
-                /*updateLayoutManager();*/
-                console.log(_layoutManager);
+                }(); /*call function immediately*/
 
                 let _viewer;
 

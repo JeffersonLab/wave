@@ -6,9 +6,9 @@
                 this.viewerMode = wave.viewerModeEnum.ARCHIVE;
                 this.layoutMode = wave.layoutModeEnum.SEPARATE_CHART;
                 this.start = new Date();
-                this.end = this.start;
+                this.end = new Date(this.start.getTime());
 
-                this.end.setMinutes(this.start.getMinutes() - 5);
+                this.start.setMinutes(this.start.getMinutes() - 5);
 
                 this.$chartSetDiv = $("#chart-container");
 

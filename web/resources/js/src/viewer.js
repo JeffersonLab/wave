@@ -63,8 +63,8 @@
                     let url = '/myget/jmyapi-span-data',
                             data = {
                                 c: pv,
-                                b: jlab.wave.util.toIsoDateTimeString(jlab.wave.startDateAndTime),
-                                e: jlab.wave.util.toIsoDateTimeString(jlab.wave.endDateAndTime),
+                                b: jlab.wave.util.toIsoDateTimeString(_options.start),
+                                e: jlab.wave.util.toIsoDateTimeString(_options.end),
                                 t: '',
                                 l: MAX_POINTS_PER_SERIES
                             },
