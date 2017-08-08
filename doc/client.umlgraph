@@ -16,14 +16,14 @@ class SeparateChartLayoutManager extends LayoutManager {}
 *@opt all
 */
 class ChartManager extends Object {
-public ChartManager%28V%29;
+
 }
 
 /**
 *@opt all
 */
 class GuiManager extends Object {
-public GuiManager%28VChartManager chartManager%29;
+
 }
 
 class UrlManager extends Object {}
