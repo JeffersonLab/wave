@@ -5,6 +5,6 @@ class LayoutManager {}
 class SingleChartLayoutManager extends LayoutManager {}
 class SeparateChartLayoutManager extends LayoutManager {}
 class ChartManager {
-private Viewer;
-private LayoutManager;
+private Viewer _viewer;
+private LayoutManager _layout;
 }
