@@ -16,7 +16,9 @@ class SeparateChartLayoutManager extends LayoutManager {}
 *@opt all
 */
 class ChartManager extends Object {
-
+public ChartManager(ApplicationOptions options, Array pvs) {}
+public Array getPvs() {}
+public ApplicationOptions getOptions() {}
 }
 
 /**
