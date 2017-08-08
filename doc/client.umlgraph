@@ -30,7 +30,7 @@ public void csvExport() {}
 *@opt all
 */
 class GuiManager extends Object {
-
+public GuiManager(ChartManager chartManager, UrlManager urlManager) {}
 }
 
 class UrlManager extends Object {}
