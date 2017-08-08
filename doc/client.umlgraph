@@ -33,3 +33,4 @@ class ApplicationOptions extends Object {}
 class Chart extends Object {}
 
 class Series extends Object {}
+
