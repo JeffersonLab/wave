@@ -5,6 +5,9 @@ class StripViewer extends Viewer {}
 class LayoutManager extends Object {}
 class SingleChartLayoutManager extends LayoutManager {}
 class SeparateChartLayoutManager extends LayoutManager {}
+/**
+ * @optall
+ */
 class ChartManager extends Object {
 private Viewer _viewer;
 private LayoutManager _layout;
