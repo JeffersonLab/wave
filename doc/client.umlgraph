@@ -1,2 +1,10 @@
 class Viewer {}
 class ArchiveViewer extends Viewer {}
+class StripViewer extends Viewer {}
+class LayoutManager {}
+class SingleChartLayoutManager extends LayoutManager {}
+class SeparateChartLayoutManager extends LayoutManager {}
+class ChartManager {
+private Viewer;
+private LayoutManager;
+}
