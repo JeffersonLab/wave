@@ -1,10 +1,17 @@
 class Object {}
+
 class Viewer extends Object {}
+
 class ArchiveViewer extends Viewer {}
+
 class StripViewer extends Viewer {}
+
 class LayoutManager extends Object {}
+
 class SingleChartLayoutManager extends LayoutManager {}
+
 class SeparateChartLayoutManager extends LayoutManager {}
+
 /**
 *@opt all
 */
@@ -12,3 +19,18 @@ class ChartManager extends Object {
 private Viewer _viewer;
 private LayoutManager _layout;
 }
+
+/**
+*@opt all
+*/
+class GuiManager extends Object {
+private ChartManager _chartManager;
+}
+
+class UrlManager extends Object {}
+
+class ApplicationOptions extends Object {}
+
+class Chart extends Object {}
+
+class Series extends Object {}
