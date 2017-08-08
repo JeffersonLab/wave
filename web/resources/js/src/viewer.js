@@ -45,7 +45,7 @@
                 this.removePvs = function (pvs) {
                     let uri = new URI();
 
-                    /*Note: we require pvs != jlab.wave.pvs otherwise pvs.length is modified during iteration.  We ensure this by using jlab.wave.pvs.slice*/
+                    /*Note: we require pvs != ChartManager.pvs otherwise pvs.length is modified during iteration.  We ensure this by using slice*/
                     pvs = pvs.slice(); /* slice (not splice) makes a copy */
 
                     for (let i = 0; i < pvs.length; i++) {
@@ -54,35 +54,26 @@
                                 metadata = series.metadata,
                                 color = metadata.color,
                                 chart = series.chart,
-                                index = chart.pvs.indexOf(pv);
+                                chartPvs = chart.getPvs(),
+                                index = chartPvs.indexOf(pv);
 
-                        chart.pvs.splice(index, 1);
+                        chartPvs.splice(index, 1);
 
-                        if (chart.pvs.length < 1) {
+                        chart.setPvs(chartPvs);
+
+                        if (chartPvs.length < 1) {
                             jlab.wave.charts.splice(jlab.wave.charts.indexOf(chart), 1);
-                            chart.$placeholderDiv.remove();
+                            chart.destroy();
                             delete series.chart;
                         }
 
                         delete jlab.wave.pvToSeriesMap[pv];
 
-                        let index2 = jlab.wave.pvs.indexOf(pv);
-                        jlab.wave.pvs.splice(index2, 1);
-
                         /*Put color back in array for re-use*/
                         colors.push(color);
-
-                        uri.removeQuery("pv", pv);
                     }
 
                     layoutManager.doLayout();
-
-                    if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
-                        $("#chart-container").css("border", "1px dashed black");
-                    }
-
-                    let url = uri.href();
-                    window.history.replaceState({}, 'Remove pvs: ' + pvs, url);
                 };
 
                 this.destroy = function () {

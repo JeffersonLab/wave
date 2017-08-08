@@ -8,10 +8,22 @@
 
                 let addPvs = function (pvs) {
                     $("#pv-input").val("");
-                    $("#chart-container").css("border", "none");
+
+                    if (pvs.length > 0) {
+                        _chartManager.getOptions().$chartSetDiv.css("border", "none");
+                    }
 
                     _urlManager.addPvs(pvs);
                     _chartManager.addPvs(pvs);
+                };
+
+                let removePvs = function (pvs) {
+                    if (Object.keys(jlab.wave.pvToSeriesMap).length === 0) {
+                        _chartManager.getOptions().$chartSetDiv.css("border", "1px dashed black");
+                    }
+
+                    _urlManager.removePvs(pvs);
+                    _chartManager.removePvs(pvs);
                 };
 
                 /* JQUERY MOBILE GLOBAL TOOLBAR INIT */
@@ -113,9 +125,8 @@
                     let e = wave.selectedSeries;
 
                     if (typeof wave.selectedSeries !== 'undefined') {
-                        _chartManager.removePvs([e.dataSeries.pv]);
+                        removePvs([e.dataSeries.pv]);
                         $("#pv-panel").panel("close");
-
                     }
                 });
 

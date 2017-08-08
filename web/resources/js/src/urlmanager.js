@@ -68,9 +68,23 @@
                     }
                 };
 
+                let removePv = function (pv) {
+                    let uri = new URI();
+                    uri.removeQuery("pv", pv);
+                    
+                    let url = uri.href();
+                    window.history.replaceState({}, 'Remove pv: ' + pv, url);                    
+                };
+
                 this.addPvs = function (pvs) {
                     for (let i = 0; i < pvs.length; i++) {
                         addPv(pvs[i]);
+                    }
+                };
+
+                this.removePvs = function (pvs) {
+                    for (let i = 0; i < pvs.length; i++) {
+                        removePv(pvs[i]);
                     }
                 };
             }

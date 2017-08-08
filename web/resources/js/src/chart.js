@@ -14,11 +14,25 @@
         wave.Chart = class Chart {
             constructor(chartManager, pvs, $placeholderDiv, separateYAxis) {
                 let _chartManager = chartManager;
-                let _pvs = pvs.slice(0); /* slice (not splice) makes a copy as we may be removing PVs */
+                let _pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
                 let _$placeholderDiv = $placeholderDiv;
                 let labels = [],
                         data = [],
                         axisY = [];
+
+
+                this.getPvs = function() {
+                    return _pvs.slice(); /*return copy*/
+                };
+
+                this.setPvs = function (pvs) {
+                    _pvs = pvs;
+                };
+                
+                this.destroy = function() {
+                    _$placeholderDiv.remove();
+                };
+
                 if (!separateYAxis) {
                     axisY.push({
                         title: '',
