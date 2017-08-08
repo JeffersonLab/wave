@@ -6,7 +6,7 @@ class LayoutManager extends Object {}
 class SingleChartLayoutManager extends LayoutManager {}
 class SeparateChartLayoutManager extends LayoutManager {}
 /**
- * @optall
+ * @opt all
  */
 class ChartManager extends Object {
 private Viewer _viewer;
