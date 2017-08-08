@@ -1,16 +1,58 @@
 class Object {}
 
-class Viewer extends Object {}
+/**
+*@opt all
+*/
+class Viewer extends Object {
+public Viewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
 
-class ArchiveViewer extends Viewer {}
+/**
+*@opt all
+*/
+class ArchiveViewer extends Viewer {
+public ArchiveViewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
 
-class StripViewer extends Viewer {}
+/**
+*@opt all
+*/
+class StripViewer extends Viewer {
+public StripViewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
 
-class LayoutManager extends Object {}
+/**
+*@opt all
+*/
+class LayoutManager extends Object {
+public LayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
 
-class SingleChartLayoutManager extends LayoutManager {}
+/**
+*@opt all
+*/
+class SingleChartLayoutManager extends LayoutManager {
+public SingleChartLayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
 
-class SeparateChartLayoutManager extends LayoutManager {}
+/**
+*@opt all
+*/
+class SeparateChartLayoutManager extends LayoutManager {
+public SeparateChartLayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
 
 /**
 *@opt all
