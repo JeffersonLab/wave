@@ -1,0 +1,85 @@
+class Object {}
+
+/**
+*@opt all
+*/
+class Viewer extends Object {
+public Viewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
+
+/**
+*@opt all
+*/
+class ArchiveViewer extends Viewer {
+public ArchiveViewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
+
+/**
+*@opt all
+*/
+class StripViewer extends Viewer {
+public StripViewer(ChartManager chartManager, LayoutManager layoutManager){}
+public void addPvs(Array pvs){}
+public void removePvs(Array pvs){}
+public void destroy(){}
+}
+
+/**
+*@opt all
+*/
+class LayoutManager extends Object {
+public LayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
+
+/**
+*@opt all
+*/
+class SingleChartLayoutManager extends LayoutManager {
+public SingleChartLayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
+
+/**
+*@opt all
+*/
+class SeparateChartLayoutManager extends LayoutManager {
+public SeparateChartLayoutManager(ChartManager chartManager) {}
+public void doLayout(){}
+}
+
+/**
+*@opt all
+*/
+class ChartManager extends Object {
+public ChartManager(ApplicationOptions options, Array pvs) {}
+public Array getPvs() {}
+public void addPvs(Array pvs) {}
+public void removePvs(Array pvs) {}
+public ApplicationOptions getOptions() {}
+public void setOptions(ApplicationOptions options) {}
+public void zoomRangeChange(ZoomEvent event) {}
+public void csvExport() {}
+}
+
+/**
+*@opt all
+*/
+class GuiManager extends Object {
+public GuiManager(ChartManager chartManager, UrlManager urlManager) {}
+}
+
+class UrlManager extends Object {}
+
+class ApplicationOptions extends Object {}
+
+class Chart extends Object {}
+
+class Series extends Object {}
+
