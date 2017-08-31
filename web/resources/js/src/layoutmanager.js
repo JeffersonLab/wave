@@ -57,7 +57,7 @@
                     });
                 };
             }
-        }
+        };
 
         wave.SingleChartLayoutManager = class SingleChartLayoutManager extends LayoutManager {
             constructor(chartManager) {
