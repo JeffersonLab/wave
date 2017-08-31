@@ -341,7 +341,7 @@
                         
                         let series = wave.pvToSeriesMap[e.detail.pv];
                         
-                        series.metadata = {datatype: e.detail.datatype};
+                        series.metadata = {datatype: e.detail.datatype, datahost: "", count: null, sampled: false, sampledcount: null, steppedcount: null};
                     } else {
                         alert('Could not connect to PV: ' + e.detail.pv);
                     }
