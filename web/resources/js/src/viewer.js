@@ -86,12 +86,12 @@
                     series.metadata = {};
                     series.data = [];
 
-                    let url = '/myget/jmyapi-span-data',
+                    let url = '/myquery/interval',
                             data = {
                                 c: pv,
                                 b: jlab.wave.util.toIsoDateTimeString(_options.start),
                                 e: jlab.wave.util.toIsoDateTimeString(_options.end),
-                                t: '',
+                                u: '',
                                 l: MAX_POINTS_PER_SERIES
                             },
                             dataType = "json",
