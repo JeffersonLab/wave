@@ -84,9 +84,10 @@
                         valueFormatString: timeFormatter.startingTickFormat,
                         interval: timeFormatter.startingInterval,
                         intervalType: timeFormatter.startingIntervalType,
-                        labelAngle: -45,
-                        minimum: minDate,
-                        maximum: maxDate}
+                        labelAngle: -45//,
+                        //minimum: minDate,
+                        //maximum: maxDate
+                    }
                     );
                 }
 
