@@ -265,10 +265,8 @@
                     }
                 };
 
-                this.refresh = function () {
-                    if (_options.viewerMode === wave.viewerModeEnum.ARCHIVE) {
-                        this.fetchMultiple(_chartManager.getPvs(), false);
-                    } /*if STRIP the onopen callback will handle this*/
+                Viewer.prototype.refresh = function () {
+                    // Archive will fetchMultiple, Strip does nothing.
                 };
             }
         };
@@ -281,6 +279,12 @@
                     Viewer.prototype.addPvs(pvs);
 
                     this.fetchMultiple(pvs);
+                };
+
+                wave.ArchiveViewer.prototype.refresh = function () {
+                    Viewer.prototype.refresh();
+
+                    this.fetchMultiple(chartManager.getPvs(), false);
                 };
             }
         };
