@@ -2,8 +2,8 @@
 (function (jlab) {
     (function (wave) {
         /**
-         * Manage WAVE application and handles user input.  Delegates to the 
-         * UrlManager and ChartManager.
+         * Manage WAVE application and handles user input and GUI menus.  
+         * Delegates to the UrlManager and ChartManager.
          */
         wave.AppManager = class AppManager {
             constructor() {
