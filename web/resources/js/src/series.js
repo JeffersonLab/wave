@@ -12,6 +12,7 @@
                 this.pv = pv;
                 this.data = null; /* Array of X,Y values */
                 this.chart = null; /* Reference to jlab.wave.Chart */
+                this.chartSeriesIndex = null; /*Index into chart data*/
                 this.metadata = null; /* Object */
                 this.preferences = null; /* Unlike metadata, this is maintained across fetch refreshes */
 
@@ -39,6 +40,9 @@
 
                         this.data.push({x: lastUpdated.getTime(), y: point});
                     }
+                    
+                    this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
+                    this.chart.canvasjsChart.render();
                 };
             }
         };

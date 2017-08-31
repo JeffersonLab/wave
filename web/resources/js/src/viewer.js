@@ -76,7 +76,7 @@
                     layoutManager.doLayout();
                 };
 
-                this.destroy = function () {
+                Viewer.prototype.destroy = function () {
                     // Do nothing
                 };
 
@@ -295,20 +295,24 @@
 
                 /*WebSocket connection*/
                 let con = null;
+                
+                let self = this;
 
                 wave.StripViewer.prototype.addPvs = function (pvs) {
                     Viewer.prototype.addPvs(pvs);
+
+                    self.doLayout();
 
                     con.monitorPvs(pvs);
                 };
 
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
-                    let series = jlab.wave.pvToSeriesMap[pv];
+                    /*console.log('strip update: ' + pv);
+                    console.log(wave.pvToSeriesMap[pv]);*/
+                    let series = wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {
-                        series.addSteppedPoint(point, lastUpdated);
                         series.lastUpdated = lastUpdated;
-                        /*series.chart.canvasjsChart.options.data[0].dataPoints = series.data;*/
-                        series.chart.canvasjsChart.render();
+                        series.addSteppedPoint(point, lastUpdated);
                     } else {
                         console.log('server is updating me on a PV I am unaware of: ' + pv);
                     }
@@ -320,8 +324,8 @@
                 con = new jlab.epics2web.ClientConnection(_conOpts);
 
                 con.onopen = function (e) {
-                    if (jlab.wave.pvs.length > 0) {
-                        jlab.wave.controller.addPvs(jlab.wave.pvs);
+                    if (chartManager.getPvs().length > 0) {
+                        self.addPvs(chartManager.getPvs());
                     }
                 };
 
@@ -334,20 +338,25 @@
                         if (!jlab.epics2web.isNumericEpicsType(e.detail.datatype)) {
                             alert(e.detail.pv + ' values are not numeric: ' + e.detail.datatype);
                         }
+                        
+                        let series = wave.pvToSeriesMap[e.detail.pv];
+                        
+                        series.metadata = {datatype: e.detail.datatype};
                     } else {
                         alert('Could not connect to PV: ' + e.detail.pv);
                     }
-                    console.log(e);
+                    /*console.log(e);*/
                 };
 
 
-                console.log('init');
-                console.log(con);
+                /*console.log('init');
+                console.log(con);*/
 
 
-                this.prototype.destroy = function () {
+                Viewer.prototype.destroy = function () {
+                    console.log('destroy');
                     if (con !== null) {
-                        con.clearPvs(jlab.wave.pvs);
+                        con.clearPvs(chartManager.getPvs());
                         con.autoReconnect = false;
                         con.close();
                         con = null;

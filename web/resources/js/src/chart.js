@@ -50,7 +50,7 @@
                             lineDashType = "solid",
                             axisYIndex = 0,
                             color = preferences.color;
-                    if (metadata.sampled === true) {
+                    if (metadata !== null && metadata.sampled === true) {
                         labels[i] = pv + ' (Sampled)';
                         lineDashType = "dot";
                     } else {
@@ -64,6 +64,7 @@
 
                     data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data});
                     series.chart = this;
+                    series.chartSeriesIndex = i;
                 }
 
                 jlab.wave.charts.push(this);
@@ -79,22 +80,19 @@
                         };
 
                 // TODO: Create separate ArchiveChart vs StripChart
-                if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
+                //if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
                     axisX = $.extend(axisX, {
                         valueFormatString: timeFormatter.startingTickFormat,
                         interval: timeFormatter.startingInterval,
                         intervalType: timeFormatter.startingIntervalType,
                         labelAngle: -45//,
-                        //minimum: minDate,
-                        //maximum: maxDate
+                                //minimum: minDate,
+                                //maximum: maxDate
                     }
                     );
-                }
+                //}
 
-                this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), {
-                    zoomEnabled: true,
-                    exportEnabled: true,
-                    rangeChanging: _chartManager.zoomRangeChange,
+                let canvasOpts = {
                     timeFormatter: timeFormatter,
                     title: {
                         text: timeFormatter.title
@@ -139,7 +137,15 @@
                     axisY: axisY,
                     axisX: axisX,
                     data: data
-                });
+                };
+
+                if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
+                    canvasOpts.zoomEnabled = true;
+                    canvasOpts.exportEnabled = true;
+                    canvasOpts.rangeChanging = _chartManager.zoomRangeChange;
+                }
+
+                this.canvasjsChart = new CanvasJS.Chart($placeholderDiv.attr("id"), canvasOpts);
             }
         };
     }
