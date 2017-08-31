@@ -1,18 +1,27 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
-        wave.GuiManager = class GuiManager {
-            constructor(chartManager, urlManager) {
-                let _chartManager = chartManager;
-                let _urlManager = urlManager;
+        /**
+         * Manage WAVE application and handles user input.  Delegates to the 
+         * UrlManager and ChartManager.
+         */
+        wave.AppManager = class AppManager {
+            constructor() {
+                let _urlManager = new jlab.wave.UrlManager(); /*Manage URL Parameters*/
+                let _chartManager = new jlab.wave.ChartManager(_urlManager.getOptions(), _urlManager.getPvs()); /*Manage Chart Viewer*/
 
-                let addPvs = function (pvs) {
+                let guiAddPvs = function (pvs) {
                     $("#pv-input").val("");
 
                     if (pvs.length > 0) {
                         _chartManager.getOptions().$chartSetDiv.css("border", "none");
                     }
+                };
 
+                guiAddPvs(_urlManager.getPvs());
+
+                let addPvs = function (pvs) {
+                    guiAddPvs(pvs);
                     _urlManager.addPvs(pvs);
                     _chartManager.addPvs(pvs);
                 };
