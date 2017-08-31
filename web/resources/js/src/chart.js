@@ -21,15 +21,15 @@
                         axisY = [];
 
 
-                this.getPvs = function() {
+                this.getPvs = function () {
                     return _pvs.slice(); /*return copy*/
                 };
 
                 this.setPvs = function (pvs) {
                     _pvs = pvs;
                 };
-                
-                this.destroy = function() {
+
+                this.destroy = function () {
                     _$placeholderDiv.remove();
                 };
 
@@ -77,7 +77,9 @@
                             tickLength: 20,
                             valueFormatString: 'YYYY-MM-DD HH:mm:ss'
                         };
-                if (_chartManager.getOptions.viewerMode === wave.viewerModeEnum.ARCHIVE) {
+
+                // TODO: Create separate ArchiveChart vs StripChart
+                if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
                     axisX = $.extend(axisX, {
                         valueFormatString: timeFormatter.startingTickFormat,
                         interval: timeFormatter.startingInterval,
