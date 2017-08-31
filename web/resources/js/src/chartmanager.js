@@ -76,7 +76,7 @@
                     }
 
                     if (_options.viewerMode === wave.viewerModeEnum.STRIP) {
-                        _viewer = new wave.StripViewer(self, _layoutManger);
+                        _viewer = new wave.StripViewer(self, _layoutManager);
                     } else {
                         _viewer = new wave.ArchiveViewer(self, _layoutManager);
                     }
