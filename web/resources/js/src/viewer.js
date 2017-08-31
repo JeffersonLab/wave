@@ -271,7 +271,7 @@
                     } /*if STRIP the onopen callback will handle this*/
                 };
             }
-        }
+        };
 
         wave.ArchiveViewer = class ArchiveViewer extends Viewer {
             constructor(chartManager, layoutManager) {
