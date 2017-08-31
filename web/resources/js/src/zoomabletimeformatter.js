@@ -14,7 +14,7 @@
          * interval - CanvasJS specific: a sensible interval between ticks given the 
          * start and end date and zoom
          * 
-         * intervalType -CanvasJS specific: a sensible scale for the interval "month", 
+         * intervalType - CanvasJS specific: a sensible scale for the interval "month", 
          * "week", "day", etc.
          * 
          * In addition there are non-changing "starting" values for tickFormat, 
