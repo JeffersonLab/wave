@@ -41,9 +41,32 @@
 
                         this.data.push({x: lastUpdated.getTime(), y: point});
                     }
-                    
+
                     this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
                     this.chart.canvasjsChart.render();
+                };
+
+                this.addExtensionPoint = function (lastUpdated) {                    
+                    if (this.data === null) {
+                        this.data = [];
+                    } else if (this.data.length > 1) {
+                        if (this.data.length >= MAX_STRIPCHART_POINTS) {
+                            /*this.data = this.data.slice(2);*/
+                            this.data.splice(0, 1);
+                        }
+
+                        let point = this.data[this.data.length - 1];
+
+                        if(this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
+                            this.data[this.data.length - 1].x = lastUpdated.getTime();
+                        } else {
+                            this.data.push({x: lastUpdated.getTime(), y: point.y});
+                            /*console.log(point);*/
+                        }
+
+                        this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
+                        this.chart.canvasjsChart.render();
+                    }
                 };
             }
         };

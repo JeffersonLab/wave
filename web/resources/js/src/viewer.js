@@ -317,6 +317,17 @@
                     if (typeof series !== 'undefined') {
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
+                        
+                        let keys = Object.keys(wave.pvToSeriesMap);
+                        for(let i = 0; i < keys.length; i++) {
+                            let pv = keys[i];
+                            let other = wave.pvToSeriesMap[pv];
+                            if(other.pv !== series.pv) {
+                                other.lastUpdated = lastUpdated;
+                                other.addExtensionPoint(lastUpdated);
+                            }
+                        }
+                        
                     } else {
                         console.log('server is updating me on a PV I am unaware of: ' + pv);
                     }
