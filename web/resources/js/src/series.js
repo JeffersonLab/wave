@@ -15,6 +15,7 @@
                 this.chartSeriesIndex = null; /*Index into chart data*/
                 this.metadata = null; /* Object */
                 this.preferences = null; /* Unlike metadata, this is maintained across fetch refreshes */
+                this.error = null; /* Series error message */
 
                 const MAX_STRIPCHART_POINTS = 100;
 

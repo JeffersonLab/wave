@@ -229,12 +229,16 @@
                         }
 
                         let message = json.error || 'Server did not handle request';
-                        alert('Unable to perform request: ' + message);
+                        /*alert('Unable to perform request: ' + message);*/
+                        series.error = message;
                     });
                     promise.always(function () {
                         /*Need to figure out how to include series in legend even if no data; until then we'll just always add a point if empty*/
                         if (series.data.length === 0) {
                             series.data = [{x: jlab.wave.startDateAndTime, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
+                            if(series.error == null) {
+                                series.error = "No Data";
+                            }
                         }
 
                         if (!multiple) {

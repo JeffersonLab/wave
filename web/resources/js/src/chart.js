@@ -62,7 +62,13 @@
                         axisY.push({title: pv + ' Value', margin: 60, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
                     }
 
-                    data.push({pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data});
+                    let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data}
+
+                    if(series.error !== null) {
+                        dataOpts.visible = false;
+                    }
+
+                    data.push(dataOpts);
                     series.chart = this;
                     series.chartSeriesIndex = i;
                 }
@@ -92,16 +98,23 @@
                     );
                 //}
 
+                let title = timeFormatter.title;
+
+                if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
+                    title = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
+                }
+
                 let canvasOpts = {
                     timeFormatter: timeFormatter,
                     title: {
-                        text: timeFormatter.title
+                        text: title
                     },
                     legend: {
                         horizontalAlign: "center",
                         verticalAlign: "top",
                         cursor: "pointer",
                         itemclick: function (e) {
+                            /*console.log(e);*/
                             jlab.wave.selectedSeries = e;
                             if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                                 $("#pv-visibility-toggle-button").text("Hide");
@@ -110,10 +123,14 @@
                             }
 
                             $("#pv-panel h2").text(e.dataSeries.pv);
+                            
                             /*BEGIN PART THAT COULD BE DEFERRED*/
                             $("#metadata-popup h2").text(e.dataSeries.pv);
                             let series = wave.pvToSeriesMap[e.dataSeries.pv],
                                     metadata = series.metadata;
+                            
+                            $("#pv-panel-error").text(series.error || "");
+                            
                             $("#metadata-datatype").text(metadata.datatype);
                             $("#metadata-host").text(metadata.datahost);
                             $("#metadata-count").text(metadata.count ? wave.util.intToStringWithCommas(metadata.count) : '');
