@@ -71,9 +71,7 @@ public void csvExport() {}
 /**
 *@opt all
 */
-class AppManager extends Object {
-public AppManager() {}
-}
+class AppManager extends Object {}
 
 class UrlManager extends Object {}
 
