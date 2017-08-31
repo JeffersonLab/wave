@@ -138,7 +138,7 @@
                             rangeMillis = (maxMillis - minMillis);
 
                     // Less than a few minutes
-                    if ((rangeMillis / millisPerMinute) < 5) {
+                    if ((rangeMillis / millisPerMinute) < 6) {
                         formatter.hour = true;
                         formatter.minute = true;
                         formatter.second = true;
