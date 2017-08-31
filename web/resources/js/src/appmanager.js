@@ -98,7 +98,9 @@
                     _options.end.setMinutes(endTime.getMinutes());
                     _options.end.setSeconds(endTime.getSeconds());
 
-                    _options.layoutMode = parseInt($("#multiple-pv-mode-select").val());
+                    _options.layoutMode = parseInt($("#layout-mode-select").val());
+
+                    _options.viewerMode = parseInt($("#viewer-mode-select").val());
 
                     _options.validate();
 
@@ -161,7 +163,7 @@
                     $("#start-time-input").val(wave.util.toUserTimeString(_chartManager.getOptions().start));
                     $("#end-date-input").val(wave.util.toUserDateString(_chartManager.getOptions().end));
                     $("#end-time-input").val(wave.util.toUserTimeString(_chartManager.getOptions().end));
-                    $("#multiple-pv-mode-select").val(_chartManager.getOptions().layoutMode).change();
+                    $("#layout-mode-select").val(_chartManager.getOptions().layoutMode).change();
                     $("#viewer-mode-select").val(_chartManager.getOptions().viewerMode).change();
                 });
 
