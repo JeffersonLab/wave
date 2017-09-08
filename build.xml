@@ -15,6 +15,14 @@
     <property name="doc.dir" value="doc"/>
     <property name="dist.dir" value="dist"/>
     <property name="dist.war" value="${dist.dir}/${ant.project.name}.war"/>
+    <scriptdef language="javascript" name="upper">
+        <attribute name="string" /> 
+        <attribute name="to" />
+
+        project.setProperty( attributes.get( "to" ),
+        attributes.get( "string" ).toUpperCase() );
+    </scriptdef>    
+    <upper string="${ant.project.name}" to="project.acronym" />
     <path id="project.class.path">       
         <pathelement path="${java.class.path}"/>
         <fileset dir="${lib.dir}">
@@ -80,8 +88,8 @@
     <target name="doc">
         <javadoc sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" overview="${src.dir}/overview.html">
             <classpath refid="project.class.path"/>
-            <header>Wave Version ${project.release.version}</header>
-            <doctitle>Wave Overview</doctitle>
+            <header>${project.acronym} Version ${project.release.version}</header>
+            <doctitle>${project.acronym} Overview</doctitle>
             <link href="http://docs.oracle.com/javase/8/docs/api/"/>
         </javadoc>
     </target>    
