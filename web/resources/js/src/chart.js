@@ -1,19 +1,19 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
-        /**
-         * A wave Chart encapsulates a CanvasJS chart object, a reference to a 
-         * placeholder div in the DOM, and an array of pv names.
-         * 
-         * @param {string array} pvs - The PV names
-         * @param {object} $placeholderDiv - jQuery object reference to placeholder div
-         * @param {boolean} separateYAxis - true if multiple PVs should they have 
-         * separate Y axis (otherwise share a single Y axis)\
-         * @param {int} titleSize - chart area scaled title size in pixels
-         * @param {boolean} includeTitle - true if title should be shown
-         * @returns {jlab.wave.Chart} - The chart
-         */
         wave.Chart = class Chart {
+            /**
+             * A wave Chart encapsulates a CanvasJS chart object, a reference to a 
+             * placeholder div in the DOM, and an array of pv names.
+             * 
+             * @param {string array} pvs - The PV names
+             * @param {object} $placeholderDiv - jQuery object reference to placeholder div
+             * @param {boolean} separateYAxis - true if multiple PVs should they have 
+             * separate Y axis (otherwise share a single Y axis)\
+             * @param {int} titleSize - chart area scaled title size in pixels
+             * @param {boolean} includeTitle - true if title should be shown
+             * @returns {jlab.wave.Chart} - The chart
+             */
             constructor(chartManager, pvs, $placeholderDiv, separateYAxis, titleSize, includeTitle) {
                 let _chartManager = chartManager;
                 let _pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
@@ -102,7 +102,7 @@
 
                 let title;
 
-                if(includeTitle) {
+                if (includeTitle) {
                     title = timeFormatter.title;
                 }
 

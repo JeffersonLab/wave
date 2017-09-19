@@ -1,30 +1,30 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
-        /**
-         * A wave ZoomableTimeFormatter encapsulates all of the tasks associated with 
-         * formatting time for a chart that can be zoomed and reset. In particular the 
-         * following public attributes are provided:
-         * 
-         * title - chart title is a concisely formatted unzoomed date range
-         * 
-         * tickFormat - tick format is as concise as possible and avoids repeating 
-         * fields implied by title, but takes into consideration zoom level
-         * 
-         * interval - CanvasJS specific: a sensible interval between ticks given the 
-         * start and end date and zoom
-         * 
-         * intervalType - CanvasJS specific: a sensible scale for the interval "month", 
-         * "week", "day", etc.
-         * 
-         * In addition there are non-changing "starting" values for tickFormat, 
-         * interval, and intervalType such that a reset is possible (zoom out).
-         * 
-         * @param {date} start - The start date
-         * @param {date} end - The end date
-         * @returns {jlab.wave.TimeFormatter} - The time formatter
-         */
         wave.ZoomableTimeFormatter = class ZoomableTimeFormatter {
+            /**
+             * A wave ZoomableTimeFormatter encapsulates all of the tasks associated with 
+             * formatting time for a chart that can be zoomed and reset. In particular the 
+             * following public attributes are provided:
+             * 
+             * title - chart title is a concisely formatted unzoomed date range
+             * 
+             * tickFormat - tick format is as concise as possible and avoids repeating 
+             * fields implied by title, but takes into consideration zoom level
+             * 
+             * interval - CanvasJS specific: a sensible interval between ticks given the 
+             * start and end date and zoom
+             * 
+             * intervalType - CanvasJS specific: a sensible scale for the interval "month", 
+             * "week", "day", etc.
+             * 
+             * In addition there are non-changing "starting" values for tickFormat, 
+             * interval, and intervalType such that a reset is possible (zoom out).
+             * 
+             * @param {date} start - The start date
+             * @param {date} end - The end date
+             * @returns {jlab.wave.TimeFormatter} - The time formatter
+             */
             constructor(start, end) {
                 let sameYear = false,
                         sameMonth = false,

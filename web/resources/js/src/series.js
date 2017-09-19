@@ -1,13 +1,13 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
-        /**
-         * A wave Series encapsulates all of the information associated with a PV.
-         * 
-         * @param {string} pv - The PV name
-         * @returns {jlab.wave.Series} - The series
-         */
         wave.Series = class Series {
+            /**
+             * A wave Series encapsulates all of the information associated with a PV.
+             * 
+             * @param {string} pv - The PV name
+             * @returns {jlab.wave.Series} - The series
+             */
             constructor(pv) {
                 this.pv = pv;
                 this.data = null; /* Array of X,Y values */
@@ -46,7 +46,7 @@
                     this.chart.canvasjsChart.render();
                 };
 
-                this.addExtensionPoint = function (lastUpdated) {                    
+                this.addExtensionPoint = function (lastUpdated) {
                     if (this.data === null) {
                         this.data = [];
                     } else if (this.data.length > 1) {
@@ -57,7 +57,7 @@
 
                         let point = this.data[this.data.length - 1];
 
-                        if(this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
+                        if (this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
                             this.data[this.data.length - 1].x = lastUpdated.getTime();
                         } else {
                             this.data.push({x: lastUpdated.getTime(), y: point.y});

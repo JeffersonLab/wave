@@ -1,15 +1,14 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
-
-        /**
-         * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
-         * but delegates the actual rendering of canvases to CanvasJS.
-         * 
-         * @param $chartSetDiv - The jQuery wrapped div container for a set of charts
-         * @param multiplePvMode - The layout mode
-         */
         let LayoutManager = class LayoutManager {
+            /**
+             * A wave LayoutManager encapsulates all of the tasks for laying out the charts, 
+             * but delegates the actual rendering of canvases to CanvasJS.
+             * 
+             * @param $chartSetDiv - The jQuery wrapped div container for a set of charts
+             * @param multiplePvMode - The layout mode
+             */
             constructor(chartManager) {
                 let _chartManager = chartManager;
 
