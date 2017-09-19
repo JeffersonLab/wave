@@ -64,7 +64,7 @@
 
                     let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data}
 
-                    if(series.error !== null) {
+                    if (series.error !== null) {
                         dataOpts.visible = false;
                     }
 
@@ -87,15 +87,15 @@
 
                 // TODO: Create separate ArchiveChart vs StripChart
                 //if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
-                    axisX = $.extend(axisX, {
-                        valueFormatString: timeFormatter.startingTickFormat,
-                        interval: timeFormatter.startingInterval,
-                        intervalType: timeFormatter.startingIntervalType,
-                        labelAngle: -45//,
-                                //minimum: minDate,
-                                //maximum: maxDate
-                    }
-                    );
+                axisX = $.extend(axisX, {
+                    valueFormatString: timeFormatter.startingTickFormat,
+                    interval: timeFormatter.startingInterval,
+                    intervalType: timeFormatter.startingIntervalType,
+                    labelAngle: -45//,
+                            //minimum: minDate,
+                            //maximum: maxDate
+                }
+                );
                 //}
 
                 let title = timeFormatter.title;
@@ -104,10 +104,20 @@
                     title = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
                 }
 
+                // Title font size is 4% of height of chart area
+                let titleSize = parseInt($placeholderDiv.height() * 0.04);
+
+                axisX.labelFontSize = titleSize;
+                for (let i = 0; i < axisY.length; i++) {
+                    axisY[i].labelFontSize = titleSize;
+                    axisY[i].titleFontSize = titleSize;
+                }
+
                 let canvasOpts = {
                     timeFormatter: timeFormatter,
                     title: {
-                        text: title
+                        text: title,
+                        fontSize: titleSize
                     },
                     legend: {
                         horizontalAlign: "center",
@@ -123,14 +133,14 @@
                             }
 
                             $("#pv-panel h2").text(e.dataSeries.pv);
-                            
+
                             /*BEGIN PART THAT COULD BE DEFERRED*/
                             $("#metadata-popup h2").text(e.dataSeries.pv);
                             let series = wave.pvToSeriesMap[e.dataSeries.pv],
                                     metadata = series.metadata;
-                            
+
                             $("#pv-panel-error").text(series.error || "");
-                            
+
                             $("#metadata-datatype").text(metadata.datatype);
                             $("#metadata-host").text(metadata.datahost);
                             $("#metadata-count").text(metadata.count ? wave.util.intToStringWithCommas(metadata.count) : '');
