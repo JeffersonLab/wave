@@ -56,10 +56,20 @@
                          });*/
                     });
                 };
-            }
-        };
+                this.calculateTitleSize = function ($placeholderDiv) {
+                    // Title font size is 4% of height of chart area
+                    let titleSize = parseInt($placeholderDiv.height() * 0.04);
 
-        wave.SingleChartLayoutManager = class SingleChartLayoutManager extends LayoutManager {
+                    if (titleSize < 10) {
+                        titleSize = 10;
+                    }
+
+                    return titleSize;
+                };
+            }
+        }
+        ;
+                wave.SingleChartLayoutManager = class SingleChartLayoutManager extends LayoutManager {
             constructor(chartManager) {
                 super(chartManager);
 
@@ -71,7 +81,7 @@
                     if (_chartManager.getPvs().length > 0) {
 
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
-                                c = new wave.Chart(_chartManager, _chartManager.getPvs(), $placeholderDiv, (_chartManager.getOptions().layoutMode === wave.layoutModeEnum.SAME_CHART_SEPARATE_AXIS));
+                                c = new wave.Chart(_chartManager, _chartManager.getPvs(), $placeholderDiv, (_chartManager.getOptions().layoutMode === wave.layoutModeEnum.SAME_CHART_SEPARATE_AXIS), this.calculateTitleSize(_chartManager.getOptions().$chartSetDiv), true);
 
                         $placeholderDiv.css("top", 0);
                         $placeholderDiv.height(_chartManager.getOptions().$chartSetDiv.height());
@@ -97,18 +107,30 @@
 
                     let offset = 0;
                     let pvs = _chartManager.getPvs();
+                    let titleSize = this.calculateTitleSize(_chartManager.getOptions().$chartSetDiv);
+                    let chartHeight = (_chartManager.getOptions().$chartSetDiv.height() - titleSize) / pvs.length;
+
+                    /*console.log(titleSize);*/
 
                     for (let i = 0; i < pvs.length; i++) {
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
                                 pv = pvs[i],
-                                chartHeight = _chartManager.getOptions().$chartSetDiv.height() / pvs.length;
+                                includeTitle = false,
+                                effectiveChartHeight = chartHeight;
+
+                        if (i === 0) {
+                            effectiveChartHeight = chartHeight + titleSize;
+                            includeTitle = true;
+                        }
+
+                        /*console.log(chartHeight);*/
 
                         $placeholderDiv.css("top", offset);
-                        offset = offset + chartHeight;
-                        $placeholderDiv.height(chartHeight);
-                        
+                        offset = offset + effectiveChartHeight;
+                        $placeholderDiv.height(effectiveChartHeight);
+
                         /*Set height of each placeholder before creating chart*/
-                        let c = new wave.Chart(_chartManager, [pv], $placeholderDiv);
+                        let c = new wave.Chart(_chartManager, [pv], $placeholderDiv, false, titleSize, includeTitle);
 
                         console.time("render");
                         c.canvasjsChart.render();
