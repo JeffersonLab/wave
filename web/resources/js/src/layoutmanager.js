@@ -101,12 +101,14 @@
                     for (let i = 0; i < pvs.length; i++) {
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
                                 pv = pvs[i],
-                                c = new wave.Chart(_chartManager, [pv], $placeholderDiv),
                                 chartHeight = _chartManager.getOptions().$chartSetDiv.height() / pvs.length;
 
                         $placeholderDiv.css("top", offset);
                         offset = offset + chartHeight;
                         $placeholderDiv.height(chartHeight);
+                        
+                        /*Set height of each placeholder before creating chart*/
+                        let c = new wave.Chart(_chartManager, [pv], $placeholderDiv);
 
                         console.time("render");
                         c.canvasjsChart.render();

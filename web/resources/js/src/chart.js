@@ -107,6 +107,10 @@
                 // Title font size is 4% of height of chart area
                 let titleSize = parseInt($placeholderDiv.height() * 0.04);
 
+                if(titleSize < 10) {
+                    titleSize = 10;
+                }
+
                 axisX.labelFontSize = titleSize;
                 for (let i = 0; i < axisY.length; i++) {
                     axisY[i].labelFontSize = titleSize;
