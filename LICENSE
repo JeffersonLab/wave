@@ -1,11 +1,4 @@
-THIS SOFTWARE IS DEPENDENT ON A COMMERCIAL LICENSE
-The canvasjs library is commercial software and requires a separate license to 
-use.  See: https://canvasjs.com/.   We have purchased a team license for us; but 
-unless you have one you cannot develop this software.
-
-The code that we actually wrote (not third party libraries) is NOT commercially 
-licensed.  If you are a laboratory with an EPICS control system you may reuse 
-for the purpose of supporting research.
+--- WAVE ---
 
 Copyright (c) 2017 Jefferson Lab
 
@@ -24,3 +17,34 @@ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED
 HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE MAINTENANCE,
 SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+--- DEPENDENCIES ---
+
+Closure Compiler License
+File: closure-compiler-v20170910.jar
+License: Apache 2.0
+Project URL: https://github.com/google/closure-compiler
+
+YUICompressor License
+File: yuicompressor-2.4.8.jar
+License: BSD License
+Project URL: https://github.com/yui/yuicompressor
+
+JSTL License
+File: jstl-1.2.jar
+License: CDDL 1.1
+Project URL: https://github.com/javaee/jstl-api
+
+canvasjs License
+File: canvasjs-1.9.10.min.js
+License: Commercial
+Project URL: https://canvasjs.com/ 
+
+THE WAVE SOFTWARE IS DEPENDENT ON A LIBRARY WITH A COMMERCIAL LICENSE
+The canvasjs library is commercial software and requires a separate license to 
+use.  We have purchased a team license for us; but unless you have one you 
+cannot develop this software.
+
+The code that we actually wrote (not third party libraries) is NOT commercially 
+licensed.  If you are a laboratory with an EPICS control system you may reuse 
+for the purpose of supporting research.

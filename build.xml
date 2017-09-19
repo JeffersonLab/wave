@@ -49,8 +49,9 @@
                 <include name="**/*.css"/>
             </fileset>
         </concat>
-        <concat destfile="${build.dir}/web/resources/js/combined.min.js" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
+        <concat destfile="${build.dir}/web/resources/js/combined.js" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
             <fileset dir="web/resources/js/src">
+                <exclude name="combined.js"/>
                 <exclude name="combined.min.js"/>
                 <include name="**/*.js"/>
             </fileset>
@@ -60,10 +61,9 @@
             <arg value="${build.dir}/web/resources/css/combined.min.css"/>
             <arg value="${build.dir}/web/resources/css/combined.min.css"/>
         </java>       
-        <java jar="build-lib/yuicompressor-2.4.8.jar" fork="true">
-            <arg value="-o"/>
-            <arg value="${build.dir}/web/resources/js/combined.min.js"/>
-            <arg value="${build.dir}/web/resources/js/combined.min.js"/>
+        <java jar="build-lib/closure-compiler-v20170910.jar" fork="true">
+            <arg value="--js_output_file=${build.dir}/web/resources/js/combined.min.js"/>
+            <arg value="${build.dir}/web/resources/js/combined.js"/>
         </java>          
         <war destfile="${dist.war}" basedir="${build.dir}/web" webxml="${build.dir}/web/WEB-INF/web.xml">
             <lib dir="${lib.dir}"/>
