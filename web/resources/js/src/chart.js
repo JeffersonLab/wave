@@ -138,8 +138,8 @@
                             $("#metadata-sampled-count").text(metadata.sampledcount ? wave.util.intToStringWithCommas(metadata.sampledcount) : 'N/A');
                             $("#metadata-stepped-count").text(metadata.steppedcount ? wave.util.intToStringWithCommas(metadata.steppedcount) : '');
                             $("#statistics-popup h2").text(e.dataSeries.pv);
-                            $("#metadata-max").text(metadata.max ? wave.util.intToStringWithCommas(metadata.max) : '');
-                            $("#metadata-min").text(metadata.min ? wave.util.intToStringWithCommas(metadata.min) : '');
+                            $("#metadata-max").text(isFinite(metadata.max) ? metadata.max.toLocaleString() : '');
+                            $("#metadata-min").text(isFinite(metadata.min) ? metadata.min.toLocaleString() : '');
                             /*END PART THAT COULD BE DEFERRED*/
 
                             $("#pv-panel").panel("open");
