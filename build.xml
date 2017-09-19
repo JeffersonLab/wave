@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="wave" default="clean-build" basedir=".">    
     <property name="project.release.version" value="0.13.0"/>
-    <property name="project.release.date" value="26 Jul 2017"/>
+    <property name="project.release.date" value="19 Sep 2017"/>
     <property name="project.release.production" value="true"/>
     <property environment="env"/>   
     <fail unless="env.CATALINA_HOME" message="Environment variable CATALINA_HOME must be set in order to include Tomcat libraries in classpath"/>
@@ -16,9 +16,8 @@
     <property name="dist.dir" value="dist"/>
     <property name="dist.war" value="${dist.dir}/${ant.project.name}.war"/>
     <scriptdef language="javascript" name="upper">
-        <attribute name="string" /> 
-        <attribute name="to" />
-
+        <attribute name="string"/> 
+        <attribute name="to"/>
         project.setProperty( attributes.get( "to" ),
         attributes.get( "string" ).toUpperCase() );
     </scriptdef>    
