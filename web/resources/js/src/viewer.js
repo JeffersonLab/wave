@@ -84,7 +84,8 @@
                     /*In case things go wrong we set to empty*/
                     let series = jlab.wave.pvToSeriesMap[pv];
                     series.metadata = {};
-                    series.data = [];
+                    series.data = [],
+                    series.error = null; /*Reset error before each request*/
 
                     let url = '/myquery/interval',
                             data = {
