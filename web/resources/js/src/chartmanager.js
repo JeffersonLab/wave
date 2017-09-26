@@ -21,13 +21,11 @@
 
                 let addPv = function (pv) {
                     if (_pvs.indexOf(pv) !== -1) {
-                        alert('Already charting pv: ' + pv);
-                        return;
+                        throw ('Already charting pv: ' + pv);
                     }
 
                     if (_pvs.length + 1 > MAX_PVS) {
-                        alert('Too many pvs; maximum number is: ' + MAX_PVS);
-                        return;
+                        throw ('Too many pvs; maximum number is: ' + MAX_PVS);
                     }
 
                     _pvs.push(pv);

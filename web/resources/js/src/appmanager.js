@@ -21,9 +21,9 @@
                 guiAddPvs(_urlManager.getPvs());
 
                 let addPvs = function (pvs) {
+                    _chartManager.addPvs(pvs);                    
                     guiAddPvs(pvs);
                     _urlManager.addPvs(pvs);
-                    _chartManager.addPvs(pvs);
                 };
 
                 let removePvs = function (pvs) {
@@ -150,7 +150,11 @@
                             /*Replace all commas with space, split on any whitespace, filter out empty strings*/
                             let tokens = input.replace(new RegExp(',', 'g'), " ").split(/\s/).filter(Boolean);
 
-                            addPvs(tokens);
+                            try {
+                                addPvs(tokens);
+                            } catch(e) {
+                                alert(e);
+                            }
                         }
                         return false; /*Don't do default action*/
                     }
