@@ -35,10 +35,12 @@
                     _$placeholderDiv.remove();
                 };
 
+                let yAxisMargin = titleSize * 1.5;
+
                 if (!separateYAxis) {
                     axisY.push({
                         title: '',
-                        margin: 60,
+                        margin: yAxisMargin,
                         tickLength: 20,
                         includeZero: false
                     });
@@ -61,7 +63,7 @@
 
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: pv + ' Value', margin: 60, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+                        axisY.push({title: pv + ' Value', margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
                     }
 
                     let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
