@@ -9,6 +9,10 @@
         wave.pvToSeriesMap = {};
         wave.charts = [];
         wave.selectedSeries; /*When you click on series label in legend*/
+        
+        /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
+        /*One global set since viewer is destroyed on options update*/
+        wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/     
 
         let Viewer = class Viewer {
             constructor(chartManager, layoutManager) {
@@ -19,9 +23,6 @@
                 const MAX_POINTS_PER_SERIES = 100000;
                 const MAX_PVS = 5; /*Max Charts too*/
 
-                /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
-                const colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/
-
                 this.doLayout = function () {
                     _layoutManager.doLayout();
                 };
@@ -31,9 +32,7 @@
 
                     wave.pvToSeriesMap[pv] = series;
 
-                    series.preferences = {
-                        color: colors.shift()
-                    };
+                    series.preferences.color = wave.colors.shift();
                 };
 
                 Viewer.prototype.addPvs = function (pvs) {
@@ -51,8 +50,8 @@
                     for (let i = 0; i < pvs.length; i++) {
                         let pv = pvs[i],
                                 series = jlab.wave.pvToSeriesMap[pv],
-                                metadata = series.metadata,
-                                color = metadata.color,
+                                preferences = series.preferences,
+                                color = preferences.color,
                                 chart = series.chart,
                                 chartPvs = chart.getPvs(),
                                 index = chartPvs.indexOf(pv);
@@ -70,7 +69,7 @@
                         delete jlab.wave.pvToSeriesMap[pv];
 
                         /*Put color back in array for re-use*/
-                        colors.push(color);
+                        wave.colors.push(color);
                     }
 
                     layoutManager.doLayout();
@@ -85,7 +84,7 @@
                     let series = jlab.wave.pvToSeriesMap[pv];
                     series.metadata = {};
                     series.data = [],
-                    series.error = null; /*Reset error before each request*/
+                            series.error = null; /*Reset error before each request*/
 
                     let url = '/myquery/interval',
                             data = {
@@ -237,7 +236,7 @@
                         /*Need to figure out how to include series in legend even if no data; until then we'll just always add a point if empty*/
                         if (series.data.length === 0) {
                             series.data = [{x: _options.start, y: 0, markerType: 'cross', markerColor: 'red', markerSize: 12, toolTipContent: pv + ": NO DATA"}];
-                            if(series.error === null) {
+                            if (series.error === null) {
                                 series.error = "No Data";
                             }
                         }
@@ -275,7 +274,7 @@
                 };
             }
         };
-
+        
         wave.ArchiveViewer = class ArchiveViewer extends Viewer {
             constructor(chartManager, layoutManager) {
                 super(chartManager, layoutManager);
@@ -300,7 +299,7 @@
 
                 /*WebSocket connection*/
                 let con = null;
-                
+
                 let self = this;
 
                 wave.StripViewer.prototype.addPvs = function (pvs) {
@@ -313,22 +312,22 @@
 
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
                     /*console.log('strip update: ' + pv);
-                    console.log(wave.pvToSeriesMap[pv]);*/
+                     console.log(wave.pvToSeriesMap[pv]);*/
                     let series = wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
-                        
+
                         let keys = Object.keys(wave.pvToSeriesMap);
-                        for(let i = 0; i < keys.length; i++) {
+                        for (let i = 0; i < keys.length; i++) {
                             let pv = keys[i];
                             let other = wave.pvToSeriesMap[pv];
-                            if(other.pv !== series.pv) {
+                            if (other.pv !== series.pv) {
                                 other.lastUpdated = lastUpdated;
                                 other.addExtensionPoint(lastUpdated);
                             }
                         }
-                        
+
                     } else {
                         console.log('server is updating me on a PV I am unaware of: ' + pv);
                     }
@@ -354,9 +353,9 @@
                         if (!jlab.epics2web.isNumericEpicsType(e.detail.datatype)) {
                             alert(e.detail.pv + ' values are not numeric: ' + e.detail.datatype);
                         }
-                        
+
                         let series = wave.pvToSeriesMap[e.detail.pv];
-                        
+
                         series.metadata = {datatype: e.detail.datatype, datahost: "", count: null, sampled: false, sampledcount: null, steppedcount: null};
                     } else {
                         alert('Could not connect to PV: ' + e.detail.pv);
@@ -366,7 +365,7 @@
 
 
                 /*console.log('init');
-                console.log(con);*/
+                 console.log(con);*/
 
 
                 Viewer.prototype.destroy = function () {
