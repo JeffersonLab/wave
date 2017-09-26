@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="wave" default="clean-build" basedir=".">    
-    <property name="project.release.version" value="0.14.0"/>
+    <property name="project.release.version" value="0.15.0"/>
     <property name="project.release.date" value="26 Sep 2017"/>
     <property name="project.release.production" value="true"/>
     <property environment="env"/>   
