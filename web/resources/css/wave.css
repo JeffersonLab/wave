@@ -19,9 +19,6 @@
     margin: 0.5em;
     font-size: 0.60em;
 }
-.ui-panel-inner {
-    margin-bottom: 3em;
-}
 h2 {
     font-size: 1.1em;
     margin-top: 0;
@@ -47,4 +44,13 @@ h3 {
 }
 .info-popup th {
     text-align: right;
+}
+.ui-panel-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }

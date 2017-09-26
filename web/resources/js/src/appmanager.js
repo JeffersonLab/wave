@@ -21,7 +21,7 @@
                 guiAddPvs(_urlManager.getPvs());
 
                 let addPvs = function (pvs) {
-                    _chartManager.addPvs(pvs);                    
+                    _chartManager.addPvs(pvs);
                     guiAddPvs(pvs);
                     _urlManager.addPvs(pvs);
                 };
@@ -152,7 +152,7 @@
 
                             try {
                                 addPvs(tokens);
-                            } catch(e) {
+                            } catch (e) {
                                 alert(e);
                             }
                         }
