@@ -169,7 +169,7 @@
                     data: data
                 };
 
-                if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
+                if (!jlab.wave.util.hasTouch() && (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE)) {
                     canvasOpts.zoomEnabled = true;
                     canvasOpts.exportEnabled = true;
                     canvasOpts.rangeChanging = _chartManager.zoomRangeChange;
