@@ -54,3 +54,25 @@ h3 {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
 }
+html.print,
+.print body {
+    height: 600px !important;
+}
+.print #chart-page {
+    position: static;
+    width: 800px;
+    height: 600px;
+    margin: 0 auto;
+    padding: 0 !important;
+    min-height: 0 !important;
+}
+.print #chart-container {
+    position: absolute;
+    width: 800px;
+    height: 600px;
+}
+.print #header-panel,
+.print #footer-panel,
+.print .canvasjs-chart-toolbar {
+    display: none;
+}
