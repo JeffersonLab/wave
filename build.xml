@@ -36,7 +36,7 @@
         <copy todir="${build.dir}/web">
             <fileset dir="web"/>
         </copy>  
-        <copy file="web/WEB-INF/web.xml" toFile="${build.dir}/web/WEB-INF/web.xml" overwrite="true" force="true">
+        <copy file="src/main/webapp/WEB-INF/web.xml" toFile="${build.dir}/web/WEB-INF/web.xml" overwrite="true" force="true">
             <filterset>
                 <filter token="VERSION" value="${project.release.version}"/>
                 <filter token="RELEASE_DATE" value="${project.release.date}"/>
@@ -44,13 +44,13 @@
             </filterset>
         </copy>
         <concat destfile="${build.dir}/web/resources/css/combined.min.css" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
-            <fileset dir="web/resources/css">
+            <fileset dir="src/main/webapp/resources/css">
                 <exclude name="combined.min.css"/>
                 <include name="**/*.css"/>
             </fileset>
         </concat>
         <concat destfile="${build.dir}/web/resources/js/combined.js" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
-            <fileset dir="web/resources/js/src">
+            <fileset dir="src/main/webapp/resources/js/src">
                 <exclude name="combined.js"/>
                 <exclude name="combined.min.js"/>
                 <include name="**/*.js"/>
@@ -85,7 +85,7 @@
         </copy>        
     </target>    
     <target name="doc">
-        <javadoc sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" overview="${src.dir}/overview.html">
+        <javadoc sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" overview="src/main/webapp/overview.html">
             <classpath refid="project.class.path"/>
             <header>${project.acronym} Version ${project.release.version}</header>
             <doctitle>${project.acronym} Overview</doctitle>

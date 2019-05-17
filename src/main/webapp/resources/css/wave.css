@@ -1,0 +1,78 @@
+#chart-page {
+    display: flex;
+    flex-direction: column;    
+}
+#chart-container {
+    flex-grow: 1;
+    position: relative;
+    border: 1px dashed black;
+}
+.chart {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#version {
+    float: right;
+    margin: 0.5em;
+    font-size: 0.60em;
+}
+h2 {
+    font-size: 1.1em;
+    margin-top: 0;
+}
+h3 {
+    margin: 1em 0 0 0;
+    padding: 0 0 10px 0;
+    font-size: 1em;
+}
+.endpoint-header {
+    font-size: 0.75em;
+    font-style: italic;
+}
+#options-hr {
+    margin-top: 3em;
+}
+.info-popup {
+    padding: 0;
+    min-width: 250px;
+}
+.info-popup table {
+    padding: 1em;
+}
+.info-popup th {
+    text-align: right;
+}
+.ui-panel-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+html.print,
+.print body {
+    height: 600px !important;
+}
+.print #chart-page {
+    position: static;
+    width: 800px;
+    height: 600px;
+    margin: 0 auto;
+    padding: 0 !important;
+    min-height: 0 !important;
+}
+.print #chart-container {
+    position: absolute;
+    width: 800px;
+    height: 600px;
+}
+.print #header-panel,
+.print #footer-panel,
+.print .canvasjs-chart-toolbar {
+    display: none;
+}

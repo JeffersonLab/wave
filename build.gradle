@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+	id 'war'
+}
+
+description = "Web Archive Viewer and Expositor"
+version = '1.0.1'
+//releaseDate = 'TBD'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'javax.servlet:jstl:1.2'
+    providedCompile 'javax.json:javax.json-api:1.1.4'
+	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+}
+
+war {
+    ext.webXmlProperties = 'webXml.properties'
+    inputs.file webXmlProperties
+    filesMatching('WEB-INF/web.xml') {
+        filter org.apache.tools.ant.filters.ReplaceTokens, propertiesResource: ant.file(file: webXmlProperties)
+    }
+}
