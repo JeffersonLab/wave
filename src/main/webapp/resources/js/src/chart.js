@@ -66,7 +66,7 @@
                         axisY.push({title: pv + ' Value', margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
                     }
 
-                    let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: "{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
+                    let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: labels[i] + "<br/>{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
 
                     if (series.error !== null) {
                         dataOpts.visible = false;
@@ -173,6 +173,7 @@
 
                 if (!jlab.wave.util.hasTouch() && (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE)) {
                     canvasOpts.zoomEnabled = true;
+                    canvasOpts.zoomType = "xy";
                     canvasOpts.exportEnabled = true;
                     canvasOpts.rangeChanging = _chartManager.zoomRangeChange;
                 }
