@@ -12,16 +12,15 @@
         
         /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
         /*One global set since viewer is destroyed on options update*/
-        wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a']; /*Make sure at least as many as MAX_PVS*/     
+        /*Make sure at least as many as MAX_PVS*/
+        // wave.colors = ['#33a02c', '#1f78b4', '#fb9a99', '#a6cee3', '#b2df8a'];
+        wave.colors = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a'];
 
         let Viewer = class Viewer {
             constructor(chartManager, layoutManager) {
                 let _chartManager = chartManager;
                 let _options = chartManager.getOptions();
                 let _layoutManager = layoutManager;
-
-                const MAX_POINTS_PER_SERIES = 100000;
-                const MAX_PVS = 5; /*Max Charts too*/
 
                 this.doLayout = function () {
                     _layoutManager.doLayout();
@@ -42,8 +41,6 @@
                 };
 
                 this.removePvs = function (pvs) {
-                    let uri = new URI();
-
                     /*Note: we require pvs != ChartManager.pvs otherwise pvs.length is modified during iteration.  We ensure this by using slice*/
                     pvs = pvs.slice(); /* slice (not splice) makes a copy */
 
@@ -83,8 +80,8 @@
                     /*In case things go wrong we set to empty*/
                     let series = jlab.wave.pvToSeriesMap[pv];
                     series.metadata = {};
-                    series.data = [],
-                            series.error = null; /*Reset error before each request*/
+                    series.data = [];
+                    series.error = null; /*Reset error before each request*/
 
                     let url = '/myquery/interval',
                             data = {
@@ -92,8 +89,8 @@
                                 b: jlab.wave.util.toIsoDateTimeString(_options.start),
                                 e: jlab.wave.util.toIsoDateTimeString(_options.end),
                                 u: '',
-                                m: 'opsfb',
-                                l: MAX_POINTS_PER_SERIES
+                                m: _options.myaDeployment,
+                                l: _options.myaLimit
                             },
                             dataType = "json",
                             options = {url: url, type: 'GET', data: data, dataType: dataType, timeout: 30000};
@@ -156,7 +153,11 @@
                                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                                 if (value !== value) {
                                     formattedData.push({x: timestamp, y: null});
-                                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: "{x}, " + record.v});
+                                    let pvLabel = pv;
+                                    if (json.sampled) {
+                                        pvLabel = pv + " (sampled)";
+                                    }
+                                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: pvLabel + "<br/>{x}<br/><b>" + record.t + "</b>"});
                                     point = {x: timestamp, y: null};
                                 } else {
                                     point = {x: timestamp, y: value};
@@ -186,7 +187,7 @@
                                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                                 if (value !== value) {
                                     formattedData.push({x: timestamp, y: null});
-                                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: "{x}, " + record.v});
+                                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: "{x}, " + record.x});
                                     point = {x: timestamp, y: null};
                                 } else {
                                     point = {x: timestamp, y: value};
@@ -210,7 +211,9 @@
 
                         series.data = formattedData;
 
-                        console.log('database event count: ' + jlab.wave.util.intToStringWithCommas(json.count));
+                        if (typeof json.count !== "undefined" && json.count !== null) {
+                            console.log('database event count: ' + jlab.wave.util.intToStringWithCommas(json.count));
+                        }
                         console.log('transferred points: ' + jlab.wave.util.intToStringWithCommas(json.data.length));
                         console.log('total points (includes steps): ' + jlab.wave.util.intToStringWithCommas(formattedData.length));
                     });
@@ -229,6 +232,7 @@
                             json = {};
                         }
 
+                        // noinspection UnnecessaryLocalVariableJS
                         let message = json.error || 'Server did not handle request';
                         /*alert('Unable to perform request: ' + message);*/
                         series.error = message;
@@ -253,7 +257,7 @@
                     if (pvs.length > 0) {
                         $.mobile.loading("show", {textVisible: true, theme: "b"});
 
-                        var promises = [];
+                        let promises = [];
 
                         for (let i = 0; i < pvs.length; i++) {
                             let pv = pvs[i];
