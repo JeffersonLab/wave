@@ -14,8 +14,9 @@
                     return $.extend(true, {}, _options); /*Return a clone to ensure immutability*/
                 };
 
-                const MAX_POINTS_PER_SERIES = 100000;
-                const MAX_PVS = 5; /*Max Charts too*/
+                // const MAX_POINTS_PER_SERIES = 100000;
+                // const MAX_PVS = 5; /*Max Charts too*/
+                const MAX_PVS = 10; /*Max Charts too*/
 
                 let _pvs = pvs || [];
 
@@ -94,6 +95,16 @@
                     updateViewer();
 
                     if (_options.viewerMode !== _old.viewerMode) {
+                        fetchRequired = true;
+                    }
+
+                    // If user has requested a new deployment, then request all of the data again
+                    if (_old.myaDeployment !== _options.myaDeployment) {
+                        fetchRequired = true;
+                    }
+
+                    // If user has requested a different sampling threshold, then request all of the data again
+                    if (_old.myaLimit !== _options.myaLimit) {
                         fetchRequired = true;
                     }
 

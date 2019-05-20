@@ -83,7 +83,9 @@
                             startDate = wave.util.parseUserDate(startDateStr),
                             startTime = wave.util.parseUserTime(startTimeStr),
                             endDate = wave.util.parseUserDate(endDateStr),
-                            endTime = wave.util.parseUserTime(endTimeStr);
+                            endTime = wave.util.parseUserTime(endTimeStr),
+                            myaDeployment = $("#mya-deployment").val(),
+                            myaLimit = $("#mya-limit").val();
 
                     _options.start.setFullYear(startDate.getFullYear());
                     _options.start.setMonth(startDate.getMonth());
@@ -101,6 +103,8 @@
                     _options.layoutMode = parseInt($("#layout-mode-select").val());
 
                     _options.viewerMode = parseInt($("#viewer-mode-select").val());
+                    _options.myaDeployment = myaDeployment;
+                    _options.myaLimit = myaLimit;
 
                     _options.validate();
 
@@ -109,6 +113,8 @@
                     uri.setQuery("end", wave.util.toIsoDateTimeString(_options.end));
                     uri.setQuery("layoutMode", _options.layoutMode);
                     uri.setQuery("viewerMode", _options.viewerMode);
+                    uri.setQuery("myaDeployment", _options.myaDeployment);
+                    uri.setQuery("myaLimit", _options.myaLimit);
                     window.history.replaceState({}, 'Set start and end', uri.href());
 
                     _chartManager.setOptions(_options);

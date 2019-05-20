@@ -26,6 +26,20 @@
                     window.history.replaceState({}, 'Set end: ' + _options.end, url);
                 }
 
+                if (uri.hasQuery("myaDeployment")) {
+                    _options.myaDeployment = queryMap["myaDeployment"];
+                } else {
+                    let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {myaDeployment: _options.myaDeployment});
+                    window.history.replaceState({}, 'Set myaDeployment', url);
+                }
+
+                if (uri.hasQuery("myaLimit")) {
+                    _options.myaLimit = queryMap["myaLimit"];
+                } else {
+                    let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {myaLimit: _options.myaLimit});
+                    window.history.replaceState({}, 'Set myaLimit', url);
+                }
+
                 if (uri.hasQuery("layoutMode")) {
                     _options.layoutMode = parseInt(queryMap["layoutMode"]);
                 } else {
