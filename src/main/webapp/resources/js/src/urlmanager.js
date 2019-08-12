@@ -4,6 +4,7 @@
         wave.UrlManager = class UrlManager {
             constructor() {
                 let _options = new wave.ApplicationOptions();
+                let _preferences = {};
 
                 this.getOptions = function () {
                     return _options;
@@ -54,6 +55,7 @@
                     window.history.replaceState({}, 'Set viewer Mode: ' + _options.viewerMode, url);
                 }
 
+                /* PVs*/
                 let _pvs = queryMap["pv"] || [];
                 if (!Array.isArray(_pvs)) {
                     _pvs = [_pvs];
@@ -85,9 +87,12 @@
                 let removePv = function (pv) {
                     let uri = new URI();
                     uri.removeQuery("pv", pv);
-                    
+
+                    uri.removeQuery(pv + "label");
+                    uri.removeQuery(pv + "color");
+
                     let url = uri.href();
-                    window.history.replaceState({}, 'Remove pv: ' + pv, url);                    
+                    window.history.replaceState({}, 'Remove pv: ' + pv, url);
                 };
 
                 this.addPvs = function (pvs) {
@@ -100,6 +105,43 @@
                     for (let i = 0; i < pvs.length; i++) {
                         removePv(pvs[i]);
                     }
+                };
+
+
+                /* PV Preferences */
+                for(let i = 0; i < _pvs.length; i++) {
+                    let pv = _pvs[i];
+
+                    let label = pv;
+                    let color = wave.colors.shift();
+
+                    let key = pv + 'label';
+                    if (uri.hasQuery(key)) {
+                        label = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = label;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV Label', url);
+                    }
+
+                    key = pv + 'color';
+                    if (uri.hasQuery(key)) {
+                        color = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = color;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV Color', url);
+                    }
+
+                    _preferences[pv] = {};
+                    _preferences[pv].label = label;
+                    _preferences[pv].color = color;
+                }
+
+                this.getPreferences = function() {
+                    return _preferences;
                 };
             }
         };

@@ -3,7 +3,7 @@
     (function (wave) {
         wave.ChartManager = class ChartManager {
 
-            constructor(options, pvs) {
+            constructor(options, pvs, preferences) {
                 let _options = options;
 
                 let self = this; /*private functions don't see this as expected*/
@@ -19,6 +19,7 @@
                 const MAX_PVS = 10; /*Max Charts too*/
 
                 let _pvs = pvs || [];
+                let _preferences = preferences || [];
 
                 let addPv = function (pv) {
                     if (_pvs.indexOf(pv) !== -1) {
@@ -34,12 +35,12 @@
                     _pvs.sort();
                 };
 
-                this.addPvs = function (pvs) {
+                this.addPvs = function (pvs, preferences) {
                     for (let i = 0; i < pvs.length; i++) {
                         addPv(pvs[i]);
                     }
 
-                    _viewer.addPvs(pvs);
+                    _viewer.addPvs(pvs, preferences);
                 };
 
                 this.removePvs = function (pvs) {
@@ -120,7 +121,7 @@
                 };
 
                 if (_options.viewerMode === wave.viewerModeEnum.ARCHIVE) {
-                    _viewer.addPvs(_pvs);
+                    _viewer.addPvs(_pvs, preferences);
                 } /*if STRIP the onopen callback will handle this*/
 
                 /* Sync zoom of all charts and update chart tick label format and tick interval */

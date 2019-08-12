@@ -53,17 +53,23 @@
                             preferences = series.preferences,
                             lineDashType = "solid",
                             axisYIndex = 0,
-                            color = preferences.color;
+                            color = preferences.color,
+                            label = preferences.label;
+
+                    if(preferences.label == null) {
+                        label = pv;
+                    }
+
                     if (metadata !== null && metadata.sampled === true) {
-                        labels[i] = pv + ' (Sampled)';
+                        labels[i] = label + ' (Sampled)';
                         lineDashType = "dot";
                     } else {
-                        labels[i] = pv;
+                        labels[i] = label;
                     }
 
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: pv + ' Value', margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+                        axisY.push({title: label + ' Value', margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
                     }
 
                     let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: labels[i] + "<br/>{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
@@ -138,6 +144,9 @@
                             }
 
                             $("#pv-panel h2").text(e.dataSeries.pv);
+
+                            $("#pv-label").val(e.dataSeries.legendText);
+                            $("#pv-color").val(e.dataSeries.color);
 
                             /*BEGIN PART THAT COULD BE DEFERRED*/
                             $("#metadata-popup h2").text(e.dataSeries.pv);

@@ -14,7 +14,7 @@
                 this.chart = null; /* Reference to jlab.wave.Chart */
                 this.chartSeriesIndex = null; /*Index into chart data*/
                 this.metadata = null; /* Object */
-                this.preferences = {color: null}; /* Unlike metadata, this is maintained across fetch refreshes */
+                this.preferences = {color: null, label: null}; /* Unlike metadata, this is maintained across fetch refreshes */
                 this.error = null; /* Series error message */
 
                 const MAX_STRIPCHART_POINTS = 100;

@@ -26,17 +26,19 @@
                     _layoutManager.doLayout();
                 };
 
-                Viewer.prototype.addPv = function (pv) {
+                Viewer.prototype.addPv = function (pv, preferences) {
                     let series = new wave.Series(pv);
 
                     wave.pvToSeriesMap[pv] = series;
 
-                    series.preferences.color = wave.colors.shift();
+                    series.preferences.color = preferences.color || wave.colors.shift();
+                    series.preferences.label = preferences.label || pv;
                 };
 
-                Viewer.prototype.addPvs = function (pvs) {
+                Viewer.prototype.addPvs = function (pvs, preferences) {
                     for (let i = 0; i < pvs.length; i++) {
-                        Viewer.prototype.addPv(pvs[i]);
+                        let prefs = preferences ? preferences[pvs[i]] : {};
+                        Viewer.prototype.addPv(pvs[i], prefs);
                     }
                 };
 
@@ -284,8 +286,8 @@
             constructor(chartManager, layoutManager) {
                 super(chartManager, layoutManager);
 
-                wave.ArchiveViewer.prototype.addPvs = function (pvs) {
-                    Viewer.prototype.addPvs(pvs);
+                wave.ArchiveViewer.prototype.addPvs = function (pvs, preferences) {
+                    Viewer.prototype.addPvs(pvs, preferences);
 
                     this.fetchMultiple(pvs);
                 };

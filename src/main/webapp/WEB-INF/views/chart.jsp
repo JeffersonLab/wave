@@ -55,6 +55,12 @@
                 <h2>PV Menu</h2>
                 <div id="pv-panel-error"></div>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
+                <h3>Config</h3>
+                <div class="endpoint-header">Label</div>
+                <input type="text" id="pv-label"/>
+                <div class="endpoint-header">Color</div>
+                <input type="text" id="pv-color"/>
+                <button type="button" class="ui-btn ui-icon-check ui-btn-icon-left" id="pv-update-config-button">Update</button>
                 <h3>Info</h3>
                 <ul id="pv-info-list" data-role="listview" data-inset="true">
                     <li><a href="#metadata-popup" data-rel="popup" data-position-to="window">Metadata</a></li>

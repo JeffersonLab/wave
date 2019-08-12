@@ -8,7 +8,7 @@
         wave.AppManager = class AppManager {
             constructor() {
                 let _urlManager = new jlab.wave.UrlManager(); /*Manage URL Parameters*/
-                let _chartManager = new jlab.wave.ChartManager(_urlManager.getOptions(), _urlManager.getPvs()); /*Manage Chart Viewer*/
+                let _chartManager = new jlab.wave.ChartManager(_urlManager.getOptions(), _urlManager.getPvs(), _urlManager.getPreferences()); /*Manage Chart Viewer*/
 
                 let guiAddPvs = function (pvs) {
                     $("#pv-input").val("");
@@ -121,6 +121,33 @@
 
                     $("#options-panel").panel("close");
                 });
+                $(document).on("click", "#pv-update-config-button", function () {
+                    let e = wave.selectedSeries;
+
+                    if (typeof wave.selectedSeries !== 'undefined') {
+                        let label = $("#pv-label").val();
+                        let color = $("#pv-color").val();
+
+                        e.dataSeries.legendText = label;
+                        e.dataSeries.color = color;
+
+                        /*TODO: We need to update Y Axis labels here too...*/
+
+                        e.chart.render();
+
+                        let series = wave.pvToSeriesMap[e.dataSeries.pv];
+
+                        series.preferences.label = label;
+                        series.preferences.color = color;
+
+                        let uri = new URI();
+                        uri.setQuery(e.dataSeries.pv + "label", label);
+                        uri.setQuery(e.dataSeries.pv + "color", color);
+                        window.history.replaceState({}, 'Set PV Config', uri.href());
+                    }
+
+                    $("#pv-panel").panel("close");
+                });
                 $(document).on("click", "#pv-visibility-toggle-button", function () {
                     let e = wave.selectedSeries;
 
@@ -159,6 +186,7 @@
                             try {
                                 addPvs(tokens);
                             } catch (e) {
+                                console.log(e);
                                 alert(e);
                             }
                         }
