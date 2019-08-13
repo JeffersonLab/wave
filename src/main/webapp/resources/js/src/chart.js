@@ -14,7 +14,7 @@
              * @param {boolean} includeTitle - true if title should be shown
              * @returns {jlab.wave.Chart} - The chart
              */
-            constructor(chartManager, pvs, $placeholderDiv, separateYAxis, titleSize, includeTitle) {
+            constructor(chartManager, pvs, $placeholderDiv, separateYAxis, title, titleSize, includeTitle) {
                 let _chartManager = chartManager;
                 let _pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
                 let _$placeholderDiv = $placeholderDiv;
@@ -122,21 +122,24 @@
                 );
                 //}
 
-                let title;
                 let subtitle;
 
                 if (includeTitle) {
                     subtitle = timeFormatter.title;
+                } else {
+                    title = null;
                 }
 
                 if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
                     subtitle = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
                 }
 
-                axisX.labelFontSize = titleSize;
+                let subtitleSize = titleSize * 0.75;
+
+                axisX.labelFontSize = subtitleSize;
                 for (let i = 0; i < axisY.length; i++) {
-                    axisY[i].labelFontSize = titleSize;
-                    axisY[i].titleFontSize = titleSize;
+                    axisY[i].labelFontSize = subtitleSize;
+                    axisY[i].titleFontSize = subtitleSize;
                 }
 
                 let canvasOpts = {
@@ -148,7 +151,7 @@
                     subtitles: [
                         {
                             text: subtitle,
-                            fontSize: titleSize
+                            fontSize: subtitleSize
                         }
                     ],
                     legend: {

@@ -48,6 +48,8 @@
                 <input type="text" id="mya-deployment" placeholder="Mya Deployment (ops, etc)" value="ops" />
                 <div class="endpoint-header">Sampling Threshold</div>
                 <input type="text" id="mya-limit" placeholder="Binning limit (optional)" value="100000"/>
+                <h3>Title</h3>
+                <input type="text" id="chart-title-input"/>
                 <hr id="options-hr"/>
                 <button type="button" id="update-options-button" class="ui-btn ui-icon-check ui-btn-icon-left">Update</button>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>

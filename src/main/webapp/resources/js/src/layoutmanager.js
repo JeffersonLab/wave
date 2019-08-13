@@ -79,8 +79,9 @@
 
                     if (_chartManager.getPvs().length > 0) {
 
+                        let title = _chartManager.getOptions().title;
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
-                                c = new wave.Chart(_chartManager, _chartManager.getPvs(), $placeholderDiv, (_chartManager.getOptions().layoutMode === wave.layoutModeEnum.SAME_CHART_SEPARATE_AXIS), this.calculateTitleSize(_chartManager.getOptions().$chartSetDiv), true);
+                                c = new wave.Chart(_chartManager, _chartManager.getPvs(), $placeholderDiv, (_chartManager.getOptions().layoutMode === wave.layoutModeEnum.SAME_CHART_SEPARATE_AXIS), title, this.calculateTitleSize(_chartManager.getOptions().$chartSetDiv), true);
 
                         $placeholderDiv.css("top", 0);
                         $placeholderDiv.height(_chartManager.getOptions().$chartSetDiv.height());
@@ -106,6 +107,7 @@
 
                     let offset = 0;
                     let pvs = _chartManager.getPvs();
+                    let title = _chartManager.getOptions().title;
                     let titleSize = this.calculateTitleSize(_chartManager.getOptions().$chartSetDiv);
                     let chartHeight = (_chartManager.getOptions().$chartSetDiv.height() - titleSize) / pvs.length;
 
@@ -129,7 +131,7 @@
                         $placeholderDiv.height(effectiveChartHeight);
 
                         /*Set height of each placeholder before creating chart*/
-                        let c = new wave.Chart(_chartManager, [pv], $placeholderDiv, false, titleSize, includeTitle);
+                        let c = new wave.Chart(_chartManager, [pv], $placeholderDiv, false, title, titleSize, includeTitle);
 
                         console.time("render");
                         c.canvasjsChart.render();

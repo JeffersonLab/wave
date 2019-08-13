@@ -41,6 +41,13 @@
                     window.history.replaceState({}, 'Set myaLimit', url);
                 }
 
+                if (uri.hasQuery("title")) {
+                    _options.title = queryMap["title"];
+                } else {
+                    let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {title: _options.title});
+                    window.history.replaceState({}, 'Set title', url);
+                }
+
                 if (uri.hasQuery("layoutMode")) {
                     _options.layoutMode = parseInt(queryMap["layoutMode"]);
                 } else {

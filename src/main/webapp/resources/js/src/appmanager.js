@@ -101,7 +101,8 @@
                             endDate = wave.util.parseUserDate(endDateStr),
                             endTime = wave.util.parseUserTime(endTimeStr),
                             myaDeployment = $("#mya-deployment").val(),
-                            myaLimit = $("#mya-limit").val();
+                            myaLimit = $("#mya-limit").val(),
+                            title = $("#chart-title-input").val();
 
                     _options.start.setFullYear(startDate.getFullYear());
                     _options.start.setMonth(startDate.getMonth());
@@ -121,6 +122,7 @@
                     _options.viewerMode = parseInt($("#viewer-mode-select").val());
                     _options.myaDeployment = myaDeployment;
                     _options.myaLimit = myaLimit;
+                    _options.title = title;
 
                     _options.validate();
 
@@ -131,7 +133,8 @@
                     uri.setQuery("viewerMode", _options.viewerMode);
                     uri.setQuery("myaDeployment", _options.myaDeployment);
                     uri.setQuery("myaLimit", _options.myaLimit);
-                    window.history.replaceState({}, 'Set start and end', uri.href());
+                    uri.setQuery("title", _options.title);
+                    window.history.replaceState({}, 'Set Options', uri.href());
 
                     _chartManager.setOptions(_options);
 
@@ -221,6 +224,9 @@
                     $("#end-time-input").val(wave.util.toUserTimeString(_chartManager.getOptions().end));
                     $("#layout-mode-select").val(_chartManager.getOptions().layoutMode).change();
                     $("#viewer-mode-select").val(_chartManager.getOptions().viewerMode).change();
+                    $("#mya-deployment").val(_chartManager.getOptions().myaDeployment);
+                    $("#mya-limit").val(_chartManager.getOptions().myaLimit);
+                    $("#chart-title-input").val(_chartManager.getOptions().title);
                 });
 
                 /* DATEBOX EVENTS */
