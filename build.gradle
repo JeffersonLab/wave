@@ -10,6 +10,11 @@ repositories {
     jcenter()
 }
 
+compileJava   {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 dependencies {
     compile 'javax.servlet:jstl:1.2'
     providedCompile 'javax.json:javax.json-api:1.1.4'
