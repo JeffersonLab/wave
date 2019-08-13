@@ -5,6 +5,7 @@
             constructor() {
                 this.viewerMode = wave.viewerModeEnum.ARCHIVE;
                 this.layoutMode = wave.layoutModeEnum.SEPARATE_CHART;
+                this.fullscreen = false;
                 this.start = new Date();
                 this.end = new Date(this.start.getTime());
 

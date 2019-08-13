@@ -48,36 +48,75 @@
 
                 if (jlab.wave.util.hasTouch()) {
                     $("#start-date-input").datebox({mode: "flipbox"});
-                    $("#start-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+                    $("#start-time-input").datebox({
+                        mode: "durationflipbox",
+                        overrideSetDurationButtonLabel: "Set Time",
+                        overrideDurationLabel: ["Day", "Hour", "Minute", "Second"],
+                        overrideDurationFormat: "%Dl:%DM:%DS",
+                        overrideDurationOrder: ['h', 'i', 's']
+                    });
                     $("#end-date-input").datebox({mode: "flipbox"});
-                    $("#end-time-input").datebox({mode: "durationflipbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+                    $("#end-time-input").datebox({
+                        mode: "durationflipbox",
+                        overrideSetDurationButtonLabel: "Set Time",
+                        overrideDurationLabel: ["Day", "Hour", "Minute", "Second"],
+                        overrideDurationFormat: "%Dl:%DM:%DS",
+                        overrideDurationOrder: ['h', 'i', 's']
+                    });
                 } else {
                     $("#start-date-input").datebox({mode: "calbox"});
-                    $("#start-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+                    $("#start-time-input").datebox({
+                        mode: "durationbox",
+                        overrideSetDurationButtonLabel: "Set Time",
+                        overrideDurationLabel: ["Day", "Hour", "Minute", "Second"],
+                        overrideDurationFormat: "%Dl:%DM:%DS",
+                        overrideDurationOrder: ['h', 'i', 's']
+                    });
                     $("#end-date-input").datebox({mode: "calbox"});
-                    $("#end-time-input").datebox({mode: "durationbox", overrideSetDurationButtonLabel: "Set Time", overrideDurationLabel: ["Day", "Hour", "Minute", "Second"], overrideDurationFormat: "%Dl:%DM:%DS", overrideDurationOrder: ['h', 'i', 's']});
+                    $("#end-time-input").datebox({
+                        mode: "durationbox",
+                        overrideSetDurationButtonLabel: "Set Time",
+                        overrideDurationLabel: ["Day", "Hour", "Minute", "Second"],
+                        overrideDurationFormat: "%Dl:%DM:%DS",
+                        overrideDurationOrder: ['h', 'i', 's']
+                    });
                 }
 
                 /* --- EVENT WIRING --- */
 
                 /* MOUSE EVENTS */
 
-                $(document).on("click", "#fullscreen-link", function () {
+                function toggleFullscreen() {
                     $("#header-panel").toggle();
                     $("#footer-panel").toggle();
-
                     $("#chart-container").toggleClass("fullscreen");
-
                     $("#fullscreen-link").toggleClass("ui-icon-carat-u ui-icon-carat-d");
                     $("#chart-page").toggleClass("no-padding");
 
-                    /*$("#chart-page").trigger( "updatelayout" );*/
                     $.mobile.resetActivePageHeight();
+                }
+
+                $(document).on("click", "#fullscreen-link", function () {
+                    toggleFullscreen();
+
+                    let fullscreen = $("#chart-container").hasClass("fullscreen");
+                    _chartManager.getOptions().fullscreen = fullscreen;
+                    let uri = new URI();
+                    uri.setQuery("fullscreen", fullscreen);
+                    window.history.replaceState({}, 'Set Fullscreen', uri.href());
 
                     _chartManager.refresh();
 
                     return false;
                 });
+
+                $(function () {
+                    if (_chartManager.getOptions().fullscreen === 'true') {
+                        toggleFullscreen();
+                    }
+                });
+
+
                 $(document).on("click", "#pv-info-list a", function () {
                     $("#pv-panel").panel("close");
                 });

@@ -48,6 +48,13 @@
                     window.history.replaceState({}, 'Set title', url);
                 }
 
+                if (uri.hasQuery("fullscreen")) {
+                    _options.fullscreen = queryMap["fullscreen"];
+                } else {
+                    let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {fullscreen: _options.fullscreen});
+                    window.history.replaceState({}, 'Set fullscreen', url);
+                }
+
                 if (uri.hasQuery("layoutMode")) {
                     _options.layoutMode = parseInt(queryMap["layoutMode"]);
                 } else {
