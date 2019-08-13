@@ -191,8 +191,6 @@
                         e.dataSeries.color = color;
                         e.chart.axisY[e.dataSeries.axisYIndex].options.title = yAxisLabel;
 
-                        e.chart.render();
-
                         let series = wave.pvToSeriesMap[e.dataSeries.pv];
 
                         series.preferences.label = label;
@@ -204,6 +202,8 @@
                         uri.setQuery(e.dataSeries.pv + "color", color);
                         uri.setQuery(e.dataSeries.pv + "yAxisLabel", yAxisLabel);
                         window.history.replaceState({}, 'Set PV Config', uri.href());
+
+                        _chartManager.refresh();
                     }
 
                     $("#pv-panel").panel("close");
