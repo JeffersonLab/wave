@@ -62,6 +62,22 @@
 
                 /* MOUSE EVENTS */
 
+                $(document).on("click", "#fullscreen-link", function () {
+                    $("#header-panel").toggle();
+                    $("#footer-panel").toggle();
+
+                    $("#chart-container").toggleClass("fullscreen");
+
+                    $("#fullscreen-link").toggleClass("ui-icon-carat-u ui-icon-carat-d");
+                    $("#chart-page").toggleClass("no-padding");
+
+                    /*$("#chart-page").trigger( "updatelayout" );*/
+                    $.mobile.resetActivePageHeight();
+
+                    _chartManager.refresh();
+
+                    return false;
+                });
                 $(document).on("click", "#pv-info-list a", function () {
                     $("#pv-panel").panel("close");
                 });

@@ -17,7 +17,8 @@
             <h1>WAVE</h1>
             <button type="button" data-icon="gear" data-iconpos="notext" id="options-button" title="Viewer Options"></button>
             <input type="text" id="pv-input" placeholder="PV Names"/>
-        </div>          
+        </div>
+        <a id="fullscreen-link" class="ui-icon-carat-u ui-btn-icon-notext ui-shadow ui-corner-all"></a>
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="options-panel">
                 <h2>Viewer Options</h2>
@@ -122,7 +123,7 @@
                         </tr>                    
                     </tbody>
                 </table>
-            </div>            
+            </div>
             <div id="chart-container"></div>
         </div>
         <div id="footer-panel" data-role="footer" data-position="fixed" data-theme="a">

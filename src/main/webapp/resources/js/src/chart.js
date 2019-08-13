@@ -109,13 +109,14 @@
                 //}
 
                 let title;
+                let subtitle;
 
                 if (includeTitle) {
-                    title = timeFormatter.title;
+                    subtitle = timeFormatter.title;
                 }
 
                 if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
-                    title = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
+                    subtitle = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
                 }
 
                 axisX.labelFontSize = titleSize;
@@ -130,6 +131,12 @@
                         text: title,
                         fontSize: titleSize
                     },
+                    subtitles: [
+                        {
+                            text: subtitle,
+                            fontSize: titleSize
+                        }
+                    ],
                     legend: {
                         horizontalAlign: "center",
                         verticalAlign: "top",

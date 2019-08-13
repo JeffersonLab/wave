@@ -56,6 +56,10 @@
                     return _pvs.slice(0); /*Return a copy since array is mutable*/
                 };
 
+                this.refresh = function() {
+                    _viewer.doLayout();
+                };
+
                 let _layoutManager;
 
                 let updateLayoutManager = function () {

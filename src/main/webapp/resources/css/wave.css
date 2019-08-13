@@ -1,6 +1,7 @@
 #chart-page {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
+    background-color: white;
 }
 #chart-container {
     flex-grow: 1;
@@ -53,6 +54,21 @@ h3 {
     bottom: 0px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+}
+#fullscreen-link {
+    position: fixed;
+    width:30px;
+    height:30px;
+    top: 10px;
+    right :10px;
+    z-index: 1001;
+}
+.fullscreen .canvasjs-chart-toolbar {
+    right: 60px !important;
+    top: 12px !important;
+}
+#chart-page.no-padding {
+    padding: 0 !important;
 }
 html.print,
 .print body {
