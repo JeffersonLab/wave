@@ -8,6 +8,8 @@
                 this.fullscreen = false;
                 this.start = new Date();
                 this.end = new Date(this.start.getTime());
+                this.myaDeployment = 'ops';
+                this.myaLimit = 100000;
 
                 this.start.setMinutes(this.start.getMinutes() - 5);
 
