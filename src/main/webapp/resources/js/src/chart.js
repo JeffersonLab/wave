@@ -38,8 +38,17 @@
                 let yAxisMargin = titleSize * 1.5;
 
                 if (!separateYAxis) {
+                    /*Just use first configured series yAxisLabel*/
+                    let yAxisLabel = '';
+
+                    if(_pvs.length > 0) {
+                        let pv = _pvs[0];
+                        let series = wave.pvToSeriesMap[pv];
+                        yAxisLabel = series.preferences.yAxisLabel;
+                    }
+
                     axisY.push({
-                        title: '',
+                        title: yAxisLabel,
                         margin: yAxisMargin,
                         tickLength: 20,
                         includeZero: false
@@ -54,10 +63,15 @@
                             lineDashType = "solid",
                             axisYIndex = 0,
                             color = preferences.color,
-                            label = preferences.label;
+                            label = preferences.label,
+                            yAxisLabel = preferences.yAxisLabel;
 
-                    if(preferences.label == null) {
+                    if(label == null) {
                         label = pv;
+                    }
+
+                    if(yAxisLabel == null) {
+                        yAxisLabel = label;
                     }
 
                     if (metadata !== null && metadata.sampled === true) {
@@ -69,7 +83,7 @@
 
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: label + ' Value', margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
                     }
 
                     let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: labels[i] + "<br/>{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
@@ -154,6 +168,7 @@
 
                             $("#pv-label").val(e.dataSeries.legendText);
                             $("#pv-color").val(e.dataSeries.color);
+                            $("#pv-y-axis-label").val(e.chart.axisY[e.dataSeries.axisYIndex].options.title);
 
                             /*BEGIN PART THAT COULD BE DEFERRED*/
                             $("#metadata-popup h2").text(e.dataSeries.pv);

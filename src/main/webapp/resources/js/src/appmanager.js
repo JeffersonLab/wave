@@ -143,11 +143,11 @@
                     if (typeof wave.selectedSeries !== 'undefined') {
                         let label = $("#pv-label").val();
                         let color = $("#pv-color").val();
+                        let yAxisLabel = $("#pv-y-axis-label").val();
 
                         e.dataSeries.legendText = label;
                         e.dataSeries.color = color;
-
-                        /*TODO: We need to update Y Axis labels here too...*/
+                        e.chart.axisY[e.dataSeries.axisYIndex].options.title = yAxisLabel;
 
                         e.chart.render();
 
@@ -155,10 +155,12 @@
 
                         series.preferences.label = label;
                         series.preferences.color = color;
+                        series.preferences.yAxisLabel = yAxisLabel;
 
                         let uri = new URI();
                         uri.setQuery(e.dataSeries.pv + "label", label);
                         uri.setQuery(e.dataSeries.pv + "color", color);
+                        uri.setQuery(e.dataSeries.pv + "yAxisLabel", yAxisLabel);
                         window.history.replaceState({}, 'Set PV Config', uri.href());
                     }
 

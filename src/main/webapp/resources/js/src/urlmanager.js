@@ -114,6 +114,7 @@
 
                     let label = pv;
                     let color = wave.colors.shift();
+                    let yAxisLabel = null;
 
                     let key = pv + 'label';
                     if (uri.hasQuery(key)) {
@@ -135,9 +136,20 @@
                         window.history.replaceState({}, 'Set PV Color', url);
                     }
 
+                    key = pv + 'yAxisLabel';
+                    if (uri.hasQuery(key)) {
+                        yAxisLabel = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = yAxisLabel;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV yAxisLabel', url);
+                    }
+
                     _preferences[pv] = {};
                     _preferences[pv].label = label;
                     _preferences[pv].color = color;
+                    _preferences[pv].yAxisLabel = yAxisLabel;
                 }
 
                 this.getPreferences = function() {

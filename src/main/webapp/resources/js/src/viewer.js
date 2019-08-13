@@ -33,6 +33,7 @@
 
                     series.preferences.color = preferences.color || wave.colors.shift();
                     series.preferences.label = preferences.label || pv;
+                    series.preferences.yAxisLabel = preferences.yAxisLabel || null;
                 };
 
                 Viewer.prototype.addPvs = function (pvs, preferences) {
