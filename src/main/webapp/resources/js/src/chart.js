@@ -155,6 +155,7 @@
                         }
                     ],
                     legend: {
+                        fontSize: subtitleSize,
                         horizontalAlign: "center",
                         verticalAlign: "top",
                         cursor: "pointer",
