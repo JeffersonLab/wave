@@ -187,6 +187,14 @@
                             json.data[0].d = startUnixTime;
                         }
 
+                        /*Last data point should continue to end time*/
+                        if(json.data.length > 1) {
+                            let record = json.data[json.data.length - 1];
+                            if(record.v === record.v) { /*if not NaN*/
+                                json.data.push({d: _options.end.getTime(), v: record.v});
+                            }
+                        }
+
                         if(functionname === 'accumulate') {
                             json.data = accumulate(json.data, startUnixTime);
                         }
@@ -207,12 +215,11 @@
 
                                 /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                                 if (value !== value) {
-                                    formattedData.push({x: timestamp, y: null});
                                     let pvLabel = pv;
                                     if (json.sampled) {
                                         pvLabel = pv + " (sampled)";
                                     }
-                                    formattedData.push({x: timestamp, y: 0, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: pvLabel + "<br/>{x}<br/><b>" + record.t + "</b>"});
+                                    formattedData.push({x: timestamp, y: prev, markerType: 'triangle', markerColor: 'red', markerSize: 12, toolTipContent: pvLabel + "<br/>{x}<br/><b>" + record.t + "</b>"});
                                     point = {x: timestamp, y: null};
                                 } else {
                                     point = {x: timestamp, y: value};
