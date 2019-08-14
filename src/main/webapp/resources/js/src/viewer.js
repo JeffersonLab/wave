@@ -79,6 +79,28 @@
                     // Do nothing
                 };
 
+                function accumulate(data) {
+
+                    let accumulated = [];
+                    let prev = 0;
+
+                    for (let i = 0; i < data.length; i++) {
+                        let record = data[i],
+                            value = parseFloat(record.v);
+
+                        /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
+                        if (value !== value) {
+                            accumulated.push(record);
+                        } else {
+                            let next = value + prev;
+                            accumulated.push({d: record.d, v: next});
+                            prev = next;
+                        }
+                    }
+
+                    return accumulated;
+                }
+
                 let getData = function (pv, multiple) {
                     /*In case things go wrong we set to empty*/
                     let series = jlab.wave.pvToSeriesMap[pv];
@@ -86,9 +108,19 @@
                     series.data = [];
                     series.error = null; /*Reset error before each request*/
 
+                    let functionname = null;
+                    let functionpv = pv;
+
+                    if(pv.indexOf('(') > -1 && pv.indexOf(')') > -1) {
+                        functionpv = pv.substring(pv.indexOf('(') + 1, pv.indexOf(')'));
+                        functionname = pv.substring(0, pv.indexOf('('));
+                        console.log('function name: ' + functionname);
+                        console.log('function pv: ' + functionpv);
+                    }
+
                     let url = '/myquery/interval',
                             data = {
-                                c: pv,
+                                c: functionpv,
                                 b: jlab.wave.util.toIsoDateTimeString(_options.start),
                                 e: jlab.wave.util.toIsoDateTimeString(_options.end),
                                 u: '',
@@ -138,6 +170,10 @@
                                 prev = null,
                                 minY = Number.POSITIVE_INFINITY,
                                 maxY = Number.NEGATIVE_INFINITY;
+
+                        if(functionname === 'accumulate') {
+                            json.data = accumulate(json.data);
+                        }
 
                         if (makeStepLine) {
                             for (let i = 0; i < json.data.length; i++) {
