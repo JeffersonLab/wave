@@ -55,7 +55,7 @@
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
             </div>
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="pv-panel">
-                <h2>PV Menu</h2>
+                <h2 id="pv-menu-header">PV Menu</h2>
                 <div id="pv-panel-error"></div>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
                 <h3>Config</h3>

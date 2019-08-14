@@ -70,6 +70,11 @@ h3 {
 #chart-page.no-padding {
     padding: 0 !important;
 }
+#pv-menu-header {
+    overflow: hidden;
+    width: 200px;
+    text-overflow: ellipsis;
+}
 html.print,
 .print body {
     height: 600px !important;
