@@ -105,7 +105,7 @@
                     uri.setQuery("fullscreen", fullscreen);
                     window.history.replaceState({}, 'Set Fullscreen', uri.href());
 
-                    _chartManager.refresh();
+                    _chartManager.doLayout();
 
                     return false;
                 });
@@ -186,24 +186,42 @@
                         let label = $("#pv-label").val();
                         let color = $("#pv-color").val();
                         let yAxisLabel = $("#pv-y-axis-label").val();
+                        let yAxisMin = $("#pv-y-axis-min").val();
+                        let yAxisMax = $("#pv-y-axis-max").val();
+                        let scaler = $("#pv-scaler").val();
 
-                        e.dataSeries.legendText = label;
+                        /*e.dataSeries.legendText = label;
                         e.dataSeries.color = color;
-                        e.chart.axisY[e.dataSeries.axisYIndex].options.title = yAxisLabel;
+                        e.chart.axisY[e.dataSeries.axisYIndex].options.title = yAxisLabel;*/
 
                         let series = wave.pvToSeriesMap[e.dataSeries.pv];
+
+                        let fetchRequired = false;
+                        if(series.preferences.scaler !== scaler) {
+                            fetchRequired = true;
+                        }
 
                         series.preferences.label = label;
                         series.preferences.color = color;
                         series.preferences.yAxisLabel = yAxisLabel;
+                        series.preferences.yAxisMin = yAxisMin;
+                        series.preferences.yAxisMax = yAxisMax;
+                        series.preferences.scaler = scaler;
 
                         let uri = new URI();
                         uri.setQuery(e.dataSeries.pv + "label", label);
                         uri.setQuery(e.dataSeries.pv + "color", color);
                         uri.setQuery(e.dataSeries.pv + "yAxisLabel", yAxisLabel);
+                        uri.setQuery(e.dataSeries.pv + "yAxisMin", yAxisMin);
+                        uri.setQuery(e.dataSeries.pv + "yAxisMax", yAxisMax);
+                        uri.setQuery(e.dataSeries.pv + "scaler", scaler);
                         window.history.replaceState({}, 'Set PV Config', uri.href());
 
-                        _chartManager.refresh();
+                        if(fetchRequired) {
+                            _chartManager.refresh();
+                        } else {
+                            _chartManager.doLayout();
+                        }
                     }
 
                     $("#pv-panel").panel("close");

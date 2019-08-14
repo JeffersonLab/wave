@@ -57,8 +57,12 @@
                 };
 
                 this.refresh = function() {
-                    _viewer.doLayout();
+                    _viewer.refresh();
                 };
+
+                this.doLayout = function() {
+                    _viewer.doLayout();
+                }
 
                 let _layoutManager;
 

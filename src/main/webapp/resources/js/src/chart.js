@@ -40,18 +40,24 @@
                 if (!separateYAxis) {
                     /*Just use first configured series yAxisLabel*/
                     let yAxisLabel = '';
+                    let yAxisMin = null;
+                    let yAxisMax = null;
 
                     if(_pvs.length > 0) {
                         let pv = _pvs[0];
                         let series = wave.pvToSeriesMap[pv];
-                        yAxisLabel = series.preferences.yAxisLabel;
+                        yAxisLabel = series.preferences.yAxisLabel,
+                        yAxisMin = series.preferences.yAxisMin ? series.preferences.yAxisMin : null,
+                        yAxisMax = series.preferences.yAxisMax ? series.preferences.yAxisMax : null;
                     }
 
                     axisY.push({
                         title: yAxisLabel,
                         margin: yAxisMargin,
                         tickLength: 20,
-                        includeZero: false
+                        includeZero: false,
+                        minimum: yAxisMin,
+                        maximum: yAxisMax
                     });
                 }
 
@@ -64,7 +70,9 @@
                             axisYIndex = 0,
                             color = preferences.color,
                             label = preferences.label,
-                            yAxisLabel = preferences.yAxisLabel;
+                            yAxisLabel = preferences.yAxisLabel,
+                            yAxisMin = preferences.yAxisMin ? preferences.yAxisMin : null,
+                            yAxisMax = preferences.yAxisMax ? preferences.yAxisMax : null;
 
                     if(label == null) {
                         label = pv;
@@ -83,7 +91,7 @@
 
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color});
+                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax});
                     }
 
                     let dataOpts = {pv: pv, xValueFormatString: "MMM DD YYYY HH:mm:ss", toolTipContent: labels[i] + "<br/>{x}, <b>{y}</b>", showInLegend: true, legendText: labels[i], axisYIndex: axisYIndex, color: color, type: "line", lineDashType: lineDashType, markerType: "none", xValueType: "dateTime", dataPoints: series.data};
@@ -162,6 +170,10 @@
                         itemclick: function (e) {
                             /*console.log(e);*/
                             jlab.wave.selectedSeries = e;
+
+                            let series = wave.pvToSeriesMap[e.dataSeries.pv],
+                                preferences = series.preferences;
+
                             if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                                 $("#pv-visibility-toggle-button").text("Hide");
                             } else {
@@ -170,14 +182,18 @@
 
                             $("#pv-panel h2").text(e.dataSeries.pv);
 
-                            $("#pv-label").val(e.dataSeries.legendText);
-                            $("#pv-color").val(e.dataSeries.color);
-                            $("#pv-y-axis-label").val(e.chart.axisY[e.dataSeries.axisYIndex].options.title);
+
+                            $("#pv-label").val(preferences.label);
+                            $("#pv-color").val(preferences.color);
+                            $("#pv-y-axis-label").val(preferences.yAxisLabel);
+                            $("#pv-y-axis-min").val(preferences.yAxisMin);
+                            $("#pv-y-axis-max").val(preferences.yAxisMax);
+                            $("#pv-scaler").val(preferences.scaler);
 
                             /*BEGIN PART THAT COULD BE DEFERRED*/
                             $("#metadata-popup h2").text(e.dataSeries.pv);
-                            let series = wave.pvToSeriesMap[e.dataSeries.pv],
-                                    metadata = series.metadata;
+
+                            let metadata = series.metadata;
 
                             $("#pv-panel-error").text(series.error || "");
 

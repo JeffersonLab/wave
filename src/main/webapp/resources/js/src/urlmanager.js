@@ -129,6 +129,9 @@
                     let label = pv;
                     let color = wave.colors.shift();
                     let yAxisLabel = null;
+                    let yAxisMin = null;
+                    let yAxisMax = null;
+                    let scaler = null;
 
                     let key = pv + 'label';
                     if (uri.hasQuery(key)) {
@@ -160,10 +163,43 @@
                         window.history.replaceState({}, 'Set PV yAxisLabel', url);
                     }
 
+                    key = pv + 'yAxisMin';
+                    if (uri.hasQuery(key)) {
+                        yAxisMin = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = yAxisMin;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV yAxisMin', url);
+                    }
+
+                    key = pv + 'yAxisMax';
+                    if (uri.hasQuery(key)) {
+                        yAxisMax = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = yAxisMax;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV yAxisMax', url);
+                    }
+
+                    key = pv + 'scaler';
+                    if (uri.hasQuery(key)) {
+                        scaler = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = scaler;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV scaler', url);
+                    }
+
                     _preferences[pv] = {};
                     _preferences[pv].label = label;
                     _preferences[pv].color = color;
                     _preferences[pv].yAxisLabel = yAxisLabel;
+                    _preferences[pv].yAxisMin = yAxisMin;
+                    _preferences[pv].yAxisMax = yAxisMax;
+                    _preferences[pv].scaler = scaler;
                 }
 
                 this.getPreferences = function() {

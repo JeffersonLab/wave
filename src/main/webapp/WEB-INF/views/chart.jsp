@@ -65,6 +65,12 @@
                 <input type="text" id="pv-color"/>
                 <div class="endpoint-header">Y Axis Label</div>
                 <input type="text" id="pv-y-axis-label"/>
+                <div class="endpoint-header">Y Axis Max</div>
+                <input type="text" id="pv-y-axis-max"/>
+                <div class="endpoint-header">Y Axis Min</div>
+                <input type="text" id="pv-y-axis-min"/>
+                <div class="endpoint-header">Scaler</div>
+                <input type="text" id="pv-scaler"/>
                 <button type="button" class="ui-btn ui-icon-check ui-btn-icon-left" id="pv-update-config-button">Update</button>
                 <h3>Info</h3>
                 <ul id="pv-info-list" data-role="listview" data-inset="true">

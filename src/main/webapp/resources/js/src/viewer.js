@@ -34,6 +34,9 @@
                     series.preferences.color = preferences.color || wave.colors.shift();
                     series.preferences.label = preferences.label || pv;
                     series.preferences.yAxisLabel = preferences.yAxisLabel || null;
+                    series.preferences.yAxisMin = preferences.yAxisMin || null;
+                    series.preferences.yAxisMax = preferences.yAxisMax || null;
+                    series.preferences.scaler = preferences.scaler || null;
                 };
 
                 Viewer.prototype.addPvs = function (pvs, preferences) {
@@ -110,7 +113,8 @@
 
                 let getData = function (pv, multiple) {
                     /*In case things go wrong we set to empty*/
-                    let series = jlab.wave.pvToSeriesMap[pv];
+                    let series = jlab.wave.pvToSeriesMap[pv],
+                        preferences = series.preferences;
                     series.metadata = {};
                     series.data = [];
                     series.error = null; /*Reset error before each request*/
@@ -206,6 +210,10 @@
                                         value = parseFloat(record.v),
                                         point;
 
+                                if(preferences.scaler) {
+                                    value = value * preferences.scaler;
+                                }
+
                                 if (value < minY) {
                                     minY = value;
                                 }
@@ -238,6 +246,10 @@
                                         timestamp = record.d,
                                         value = parseFloat(record.v),
                                         point;
+
+                                if(preferences.scaler) {
+                                    value = value * preferences.scaler;
+                                }
 
                                 if (value < minY) {
                                     minY = value;
