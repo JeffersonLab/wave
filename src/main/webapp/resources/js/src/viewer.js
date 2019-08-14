@@ -79,22 +79,29 @@
                     // Do nothing
                 };
 
-                function accumulate(data) {
+                function accumulate(data, start) {
 
                     let accumulated = [];
-                    let prev = 0;
+                    let prev = {d: start, v: 0};
 
                     for (let i = 0; i < data.length; i++) {
                         let record = data[i],
+                            timestamp = record.d,
                             value = parseFloat(record.v);
 
                         /*NaN is returned if not a number and NaN is the only thing that isn't equal itself so that is how we detect it*/
                         if (value !== value) {
                             accumulated.push(record);
                         } else {
-                            let next = value + prev;
-                            accumulated.push({d: record.d, v: next});
-                            prev = next;
+                            let elapsedSeconds = (timestamp - prev.d) / 1000,
+                                next = (value * elapsedSeconds) + prev.v;
+
+                            let p = {d: timestamp, v: next};
+
+                            /*console.log(p);*/
+
+                            accumulated.push(p);
+                            prev = p;
                         }
                     }
 
@@ -114,8 +121,8 @@
                     if(pv.indexOf('(') > -1 && pv.indexOf(')') > -1) {
                         functionpv = pv.substring(pv.indexOf('(') + 1, pv.indexOf(')'));
                         functionname = pv.substring(0, pv.indexOf('('));
-                        console.log('function name: ' + functionname);
-                        console.log('function pv: ' + functionpv);
+                        /*console.log('function name: ' + functionname);
+                        console.log('function pv: ' + functionpv);*/
                     }
 
                     let url = '/myquery/interval',
@@ -124,6 +131,7 @@
                                 b: jlab.wave.util.toIsoDateTimeString(_options.start),
                                 e: jlab.wave.util.toIsoDateTimeString(_options.end),
                                 u: '',
+                                p: '',
                                 m: _options.myaDeployment,
                                 l: _options.myaLimit
                             },
@@ -171,8 +179,16 @@
                                 minY = Number.POSITIVE_INFINITY,
                                 maxY = Number.NEGATIVE_INFINITY;
 
+
+                        let startUnixTime = _options.start.getTime();
+
+                        /*First data point is "previous" point.  We need to set the timestamp to start time*/
+                        if(json.data.length > 0) {
+                            json.data[0].d = startUnixTime;
+                        }
+
                         if(functionname === 'accumulate') {
-                            json.data = accumulate(json.data);
+                            json.data = accumulate(json.data, startUnixTime);
                         }
 
                         if (makeStepLine) {
