@@ -4,7 +4,7 @@ plugins {
 }
 
 description = "Web Archive Viewer and Expositor"
-version = '1.2.0'
+version = '1.3.0'
 
 repositories {
     jcenter()
