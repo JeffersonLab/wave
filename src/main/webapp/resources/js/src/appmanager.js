@@ -274,6 +274,51 @@
 
                 /* JQUERY MOBILE UI EVENTS */
 
+                $(document).on("filterablebeforefilter", "#pv-filter", function(e, data) {
+                    e.preventDefault();
+
+                    var $ul = $( this ),
+                        $input = $( data.input ),
+                        value = $input.val(),
+                        html = "";
+
+                    $ul.html( "" );
+
+                    if ( value && value.length > 2 ) {
+                        $ul.html( "<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>" );
+                        $ul.listview( "refresh" );
+                        $.ajax({
+                            url: "/myquery/channel",
+                            /*dataType: "jsonp",
+                            crossDomain: true,*/
+                            data: {
+                                q: $input.val() + '%'
+                            }
+                        }).then( function ( response ) {
+                                $.each( response, function ( i, val ) {
+                                    html += '<li><a href="#">' + val.name + "</a></li>";
+                                });
+                                $ul.html( html );
+                                $ul.listview("refresh");
+                                $ul.trigger( "updatelayout");
+                            });
+                    }
+                });
+
+                $(document).on("click", "#pv-filter a", function(e) {
+                    var pv = $(this).text(),
+                        $ul = $("#pv-filter");
+                    $("#pv-input").val("");
+                    $ul.html("");
+                    $ul.listview("refresh");
+                    try {
+                        addPvs([pv]);
+                    } catch (e) {
+                        console.log(e);
+                        alert(e);
+                    }
+                });
+
                 $(document).on("panelbeforeopen", "#options-panel", function () {
                     $("#start-date-input").val(wave.util.toUserDateString(_chartManager.getOptions().start));
                     $("#start-time-input").val(wave.util.toUserTimeString(_chartManager.getOptions().start));

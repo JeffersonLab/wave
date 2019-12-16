@@ -16,7 +16,10 @@
         <div id="header-panel" data-role="header" data-position="fixed" data-theme="a">
             <h1>WAVE</h1>
             <button type="button" data-icon="gear" data-iconpos="notext" id="options-button" title="Viewer Options"></button>
-            <input type="text" id="pv-input" placeholder="PV Names"/>
+            <input type="text" id="pv-input" placeholder="PV Names" data-type="search"/>
+            <ul id="pv-filter" data-role="listview" data-filter="true" data-input="#pv-input">
+
+            </ul>
         </div>
         <a id="fullscreen-link" class="ui-icon-carat-u ui-btn-icon-notext ui-shadow ui-corner-all"></a>
         <div data-role="page" id="chart-page">  
