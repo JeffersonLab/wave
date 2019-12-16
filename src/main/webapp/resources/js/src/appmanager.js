@@ -300,6 +300,7 @@
                                 });
                                 $ul.html( html );
                                 $ul.listview("refresh");
+                                $ul.find('li').removeClass("ui-screen-hidden");
                                 $ul.trigger( "updatelayout");
                             });
                     }
