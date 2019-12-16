@@ -4,7 +4,11 @@ plugins {
 }
 
 description = "Web Archive Viewer and Expositor"
-version = '1.3.0'
+version = '1.4.0'
+
+ext {
+    releaseDate = 'Dec 16 2019'
+}
 
 repositories {
     jcenter()
@@ -21,12 +25,14 @@ dependencies {
 	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 }
 
-// WAR file is placed at build/libs/wave-x.y.z.war
-
 war {
-    ext.webXmlProperties = 'webXml.properties'
-    inputs.file webXmlProperties
+    archiveName 'wave.war' // Otherwise defaults to having version attached which is pain to re-deploy on version upgrade
     filesMatching('WEB-INF/web.xml') {
-        filter org.apache.tools.ant.filters.ReplaceTokens, propertiesResource: ant.file(file: webXmlProperties)
+        filter {
+            String line -> line.replaceAll("@VERSION@", version)
+        }
+        filter {
+            String line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
+        }
     }
 }
