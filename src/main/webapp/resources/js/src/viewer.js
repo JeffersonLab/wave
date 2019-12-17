@@ -283,6 +283,11 @@
                             min: minY
                         };
 
+                        // We only consider enum labels if exactly one set in selected interval
+                        if(json.labels != null && json.labels.length === 1) {
+                            series.metadata.labels = json.labels[0].value;
+                        }
+
                         series.data = formattedData;
 
                         if (typeof json.count !== "undefined" && json.count !== null) {
