@@ -160,7 +160,7 @@
                             return;
                         }
 
-                        if (!(json.datatype === 'DBR_DOUBLE' || json.datatype === 'DBR_FLOAT' || json.datatype === 'DBR_SHORT' || json.datatype === 'DBR_LONG')) {
+                        if (!(json.datatype === 'DBR_DOUBLE' || json.datatype === 'DBR_FLOAT' || json.datatype === 'DBR_SHORT' || json.datatype === 'DBR_LONG' || json.datatype === 'DBR_ENUM')) {
                             alert('datatype not a number: ' + json.datatype);
                             return;
                         }
