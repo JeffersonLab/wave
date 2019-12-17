@@ -113,6 +113,9 @@
 
                     /*console.log(titleSize);*/
 
+                    let maxYWidth = 0;
+                    let charts = [];
+
                     for (let i = 0; i < pvs.length; i++) {
                         let $placeholderDiv = this.createAndAppendChartPlaceholder(),
                                 pv = pvs[i],
@@ -137,7 +140,23 @@
                         c.canvasjsChart.render();
                         console.timeEnd("render");
 
+                        charts.push(c);
+
+                        let width = c.canvasjsChart.axisY[0].bounds.x2 - c.canvasjsChart.axisY[0].bounds.x1;
+
+                                   if(width > maxYWidth) {
+                            maxYWidth = width;
+                        }
+
+
                         this.updateChartToolbars();
+                    }
+
+                    /*Adjust Y Axis margin to try to make charts line up with each other*/
+                    for (let i = 0; i < charts.length; i++) {
+                        let c = charts[i];
+                        let width = c.canvasjsChart.axisY[0].bounds.x2 - c.canvasjsChart.axisY[0].bounds.x1;
+                        c.canvasjsChart.axisY[0].set("margin",  maxYWidth - width + 5);
                     }
                 };
             }
