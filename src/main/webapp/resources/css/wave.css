@@ -75,6 +75,10 @@ h3 {
     width: 200px;
     text-overflow: ellipsis;
 }
+#pv-filter {
+    position: absolute;
+    width: 100%;
+}
 html.print,
 .print body {
     height: 600px !important;
