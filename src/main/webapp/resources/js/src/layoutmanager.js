@@ -152,14 +152,47 @@
                         this.updateChartToolbars();
                     }
 
-                    /*Adjust Y Axis margin to try to make charts line up with each other*/
+                    /*Adjust Y Axis margin to try to make charts line up with each other - also sync crosshairs*/
                     for (let i = 0; i < charts.length; i++) {
                         let c = charts[i];
                         let width = c.canvasjsChart.axisY[0].bounds.x2 - c.canvasjsChart.axisY[0].bounds.x1;
                         c.canvasjsChart.axisY[0].set("margin",  maxYWidth - width + 5);
+
+                        /*TODO: Do I need to unregister on chart delete? - prob breaks if you remove a chart - I'll let Adam sort through this :) */
+                        c.$placeholderDiv.on("mousemove mouseup mousedown mouseout", function(e){
+                            for(let j = 0; j < charts.length; j++) {
+                                let other = charts[j];
+                                if(other != c) {
+
+                                    let heightRatio = (c.canvasjsChart.plotArea.y2 - c.canvasjsChart.plotArea.y1) / (other.canvasjsChart.plotArea.y2 - other.canvasjsChart.plotArea.y1);
+
+                                    /*console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);*/
+                                    let otherCanvas = other.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
+                                    otherCanvas.dispatchEvent(wave.createEvent(
+                                        e.type,
+                                        e.screenX,
+                                        e.screenY + 300, other.canvasjsChart.axisX[0].convertValueToPixel(c.canvasjsChart.axisX[0].convertPixelToValue(e.clientX)),
+                                        e.clientY + 300
+                                    ));
+                                }
+                            }
+                        });
                     }
                 };
             }
+        };
+
+        wave.createEvent = function(type, screenX, screenY, clientX, clientY){
+            var event = new MouseEvent(type, {
+                view: window,
+                bubbles: false,
+                cancelable: true,
+                screenX: screenX,
+                screenY: screenY,
+                clientX: clientX,
+                clientY: clientY
+            });
+            return event;
         };
     })(jlab.wave || (jlab.wave = {}));
 })(jlab || (jlab = {}));

@@ -17,7 +17,7 @@
             constructor(chartManager, pvs, $placeholderDiv, separateYAxis, title, titleSize, includeTitle) {
                 let _chartManager = chartManager;
                 let _pvs = pvs.slice(); /* slice (not splice) makes a copy as we may be removing PVs */
-                let _$placeholderDiv = $placeholderDiv;
+                this.$placeholderDiv = $placeholderDiv;
                 let labels = [],
                         data = [],
                         axisY = [];
@@ -32,7 +32,7 @@
                 };
 
                 this.destroy = function () {
-                    _$placeholderDiv.remove();
+                    this.$placeholderDiv.remove();
                 };
 
                 let yAxisMargin = titleSize * 1.5;
