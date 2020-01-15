@@ -161,6 +161,7 @@
                         maxDate = _chartManager.getOptions().end,
                         timeFormatter = new wave.ZoomableTimeFormatter(minDate, maxDate),
                         axisX = {
+                            crosshair: {enabled: true},
                             minimum: minDate,
                             maximum: maxDate,
                             labelAutoFit: true,
