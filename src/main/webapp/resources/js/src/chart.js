@@ -73,6 +73,7 @@
                     }
 
                     axisY.push({
+                        /*crosshair: {enabled: true},*/
                         title: yAxisLabel,
                         margin: yAxisMargin,
                         tickLength: 20,
@@ -212,6 +213,7 @@
                 }
 
                 let canvasOpts = {
+                    toolTip: {enabled: false},
                     timeFormatter: timeFormatter,
                     title: {
                         text: title,

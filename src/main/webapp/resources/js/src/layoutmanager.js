@@ -140,6 +140,9 @@
                         c.canvasjsChart.render();
                         console.timeEnd("render");
 
+                        /*Now that canvas exists, lets cache the lookup of it*/
+                        c.canvas = c.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
+
                         charts.push(c);
 
                         let width = c.canvasjsChart.axisY[0].bounds.x2 - c.canvasjsChart.axisY[0].bounds.x1;
@@ -159,19 +162,16 @@
                         c.canvasjsChart.axisY[0].set("margin",  maxYWidth - width + 5);
 
                         /*TODO: Do I need to unregister on chart delete? - prob breaks if you remove a chart - I'll let Adam sort through this :) */
-                        c.$placeholderDiv.on("mousemove mouseup mousedown mouseout", function(e){
+                        c.$placeholderDiv.on("mousemove", function(e){
                             for(let j = 0; j < charts.length; j++) {
                                 let other = charts[j];
                                 if(other != c) {
-
-                                    let heightRatio = (c.canvasjsChart.plotArea.y2 - c.canvasjsChart.plotArea.y1) / (other.canvasjsChart.plotArea.y2 - other.canvasjsChart.plotArea.y1);
-
-                                    let thisCanvas = c.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
-                                    let thisRect = thisCanvas.getBoundingClientRect();
+                                    let thisCanvas = c.canvas,
+                                        thisRect = thisCanvas.getBoundingClientRect();
 
                                     //console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);
-                                    let otherCanvas = other.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
-                                    let otherRect = otherCanvas.getBoundingClientRect();
+                                    let otherCanvas = other.canvas,
+                                        otherRect = otherCanvas.getBoundingClientRect();
 
                                     let adjustedClientY;
 
