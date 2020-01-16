@@ -102,7 +102,7 @@
         wave.doCrosshair = function() {
             wave.crosshairTimeout = null;
 
-            console.log('doCrosshair!');
+            /*console.log('doCrosshair!');*/
 
             if(wave.crosshairAction != null) {
                 wave.crosshairAction();
@@ -178,7 +178,7 @@
                         c.$placeholderDiv.on("mousemove", function(e){
 
                             if (!wave.crosshairTimeout) {
-                                wave.crosshairTimeout = setTimeout(wave.doCrosshair, 50);
+                                wave.crosshairTimeout = setTimeout(wave.doCrosshair, 100);
                             }
 
                             wave.crosshairAction = function() {

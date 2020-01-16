@@ -162,7 +162,27 @@
                         maxDate = _chartManager.getOptions().end,
                         timeFormatter = new wave.ZoomableTimeFormatter(minDate, maxDate),
                         axisX = {
-                            crosshair: {enabled: true},
+                            crosshair: {
+                                enabled: true,
+                                labelFormatter: function ( e ) {
+                                    let y = '';
+
+                                    /*console.time("search");*/
+                                    /*TODO: Should this be a binary search? */
+                                    for(let i = 0; i < e.chart.data[0].dataPoints.length; i++) {
+                                        let point = e.chart.data[0].dataPoints[i];
+                                        if(point.x > e.value) {
+                                            break;
+                                        } else {
+                                            y = point.y;
+                                        }
+                                    }
+                                    /*console.timeEnd("search");*/
+
+                                    //e.chart.options.timeFormatter.tickFormat
+                                    return CanvasJS.formatDate(e.value, e.chart.options.axisX.valueFormatString) + ", " + y;
+                                }
+                            },
                             minimum: minDate,
                             maximum: maxDate,
                             labelAutoFit: true,
