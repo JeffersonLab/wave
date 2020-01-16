@@ -96,6 +96,19 @@
             }
         };
 
+        wave.crosshairTimeout = null;
+        wave.crosshairEvent = null;
+
+        wave.doCrosshair = function() {
+            wave.crosshairTimeout = null;
+
+            console.log('doCrosshair!');
+
+            if(wave.crosshairAction != null) {
+                wave.crosshairAction();
+            }
+        };
+
         wave.SeparateChartLayoutManager = class SeparateChartLayoutManager extends LayoutManager {
             constructor(chartManager) {
                 super(chartManager);
@@ -163,37 +176,44 @@
 
                         /*TODO: Do I need to unregister on chart delete? - prob breaks if you remove a chart - I'll let Adam sort through this :) */
                         c.$placeholderDiv.on("mousemove", function(e){
-                            for(let j = 0; j < charts.length; j++) {
-                                let other = charts[j];
-                                if(other != c) {
-                                    let thisCanvas = c.canvas,
-                                        thisRect = thisCanvas.getBoundingClientRect();
 
-                                    //console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);
-                                    let otherCanvas = other.canvas,
-                                        otherRect = otherCanvas.getBoundingClientRect();
+                            if (!wave.crosshairTimeout) {
+                                wave.crosshairTimeout = setTimeout(wave.doCrosshair, 50);
+                            }
 
-                                    let adjustedClientY;
+                            wave.crosshairAction = function() {
+                                for (let j = 0; j < charts.length; j++) {
+                                    let other = charts[j];
+                                    if (other != c) {
+                                        let thisCanvas = c.canvas,
+                                            thisRect = thisCanvas.getBoundingClientRect();
 
-                                    /*Only dispatchEvent if mouse event is inside plot area since crosshair only appears inside*/
-                                    if(thisRect.y + c.canvasjsChart.plotArea.y1 < e.clientY && thisRect.y + c.canvasjsChart.plotArea.y2 > e.clientY) {
-                                        // We just take center of other chart bounding box; could try to figure out ratio of source plot area and also limit to plot area to avoid case in which title is huge and overlaps center, but that's a lot of work; we don't have horizontal in crosshair so...
-                                        adjustedClientY = otherRect.y + (otherRect.height / 2);
-                                    } else {
-                                        // We set it purposely outside of plot area to ensure tooltip/crosshair is cleared!
-                                        adjustedClientY = 0;
+                                        //console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);
+                                        let otherCanvas = other.canvas,
+                                            otherRect = otherCanvas.getBoundingClientRect();
+
+                                        let adjustedClientY;
+
+                                        /*Only dispatchEvent if mouse event is inside plot area since crosshair only appears inside*/
+                                        if (thisRect.y + c.canvasjsChart.plotArea.y1 < e.clientY && thisRect.y + c.canvasjsChart.plotArea.y2 > e.clientY) {
+                                            // We just take center of other chart bounding box; could try to figure out ratio of source plot area and also limit to plot area to avoid case in which title is huge and overlaps center, but that's a lot of work; we don't have horizontal in crosshair so...
+                                            adjustedClientY = otherRect.y + (otherRect.height / 2);
+                                        } else {
+                                            // We set it purposely outside of plot area to ensure tooltip/crosshair is cleared!
+                                            adjustedClientY = 0;
+                                        }
+
+                                        /*console.log(adjustedClientY);*/
+
+                                        otherCanvas.dispatchEvent(wave.createEvent(
+                                            e.type,
+                                            e.screenX,
+                                            e.screenY, /*not the same for this vs other, but doesn't matter*/
+                                            e.clientX,
+                                            adjustedClientY
+                                        ));
+                                        //console.log(c.canvasjsChart.plotArea, e.screenY, e.clientY, c.canvasjsChart.get("height"), clientRect);
                                     }
-
-                                    /*console.log(adjustedClientY);*/
-
-                                    otherCanvas.dispatchEvent(wave.createEvent(
-                                        e.type,
-                                        e.screenX,
-                                        e.screenY, /*not the same for this vs other, but doesn't matter*/
-                                        e.clientX,
-                                        adjustedClientY
-                                    ));
-                                    //console.log(c.canvasjsChart.plotArea, e.screenY, e.clientY, c.canvasjsChart.get("height"), clientRect);
                                 }
                             }
                         });
