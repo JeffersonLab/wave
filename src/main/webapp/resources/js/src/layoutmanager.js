@@ -166,14 +166,34 @@
 
                                     let heightRatio = (c.canvasjsChart.plotArea.y2 - c.canvasjsChart.plotArea.y1) / (other.canvasjsChart.plotArea.y2 - other.canvasjsChart.plotArea.y1);
 
-                                    /*console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);*/
+                                    let thisCanvas = c.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
+                                    let thisRect = thisCanvas.getBoundingClientRect();
+
+                                    //console.log('dispatching event from: ', c.$placeholderDiv[0].id, ' to ', other.$placeholderDiv[0].id);
                                     let otherCanvas = other.$placeholderDiv.find(".canvasjs-chart-canvas").get(1);
+                                    let otherRect = otherCanvas.getBoundingClientRect();
+
+                                    let adjustedClientY;
+
+                                    /*Only dispatchEvent if mouse event is inside plot area since crosshair only appears inside*/
+                                    if(thisRect.y + c.canvasjsChart.plotArea.y1 < e.clientY && thisRect.y + c.canvasjsChart.plotArea.y2 > e.clientY) {
+                                        // We just take center of other chart bounding box; could try to figure out ratio of source plot area and also limit to plot area to avoid case in which title is huge and overlaps center, but that's a lot of work; we don't have horizontal in crosshair so...
+                                        adjustedClientY = otherRect.y + (otherRect.height / 2);
+                                    } else {
+                                        // We set it purposely outside of plot area to ensure tooltip/crosshair is cleared!
+                                        adjustedClientY = 0;
+                                    }
+
+                                    /*console.log(adjustedClientY);*/
+
                                     otherCanvas.dispatchEvent(wave.createEvent(
                                         e.type,
                                         e.screenX,
-                                        e.screenY + 300, other.canvasjsChart.axisX[0].convertValueToPixel(c.canvasjsChart.axisX[0].convertPixelToValue(e.clientX)),
-                                        e.clientY + 300
+                                        e.screenY, /*not the same for this vs other, but doesn't matter*/
+                                        e.clientX,
+                                        adjustedClientY
                                     ));
+                                    //console.log(c.canvasjsChart.plotArea, e.screenY, e.clientY, c.canvasjsChart.get("height"), clientRect);
                                 }
                             }
                         });
