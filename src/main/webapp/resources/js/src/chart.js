@@ -37,8 +37,6 @@
 
                 let yAxisMargin = titleSize * 1.5;
 
-                let interval = null;
-
                 for (let i = 0; i < _pvs.length; i++) {
                     let pv = _pvs[i],
                             series = wave.pvToSeriesMap[pv],
@@ -52,11 +50,15 @@
                             yAxisMin = preferences.yAxisMin ? preferences.yAxisMin : null,
                             yAxisMax = preferences.yAxisMax ? preferences.yAxisMax : null,
                             yAxisLog = preferences.yAxisLog ? preferences.yAxisLog : null,
+                            interval = null,
                             yAxisLabelFormatter = null;
 
                     if(series.metadata !== null &&
                         series.metadata.datatype === 'DBR_ENUM' &&
                         series.metadata.labels != null) {
+                        interval = 1;
+                        yAxisMin = 0;
+                        yAxisMax = series.metadata.labels.length - 1;
                         yAxisLabelFormatter = function(e) {
                             var label = e.value,
                                 index = Math.round(e.value);
@@ -84,11 +86,13 @@
                         labels[i] = label;
                     }
 
+                    let yConfig = {title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, labelFormatter: yAxisLabelFormatter, interval: interval, logarithmic: yAxisLog == null ? false : true};
+
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, logarithmic: yAxisLog == null ? false : true});
+                        axisY.push(yConfig);
                     } else if(i == 0) { // Only push first one, all series will use it
-                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, logarithmic: yAxisLog == null ? false : true});
+                        axisY.push(yConfig);
                     }
 
                     let dataOpts = {pv: pv,
