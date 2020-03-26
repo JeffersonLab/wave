@@ -51,7 +51,15 @@
                             yAxisMax = preferences.yAxisMax ? preferences.yAxisMax : null,
                             yAxisLog = preferences.yAxisLog ? preferences.yAxisLog : null,
                             interval = null,
-                            yAxisLabelFormatter = null;
+                            yAxisLabelFormatter = function(e) {
+                                var label = e.value;
+
+                                if(label > 0 && (label < 0.001 || label > 100000)) {
+                                    label = label.toExponential(1);
+                                }
+
+                                return label;
+                            };
 
                     if(series.metadata !== null &&
                         series.metadata.datatype === 'DBR_ENUM' &&
@@ -94,6 +102,26 @@
                     } else if(i == 0) { // Only push first one, all series will use it
                         axisY.push(yConfig);
                     }
+
+                    /* If logarithmic scale we must replace zero with small number since log(0) === undefined */
+                    if(yAxisLog != null) {
+                        let tmp = [];
+
+                        for (let i = 0; i < series.data.length; i++) {
+                            let record = series.data[i],
+                                y = record.y;
+
+                            if (y === 0) {
+                                y = 0.000000000001;
+                            }
+
+                            tmp.push({x: record.x, y: y})
+                        }
+
+                        series.data = tmp;
+                    }
+
+                    console.log('data', series.data);
 
                     let dataOpts = {pv: pv,
                         xValueFormatString: "MMM DD YYYY HH:mm:ss",
