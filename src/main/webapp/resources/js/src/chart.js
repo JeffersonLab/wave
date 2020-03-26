@@ -262,7 +262,7 @@
                             $("#pv-y-axis-label").val(preferences.yAxisLabel);
                             $("#pv-y-axis-min").val(preferences.yAxisMin);
                             $("#pv-y-axis-max").val(preferences.yAxisMax);
-                            $("#pv-y-axis-log").val(preferences.yAxisLog);
+                            $("#pv-y-axis-log").prop('checked', preferences.yAxisLog != null);
                             $("#pv-scaler").val(preferences.scaler);
 
                             /*BEGIN PART THAT COULD BE DEFERRED*/

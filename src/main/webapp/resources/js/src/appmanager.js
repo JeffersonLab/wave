@@ -188,7 +188,7 @@
                         let yAxisLabel = $("#pv-y-axis-label").val();
                         let yAxisMin = $("#pv-y-axis-min").val();
                         let yAxisMax = $("#pv-y-axis-max").val();
-                        let yAxisLog = $("#pv-y-axis-log").val();
+                        let yAxisLog = $("#pv-y-axis-log").is(":checked") ? true : null;
                         let scaler = $("#pv-scaler").val();
 
                         /*e.dataSeries.legendText = label;
