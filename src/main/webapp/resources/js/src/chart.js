@@ -44,6 +44,7 @@
                     let yAxisLabel = '',
                         yAxisMin = null,
                         yAxisMax = null,
+                        yAxisLog = null,
                         yAxisLabelFormatter = null;
 
                     if(_pvs.length > 0) {
@@ -52,6 +53,7 @@
                         yAxisLabel = series.preferences.yAxisLabel,
                         yAxisMin = series.preferences.yAxisMin ? series.preferences.yAxisMin : null,
                         yAxisMax = series.preferences.yAxisMax ? series.preferences.yAxisMax : null;
+                        yAxisLog = series.preferences.yAxisLog ? series.preferences.yAxisLog : null;
 
                         if(series.metadata !== null &&
                             series.metadata.datatype === 'DBR_ENUM' &&
@@ -68,7 +70,7 @@
                                 }
 
                                 return label;
-                            }
+                            };
                         }
                     }
 
@@ -81,7 +83,8 @@
                         minimum: yAxisMin,
                         maximum: yAxisMax,
                         interval: interval,
-                        labelFormatter: yAxisLabelFormatter
+                        labelFormatter: yAxisLabelFormatter,
+                        logarithmic: yAxisLog == null ? false : true
                     });
                 }
 
@@ -97,6 +100,7 @@
                             yAxisLabel = preferences.yAxisLabel,
                             yAxisMin = preferences.yAxisMin ? preferences.yAxisMin : null,
                             yAxisMax = preferences.yAxisMax ? preferences.yAxisMax : null,
+                            yAxisLog = preferences.yAxisLog ? preferences.yAxisLog : null,
                             yAxisLabelFormatter = null;
 
                     if(series.metadata !== null &&
@@ -131,7 +135,7 @@
 
                     if (separateYAxis) {
                         axisYIndex = i;
-                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax});
+                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, logarithmic: yAxisLog == null ? false : true});
                     }
 
                     let dataOpts = {pv: pv,
@@ -195,9 +199,9 @@
                 // TODO: Create separate ArchiveChart vs StripChart
                 //if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.ARCHIVE) {
                 axisX = $.extend(axisX, {
-                    tickThickness: 1,
-                    gridThickness: 1,
-                    gridColor: 'rgb(169,169,169, 0.5)',
+                    tickThickness: 0.6,
+                    gridThickness: 0.6,
+                    gridColor: 'rgb(169,169,169, 0.25)',
                     valueFormatString: timeFormatter.startingTickFormat,
                     interval: timeFormatter.startingInterval,
                     intervalType: timeFormatter.startingIntervalType,
@@ -227,9 +231,9 @@
                 for (let i = 0; i < axisY.length; i++) {
                     axisY[i].labelFontSize = subtitleSize;
                     axisY[i].titleFontSize = subtitleSize;
-                    axisY[i].gridThickness = 1;
-                    axisY[i].gridColor = 'rgb(169,169,169, 0.5)';
-                    axisY[i].tickThickness = 1;
+                    axisY[i].gridThickness = 0.6;
+                    axisY[i].gridColor = 'rgb(169,169,169, 0.25)';
+                    axisY[i].tickThickness = 0.6;
                 }
 
                 let canvasOpts = {
@@ -271,6 +275,7 @@
                             $("#pv-y-axis-label").val(preferences.yAxisLabel);
                             $("#pv-y-axis-min").val(preferences.yAxisMin);
                             $("#pv-y-axis-max").val(preferences.yAxisMax);
+                            $("#pv-y-axis-log").val(preferences.yAxisLog);
                             $("#pv-scaler").val(preferences.scaler);
 
                             /*BEGIN PART THAT COULD BE DEFERRED*/

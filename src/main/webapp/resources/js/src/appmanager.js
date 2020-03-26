@@ -188,6 +188,7 @@
                         let yAxisLabel = $("#pv-y-axis-label").val();
                         let yAxisMin = $("#pv-y-axis-min").val();
                         let yAxisMax = $("#pv-y-axis-max").val();
+                        let yAxisLog = $("#pv-y-axis-log").val();
                         let scaler = $("#pv-scaler").val();
 
                         /*e.dataSeries.legendText = label;
@@ -206,6 +207,7 @@
                         series.preferences.yAxisLabel = yAxisLabel;
                         series.preferences.yAxisMin = yAxisMin;
                         series.preferences.yAxisMax = yAxisMax;
+                        series.preferences.yAxisLog = yAxisLog;
                         series.preferences.scaler = scaler;
 
                         let uri = new URI();
@@ -214,6 +216,7 @@
                         uri.setQuery(e.dataSeries.pv + "yAxisLabel", yAxisLabel);
                         uri.setQuery(e.dataSeries.pv + "yAxisMin", yAxisMin);
                         uri.setQuery(e.dataSeries.pv + "yAxisMax", yAxisMax);
+                        uri.setQuery(e.dataSeries.pv + "yAxisLog", yAxisLog);
                         uri.setQuery(e.dataSeries.pv + "scaler", scaler);
                         window.history.replaceState({}, 'Set PV Config', uri.href());
 

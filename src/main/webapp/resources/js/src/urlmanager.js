@@ -131,6 +131,7 @@
                     let yAxisLabel = null;
                     let yAxisMin = null;
                     let yAxisMax = null;
+                    let yAxisLog = null;
                     let scaler = null;
 
                     let key = pv + 'label';
@@ -183,6 +184,16 @@
                         window.history.replaceState({}, 'Set PV yAxisMax', url);
                     }
 
+                    key = pv + 'yAxisLog';
+                    if (uri.hasQuery(key)) {
+                        yAxisLog = queryMap[key];
+                    } else {
+                        let obj = {};
+                        obj[key] = yAxisLog;
+                        let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), obj);
+                        window.history.replaceState({}, 'Set PV yAxisLog', url);
+                    }
+
                     key = pv + 'scaler';
                     if (uri.hasQuery(key)) {
                         scaler = queryMap[key];
@@ -199,6 +210,7 @@
                     _preferences[pv].yAxisLabel = yAxisLabel;
                     _preferences[pv].yAxisMin = yAxisMin;
                     _preferences[pv].yAxisMax = yAxisMax;
+                    _preferences[pv].yAxisLog = yAxisLog;
                     _preferences[pv].scaler = scaler;
                 }
 
