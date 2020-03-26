@@ -121,8 +121,6 @@
                         series.data = tmp;
                     }
 
-                    console.log('data', series.data);
-
                     let dataOpts = {pv: pv,
                         xValueFormatString: "MMM DD YYYY HH:mm:ss",
                         toolTipContent: labels[i] + "<br/>{x}, <b>{y}</b>",

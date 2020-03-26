@@ -36,6 +36,7 @@
                     series.preferences.yAxisLabel = preferences.yAxisLabel || null;
                     series.preferences.yAxisMin = preferences.yAxisMin || null;
                     series.preferences.yAxisMax = preferences.yAxisMax || null;
+                    series.preferences.yAxisLog = preferences.yAxisLog || null;
                     series.preferences.scaler = preferences.scaler || null;
                 };
 
