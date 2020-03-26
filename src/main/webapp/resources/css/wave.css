@@ -33,7 +33,7 @@ h3 {
     font-size: 0.75em;
     font-style: italic;
 }
-#options-hr {
+.options-hr {
     margin-top: 3em;
 }
 .info-popup {

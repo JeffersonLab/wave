@@ -53,7 +53,7 @@
                 <input type="text" id="mya-limit" placeholder="Binning limit (optional)" value="100000"/>
                 <h3>Title</h3>
                 <input type="text" id="chart-title-input"/>
-                <hr id="options-hr"/>
+                <hr class="options-hr"/>
                 <button type="button" id="update-options-button" class="ui-btn ui-icon-check ui-btn-icon-left">Update</button>
                 <a title="Close" class="cancel-panel-button ui-btn-right ui-link ui-btn ui-btn-a ui-icon-delete ui-btn-icon-notext ui-shadow ui-corner-all" href="#">Cancel</a>
             </div>
@@ -84,7 +84,7 @@
                 </ul>
                 <h3>Actions</h3>
                 <button type="button" class="ui-btn ui-icon-eye ui-btn-icon-left" id="pv-visibility-toggle-button">Hide</button>
-                <hr id="options-hr"/>
+                <hr class="options-hr"/>
                 <button type="button" class="ui-btn ui-icon-minus ui-btn-icon-left" id="pv-delete-button">Delete</button>
             </div>
             <div id="metadata-popup" data-role="popup" class="info-popup ui-content" data-theme="b" data-dismissible="false">
