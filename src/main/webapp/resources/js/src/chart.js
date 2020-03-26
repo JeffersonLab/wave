@@ -247,7 +247,8 @@
                         {
                             text: subtitle,
                             fontSize: subtitleSize,
-                            fontFamily: 'Arial'
+                            fontFamily: 'Arial',
+                            fontWeight: 'bold'
                         }
                     ],
                     legend: {
