@@ -39,8 +39,7 @@
 
                 let interval = null;
 
-                if (!separateYAxis) {
-                    /*Just use first configured series yAxisLabel*/
+                /*if (!separateYAxis) {
                     let yAxisLabel = '',
                         yAxisMin = null,
                         yAxisMax = null,
@@ -75,7 +74,6 @@
                     }
 
                     axisY.push({
-                        /*crosshair: {enabled: true},*/
                         title: yAxisLabel,
                         margin: yAxisMargin,
                         tickLength: 20,
@@ -86,7 +84,7 @@
                         labelFormatter: yAxisLabelFormatter,
                         logarithmic: yAxisLog == null ? false : true
                     });
-                }
+                }*/
 
                 for (let i = 0; i < _pvs.length; i++) {
                     let pv = _pvs[i],
@@ -135,6 +133,8 @@
 
                     if (separateYAxis) {
                         axisYIndex = i;
+                        axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, logarithmic: yAxisLog == null ? false : true});
+                    } else if(i == 0) { // Only push first one, all series will use it
                         axisY.push({title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, logarithmic: yAxisLog == null ? false : true});
                     }
 
