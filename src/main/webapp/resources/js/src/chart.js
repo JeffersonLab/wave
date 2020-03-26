@@ -39,53 +39,6 @@
 
                 let interval = null;
 
-                /*if (!separateYAxis) {
-                    let yAxisLabel = '',
-                        yAxisMin = null,
-                        yAxisMax = null,
-                        yAxisLog = null,
-                        yAxisLabelFormatter = null;
-
-                    if(_pvs.length > 0) {
-                        let pv = _pvs[0];
-                        var series = wave.pvToSeriesMap[pv];
-                        yAxisLabel = series.preferences.yAxisLabel,
-                        yAxisMin = series.preferences.yAxisMin ? series.preferences.yAxisMin : null,
-                        yAxisMax = series.preferences.yAxisMax ? series.preferences.yAxisMax : null;
-                        yAxisLog = series.preferences.yAxisLog ? series.preferences.yAxisLog : null;
-
-                        if(series.metadata !== null &&
-                            series.metadata.datatype === 'DBR_ENUM' &&
-                            series.metadata.labels != null) {
-                            interval = 1;
-                            yAxisMin = 0;
-                            yAxisMax = series.metadata.labels.length - 1;
-                            yAxisLabelFormatter = function(e) {
-                                var label = e.value,
-                                    index = Math.round(e.value);
-
-                                if(series.metadata.labels[index] !== undefined) {
-                                    label = series.metadata.labels[index];
-                                }
-
-                                return label;
-                            };
-                        }
-                    }
-
-                    axisY.push({
-                        title: yAxisLabel,
-                        margin: yAxisMargin,
-                        tickLength: 20,
-                        includeZero: false,
-                        minimum: yAxisMin,
-                        maximum: yAxisMax,
-                        interval: interval,
-                        labelFormatter: yAxisLabelFormatter,
-                        logarithmic: yAxisLog == null ? false : true
-                    });
-                }*/
-
                 for (let i = 0; i < _pvs.length; i++) {
                     let pv = _pvs[i],
                             series = wave.pvToSeriesMap[pv],
