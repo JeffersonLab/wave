@@ -136,6 +136,7 @@
                                 e: jlab.wave.util.toIsoDateTimeString(_options.end),
                                 u: '',
                                 p: '',
+                                v: 17, /*Default is 6, which truncates small numbers to zero*/
                                 m: _options.myaDeployment,
                                 l: _options.myaLimit
                             },
