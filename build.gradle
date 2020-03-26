@@ -4,10 +4,10 @@ plugins {
 }
 
 description = "Web Archive Viewer and Expositor"
-version = '1.7.0'
+version = '1.8.1'
 
 ext {
-    releaseDate = 'Jan 16 2020'
+    releaseDate = 'Mar 26 2020'
 }
 
 repositories {
