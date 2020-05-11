@@ -148,7 +148,15 @@
                 let minDate = _chartManager.getOptions().start,
                         maxDate = _chartManager.getOptions().end,
                         timeFormatter = new wave.ZoomableTimeFormatter(minDate, maxDate),
-                        axisX = {
+                    minLimit = minDate,
+                    maxLimit = maxDate;
+
+                if(_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
+                    minLimit = null;
+                    maxLimit = null;
+                }
+
+                let axisX = {
                             crosshair: {
                                 enabled: true,
                                 labelFormatter: function ( e ) {
@@ -170,8 +178,8 @@
                                     return CanvasJS.formatDate(e.value, e.chart.options.axisX.valueFormatString) + ", " + y;
                                 }
                             },
-                            minimum: minDate,
-                            maximum: maxDate,
+                            minimum: minLimit,
+                            maximum: maxLimit,
                             labelAutoFit: true,
                             labelWrap: false,
                             /*labelMaxWidth: 200,*/
@@ -204,7 +212,7 @@
                 }
 
                 if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
-                    subtitle = jlab.wave.util.toUserDateTimeString(minDate) + ' +';
+                    subtitle = 'Sliding Window Stripchart';
                 }
 
                 let subtitleSize = titleSize * 0.75;

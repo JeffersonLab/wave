@@ -10,14 +10,12 @@
              */
             constructor(pv) {
                 this.pv = pv;
-                this.data = null; /* Array of X,Y values */
+                this.data = []; /* Array of X,Y values */
                 this.chart = null; /* Reference to jlab.wave.Chart */
                 this.chartSeriesIndex = null; /*Index into chart data*/
                 this.metadata = null; /* Object */
                 this.preferences = {color: null, label: null, yAxisLabel: null, yAxisMin: null, yAxisMax: null, scaler: null, yAxisLog: null}; /* Unlike metadata, this is maintained across fetch refreshes */
                 this.error = null; /* Series error message */
-
-                const MAX_STRIPCHART_POINTS = 100;
 
                 let prev = this.data !== null && this.data.length > 0 ? this.data[this.data.length - 1] : null;
 
@@ -26,11 +24,9 @@
                         this.data = [];
                     }
 
-
                     if (point !== undefined) {
-                        if (this.data.length >= MAX_STRIPCHART_POINTS) {
-                            /*this.data = this.data.slice(2);*/
-                            this.data.splice(0, 1);
+                        if (this.data.length >= wave.MAX_STRIPCHART_POINTS) {
+                            this.data.splice(0, 2); // Remove first two points, since we add two points!
                         }
 
                         if (prev !== null) {
@@ -50,7 +46,7 @@
                     if (this.data === null) {
                         this.data = [];
                     } else if (this.data.length > 1) {
-                        if (this.data.length >= MAX_STRIPCHART_POINTS) {
+                        if (this.data.length >= wave.MAX_STRIPCHART_POINTS) {
                             /*this.data = this.data.slice(2);*/
                             this.data.splice(0, 1);
                         }

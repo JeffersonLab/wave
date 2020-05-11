@@ -1,6 +1,9 @@
 /*Organized as a 'Revealing Module' with namespace jlab.wave*/
 (function (jlab) {
     (function (wave) {
+
+        wave.MAX_STRIPCHART_POINTS = 100;
+
         /*public wave viewer Enums*/
         wave.viewerModeEnum = Object.freeze({ARCHIVE: 1, STRIP: 2, WAVEFORM: 3});
         wave.layoutModeEnum = Object.freeze({SEPARATE_CHART: 1, SAME_CHART_SAME_AXIS: 2, SAME_CHART_SEPARATE_AXIS: 3});
@@ -397,7 +400,7 @@
                 };
 
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
-                    /*console.log('strip update: ' + pv);
+                     /*console.log('strip update: ' + pv);
                      console.log(wave.pvToSeriesMap[pv]);*/
                     let series = wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {
