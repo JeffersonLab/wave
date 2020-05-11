@@ -151,14 +151,18 @@
                     minLimit = minDate,
                     maxLimit = maxDate;
 
+                let crossHairEnabled = true;
+
                 if(_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
                     minLimit = null;
                     maxLimit = null;
+
+                    crossHairEnabled = false;
                 }
 
                 let axisX = {
                             crosshair: {
-                                enabled: true,
+                                enabled: crossHairEnabled,
                                 labelFormatter: function ( e ) {
                                     let y = '';
 
