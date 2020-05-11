@@ -50,7 +50,7 @@
                     }
                 };
 
-                this.removePvs = function (pvs) {
+                Viewer.prototype.removePvs = function (pvs) {
                     /*Note: we require pvs != ChartManager.pvs otherwise pvs.length is modified during iteration.  We ensure this by using slice*/
                     pvs = pvs.slice(); /* slice (not splice) makes a copy */
 
@@ -399,6 +399,12 @@
                     con.monitorPvs(pvs);
                 };
 
+                wave.StripViewer.prototype.removePvs = function (pvs) {
+                    Viewer.prototype.removePvs(pvs);
+
+                    con.clearPvs(pvs);
+                };
+
                 let doStripchartUpdate = function (pv, point, lastUpdated) {
                      /*console.log('strip update: ' + pv);
                      console.log(wave.pvToSeriesMap[pv]);*/
@@ -418,7 +424,7 @@
                         }
 
                     } else {
-                        console.log('server is updating me on a PV I am unaware of: ' + pv);
+                        console.log('Ignoring update for: ', pv);
                     }
                 };
 
