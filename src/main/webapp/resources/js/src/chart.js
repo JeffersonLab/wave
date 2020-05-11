@@ -212,7 +212,7 @@
                 }
 
                 if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
-                    subtitle = 'Sliding Window Stripchart';
+                    subtitle = 'Sliding Window Live Plot';
                 }
 
                 let subtitleSize = titleSize * 0.75;

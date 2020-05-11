@@ -323,6 +323,26 @@
                     }
                 });
 
+                $(document).on("change", "#viewer-mode-select", function() {
+                    if(this.value === "1") {
+                        $("#start-date-input").parent("div").removeClass("ui-disabled");
+                        $("#start-time-input").parent("div").removeClass("ui-disabled");
+                        $("#end-date-input").parent("div").removeClass("ui-disabled");
+                        $("#end-time-input").parent("div").removeClass("ui-disabled");
+
+                        $("#layout-mode-select").removeAttr("disabled");
+                    } else {
+                        $("#start-date-input").parent("div").addClass("ui-disabled");
+                        $("#start-time-input").parent("div").addClass("ui-disabled");
+                        $("#end-date-input").parent("div").addClass("ui-disabled");
+                        $("#end-time-input").parent("div").addClass("ui-disabled");
+
+                        $("#layout-mode-select").attr("disabled", "disabled");
+                        $("#layout-mode-select").val("1");
+                        $("#layout-mode-select").selectmenu("refresh", true);
+                    }
+                });
+
                 $(document).on("panelbeforeopen", "#options-panel", function () {
                     $("#start-date-input").val(wave.util.toUserDateString(_chartManager.getOptions().start));
                     $("#start-time-input").val(wave.util.toUserTimeString(_chartManager.getOptions().start));

@@ -25,14 +25,11 @@
         <div data-role="page" id="chart-page">  
             <div data-role="panel" data-position="left" data-display="overlay" data-dismissible="false" data-swipe-close="false" id="options-panel">
                 <h2>Viewer Options</h2>
-<!--                
                 <h3>Mode</h3>
                 <select id="viewer-mode-select">
-                    <option value="1">Archive</option>
-                    <option value="2" disabled="disabled">Strip</option>
-                    <option value="3" disabled="disabled">Waveform</option>
+                    <option value="1">Fixed Plot</option>
+                    <option value="2">Live Plot</option>
                 </select>
--->
                 <h3>Time Interval</h3>
                 <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
