@@ -391,6 +391,27 @@
 
                 let self = this;
 
+                let renderLastUpdated = new Date();
+
+                let doRender = function() {
+                    let newLastUpdated = new Date();
+                    let keys = Object.keys(wave.pvToSeriesMap);
+                    for (let i = 0; i < keys.length; i++) {
+                        let pv = keys[i];
+                        let series = wave.pvToSeriesMap[pv];
+
+                        if(series.lastUpdated < renderLastUpdated) {
+                            series.addExtensionPoint(newLastUpdated)
+                        }
+
+                        series.chart.canvasjsChart.render();
+                    }
+                    renderLastUpdated = newLastUpdated;
+                };
+
+
+                let renderTimer = setInterval(doRender, 1000);
+
                 wave.StripViewer.prototype.addPvs = function (pvs) {
                     Viewer.prototype.addPvs(pvs);
 
@@ -412,17 +433,6 @@
                     if (typeof series !== 'undefined') {
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
-
-                        let keys = Object.keys(wave.pvToSeriesMap);
-                        for (let i = 0; i < keys.length; i++) {
-                            let pv = keys[i];
-                            let other = wave.pvToSeriesMap[pv];
-                            if (other.pv !== series.pv) {
-                                other.lastUpdated = lastUpdated;
-                                other.addExtensionPoint(lastUpdated);
-                            }
-                        }
-
                     } else {
                         console.log('Ignoring update for: ', pv);
                     }
