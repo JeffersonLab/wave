@@ -56,6 +56,10 @@
                     return _pvs.slice(0); /*Return a copy since array is mutable*/
                 };
 
+                this.getPreferences = function() {
+                    return _preferences;
+                };
+
                 this.refresh = function() {
                     _viewer.refresh();
                 };

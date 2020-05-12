@@ -359,7 +359,7 @@
                 };
 
                 Viewer.prototype.refresh = function () {
-                    // Archive will fetchMultiple, Strip does nothing.
+                    // Archive will fetchMultiple, Strip redoes entire layout.
                 };
             }
         };
@@ -426,12 +426,29 @@
 
                 let renderTimer = setInterval(doRender, 1000);
 
-                wave.StripViewer.prototype.addPvs = function (pvs) {
-                    Viewer.prototype.addPvs(pvs);
+                wave.StripViewer.prototype.addPvs = function (pvs, preferences) {
+                    Viewer.prototype.addPvs(pvs, preferences);
 
                     self.doLayout();
 
                     con.monitorPvs(pvs);
+                };
+
+                wave.StripViewer.prototype.refresh = function () {
+
+                    let keys = Object.keys(wave.pvToSeriesMap);
+
+                    for (let i = 0; i < keys.length; i++) {
+                        let pv = keys[i];
+                        let series = wave.pvToSeriesMap[pv];
+                        series.metadata.min = undefined;
+                        series.metadata.max = undefined;
+                        /*series.data.length = 0;*/
+                    }
+
+                    Viewer.prototype.refresh();
+
+                    self.doLayout();
                 };
 
                 wave.StripViewer.prototype.removePvs = function (pvs) {
@@ -444,7 +461,12 @@
                      /*console.log('strip update: ' + pv);
                      console.log(wave.pvToSeriesMap[pv]);*/
                     let series = wave.pvToSeriesMap[pv];
+
                     if (typeof series !== 'undefined') {
+                        if(series.preferences.scaler) {
+                            point = point * series.preferences.scaler;
+                        }
+
                         if(point < series.metadata.min || series.metadata.min === undefined) {
                             series.metadata.min = point;
                             series.calculateFractionDigits();
@@ -470,7 +492,7 @@
 
                 con.onopen = function (e) {
                     if (chartManager.getPvs().length > 0) {
-                        self.addPvs(chartManager.getPvs());
+                        self.addPvs(chartManager.getPvs(), chartManager.getPreferences());
                     }
                 };
 
