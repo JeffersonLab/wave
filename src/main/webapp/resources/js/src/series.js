@@ -13,7 +13,7 @@
                 this.data = []; /* Array of X,Y values */
                 this.chart = null; /* Reference to jlab.wave.Chart */
                 this.chartSeriesIndex = null; /*Index into chart data*/
-                this.metadata = null; /* Object */
+                this.metadata = {}; /* Object */
                 this.preferences = {color: null, label: null, yAxisLabel: null, yAxisMin: null, yAxisMax: null, scaler: null, yAxisLog: null}; /* Unlike metadata, this is maintained across fetch refreshes */
                 this.error = null; /* Series error message */
 

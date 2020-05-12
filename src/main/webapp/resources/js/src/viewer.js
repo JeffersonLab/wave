@@ -445,6 +445,14 @@
                      console.log(wave.pvToSeriesMap[pv]);*/
                     let series = wave.pvToSeriesMap[pv];
                     if (typeof series !== 'undefined') {
+                        if(point < series.metadata.min || series.metadata.min === undefined) {
+                            series.metadata.min = point;
+                        }
+
+                        if(point > series.metadata.max || series.metadata.max === undefined) {
+                            series.metadata.max = point;
+                        }
+
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
                         series.updatesSinceLastRender++;

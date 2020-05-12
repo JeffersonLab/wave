@@ -50,12 +50,30 @@
                             yAxisMin = preferences.yAxisMin ? preferences.yAxisMin : null,
                             yAxisMax = preferences.yAxisMax ? preferences.yAxisMax : null,
                             yAxisLog = preferences.yAxisLog ? preferences.yAxisLog : null,
-                            interval = null,
-                            yAxisLabelFormatter = function(e) {
-                                var label = e.value;
+                            interval = null;
 
-                                if(label > 0 && (label < 0.001 || label > 100000)) {
-                                    label = label.toExponential(1);
+                    /*Set function, then call it immediately for fixed charts*/
+                    series.calculateFractionDigits = function() {
+                        let diff = (series.metadata.max || 0) - (series.metadata.min || 0),
+                            base10 = diff === 0 ? 0 : Math.log10(diff);
+                        series.fractionDigits = Math.ceil(Math.abs(base10)) + 1;
+                    }();
+
+                    var yAxisLabelFormatter = function(e) {
+                                var label = e.value,
+                                    fractionDigits = 1,
+                                    series = e.axis.series,
+                                    diff = (series.metadata.max || 0) - (series.metadata.min || 0),
+                                    base10 = diff === 0 ? 1 : Math.log10(diff),
+                                    fractionDigits = Math.ceil(Math.abs(base10)) + 1;
+
+                        console.log("diff: ", diff, "base10: ", base10, "max: ", series.metadata.max, "min: ", series.metadata.min, 'digits: ', fractionDigits);
+
+
+                        if(label > 0 && (label < 0.001 || label > 100000)) {
+                                    label = label.toExponential(fractionDigits);
+                                } else {
+                                    label = label.toFixed(fractionDigits);
                                 }
 
                                 return label;
@@ -91,6 +109,8 @@
                     }
 
                     let yConfig = {title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, labelFormatter: yAxisLabelFormatter, interval: interval, logarithmic: yAxisLog == null ? false : true};
+
+                    yConfig.series = series;
 
                     if (separateYAxis) {
 
