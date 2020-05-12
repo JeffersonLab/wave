@@ -83,10 +83,6 @@
                         label = pv;
                     }
 
-                    if(yAxisLabel == null) {
-                        yAxisLabel = label;
-                    }
-
                     if (metadata !== null && metadata.sampled === true) {
                         labels[i] = label + ' (Sampled)';
                         lineDashType = "dot";
@@ -97,6 +93,12 @@
                     let yConfig = {title: yAxisLabel, margin: yAxisMargin, tickLength: 20, includeZero: false, lineColor: color, labelFontColor: color, titleFontColor: color, minimum: yAxisMin, maximum: yAxisMax, labelFormatter: yAxisLabelFormatter, interval: interval, logarithmic: yAxisLog == null ? false : true};
 
                     if (separateYAxis) {
+
+                        /*Try to ensure y axis is labeled if separate*/
+                        if(yAxisLabel == null) {
+                            yConfig.title = label;
+                        }
+
                         axisYIndex = i;
                         axisY.push(yConfig);
                     } else if(i == 0) { // Only push first one, all series will use it
