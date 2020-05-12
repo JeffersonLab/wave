@@ -2,7 +2,7 @@
 (function (jlab) {
     (function (wave) {
 
-        wave.MAX_STRIPCHART_POINTS = 100;
+        wave.MAX_STRIPCHART_POINTS = 100000;
 
         /*public wave viewer Enums*/
         wave.viewerModeEnum = Object.freeze({ARCHIVE: 1, STRIP: 2, WAVEFORM: 3});
@@ -115,13 +115,16 @@
                     return accumulated;
                 }
 
-                let getData = function (pv, multiple) {
+                let getData = function (pv, multiple, prepend) {
                     /*In case things go wrong we set to empty*/
                     let series = jlab.wave.pvToSeriesMap[pv],
                         preferences = series.preferences;
                     series.metadata = {};
-                    series.data = [];
                     series.error = null; /*Reset error before each request*/
+
+                    if(!prepend) {
+                        series.data = [];
+                    }
 
                     let functionname = null;
                     let functionpv = pv;
@@ -133,11 +136,21 @@
                         console.log('function pv: ' + functionpv);*/
                     }
 
+                    let start = _options.start,
+                        end = _options.end;
+
+                    if(_options.viewerMode ===  wave.viewerModeEnum.STRIP) {
+                        end = new Date();
+                        end.setMinutes(end.getMinutes() + 1); /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
+                        start = new Date(end);
+                        start.setMinutes(start.getMinutes() - 2); /*One hour ago*/
+                    }
+
                     let url = '/myquery/interval',
                             data = {
                                 c: functionpv,
-                                b: jlab.wave.util.toIsoDateTimeString(_options.start),
-                                e: jlab.wave.util.toIsoDateTimeString(_options.end),
+                                b: jlab.wave.util.toIsoDateTimeString(start),
+                                e: jlab.wave.util.toIsoDateTimeString(end),
                                 u: '',
                                 p: '',
                                 v: 17, /*Default is 6, which truncates small numbers to zero*/
@@ -189,18 +202,18 @@
                                 maxY = Number.NEGATIVE_INFINITY;
 
 
-                        let startUnixTime = _options.start.getTime();
+                        let startUnixTime = start.getTime();
 
                         /*First data point is "previous" point.  We need to set the timestamp to start time*/
                         if(json.data.length > 0) {
                             json.data[0].d = startUnixTime;
                         }
 
-                        /*Last data point should continue to end time*/
-                        if(json.data.length > 1) {
+                        /*Last data point should continue to end time, except when prepending!*/
+                        if(json.data.length > 1 && !prepend) {
                             let record = json.data[json.data.length - 1];
                             if(record.v === record.v) { /*if not NaN*/
-                                json.data.push({d: _options.end.getTime(), v: record.v});
+                                json.data.push({d: end.getTime(), v: record.v});
                             }
                         }
 
@@ -239,8 +252,10 @@
                                 }
 
                                 if (prev !== null && prev === prev) { /*prev === prev skips NaN*/
-                                    formattedData.push({x: timestamp, y: prev});
+                                    formattedData.push({x: timestamp, y: prev, source: 'mya'});
                                 }
+
+                                point.source = 'mya';
 
                                 formattedData.push(point);
                                 prev = value;
@@ -272,6 +287,8 @@
                                     point = {x: timestamp, y: value};
                                 }
 
+                                point.source = 'mya';
+
                                 formattedData.push(point);
                             }
                         }
@@ -293,7 +310,25 @@
                             series.metadata.labels = json.labels[0].value;
                         }
 
-                        series.data = formattedData;
+                        if(prepend) {
+                            let old = series.data,
+                                lastMyaPoint = formattedData[formattedData.length - 1];
+
+                            formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});
+
+                            series.data = formattedData.concat(old);
+                            series.data.sort(function(a,b){
+                                return a.x - b.x;
+                            });
+
+                        } else {
+                            series.data = formattedData;
+                        }
+
+                        for(var i = 0; i < series.data.length; i++) {
+                            let point = series.data[i];
+                            console.log(jlab.wave.util.toUserDateTimeString(new Date(point.x)), point.y, point.source);
+                        }
 
                         if (typeof json.count !== "undefined" && json.count !== null) {
                             console.log('database event count: ' + jlab.wave.util.intToStringWithCommas(json.count));
@@ -337,7 +372,7 @@
                     });
                     return promise;
                 };
-                this.fetchMultiple = function (pvs) {
+                this.fetchMultiple = function (pvs, prepend) {
                     if (pvs.length > 0) {
                         $.mobile.loading("show", {textVisible: true, theme: "b"});
 
@@ -346,7 +381,7 @@
                         for (let i = 0; i < pvs.length; i++) {
                             let pv = pvs[i];
 
-                            let promise = getData(pv, true);
+                            let promise = getData(pv, true, prepend);
 
                             promises.push(promise);
                         }
@@ -463,6 +498,12 @@
                     let series = wave.pvToSeriesMap[pv];
 
                     if (typeof series !== 'undefined') {
+
+                        if(series.data.length > 0 && lastUpdated < series.data[series.data.length - 1].x) {
+                            console.log('ca updates are older than existing mya data', lastUpdated, point);
+                            return;
+                        }
+
                         if(series.preferences.scaler) {
                             point = point * series.preferences.scaler;
                         }
@@ -476,6 +517,8 @@
                             series.metadata.max = point;
                             series.calculateFractionDigits();
                         }
+
+                        console.log(jlab.wave.util.toUserDateTimeString(new Date(lastUpdated)), point, 'ca');
 
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
@@ -493,6 +536,8 @@
                 con.onopen = function (e) {
                     if (chartManager.getPvs().length > 0) {
                         self.addPvs(chartManager.getPvs(), chartManager.getPreferences());
+
+                        self.fetchMultiple(chartManager.getPvs(), true);
                     }
                 };
 

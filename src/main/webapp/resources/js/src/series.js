@@ -60,12 +60,12 @@
                         }
 
                         if (prev !== null) {
-                            this.data.push({x: lastUpdated.getTime(), y: prev.y});
+                            this.data.push({x: lastUpdated.getTime(), y: prev.y, source: 'ca'});
                         }
 
                         prev = {x: lastUpdated.getTime(), y: point};
 
-                        this.data.push({x: lastUpdated.getTime(), y: point});
+                        this.data.push({x: lastUpdated.getTime(), y: point, source: 'ca'});
                     }
 
                     this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
