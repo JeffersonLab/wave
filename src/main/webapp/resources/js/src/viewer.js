@@ -396,15 +396,29 @@
                 let doRender = function() {
                     let newLastUpdated = new Date();
                     let keys = Object.keys(wave.pvToSeriesMap);
+
+                    let maxUpdates = 1;
+                    for (let i = 0; i < keys.length; i++) {
+                        let pv = keys[i];
+                        let series = wave.pvToSeriesMap[pv];
+                        if(series.updatesSinceLastRender > maxUpdates) {
+                            maxUpdates = series.updatesSinceLastRender;
+                        }
+                    }
+
                     for (let i = 0; i < keys.length; i++) {
                         let pv = keys[i];
                         let series = wave.pvToSeriesMap[pv];
 
-                        if(series.lastUpdated < renderLastUpdated) {
-                            series.addExtensionPoint(newLastUpdated)
+                        let diff = maxUpdates - series.updatesSinceLastRender;
+
+                        if(diff > 0) {
+                        //if(series.lastUpdated < renderLastUpdated) {
+                            series.addExtensionPoint(newLastUpdated, diff);
                         }
 
                         series.chart.canvasjsChart.render();
+                        series.updatesSinceLastRender = 0;
                     }
                     renderLastUpdated = newLastUpdated;
                 };
@@ -433,6 +447,7 @@
                     if (typeof series !== 'undefined') {
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated);
+                        series.updatesSinceLastRender++;
                     } else {
                         console.log('Ignoring update for: ', pv);
                     }

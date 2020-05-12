@@ -160,7 +160,7 @@
 
                         let width = c.canvasjsChart.axisY[0].bounds.x2 - c.canvasjsChart.axisY[0].bounds.x1;
 
-                                   if(width > maxYWidth) {
+                        if(width > maxYWidth) {
                             maxYWidth = width;
                         }
 

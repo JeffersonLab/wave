@@ -41,7 +41,7 @@
                     this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
                 };
 
-                this.addExtensionPoint = function (lastUpdated) {
+                this.addExtensionPoint = function (lastUpdated, num) {
                     if (this.data === null) {
                         this.data = [];
                     } else if (this.data.length > 0) {
@@ -51,9 +51,15 @@
 
                         let point = this.data[this.data.length - 1];
 
-                        if (this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
+                        /*This is way more efficient, but tick generator algorithm won't match...*/
+                        /*if (this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
                             this.data[this.data.length - 1].x = lastUpdated.getTime();
                         } else {
+                            this.data.push({x: lastUpdated.getTime(), y: point.y});
+                        }*/
+
+                        /*Inefficient, but ticks now line up*/
+                        for(var i = 0; i < num; i++) {
                             this.data.push({x: lastUpdated.getTime(), y: point.y});
                         }
 
