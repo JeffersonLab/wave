@@ -25,12 +25,23 @@
                     let max = this.metadata.max || 0,
                         min = this.metadata.min || 0,
                         diff = max - min,
-                        base10 = diff === 0 ? 0 : Math.log10(diff);
+                        numTicks = 5, /*An estimate*/
+                        tickDiff = diff / numTicks, /*Difference between ticks*/
+                        /*base10 = diff === 0 ? 0 : Math.log10(diff),*/
+                        tickBase10 = tickDiff === 0 ? 0 : Math.log10(tickDiff),
+                        decimal = tickBase10 < 0, /*If log is negative, then diff is fractional*/
+                        magnitude = Math.abs(diff),
+                        largeMagnitude = magnitude > 0 && (magnitude < 0.0001 || magnitude > 10000);
 
-                    this.fractionDigits = Math.ceil(Math.abs(base10)) + 1;
+                    if(decimal) {
+                        this.fractionDigits = Math.ceil(Math.abs(tickBase10));
+                    } else {
+                        this.fractionDigits = 0;
+                    }
 
-                    if(max > 0 && (max < 0.001 || max > 100000)) {
+                    if(largeMagnitude && (this.preferences.yAxisLog || tickDiff > 1000)) {
                         this.exponentialFormat = true;
+                        this.fractionDigits = 0;
                     } else {
                         this.exponentialFormat = false;
                     }
