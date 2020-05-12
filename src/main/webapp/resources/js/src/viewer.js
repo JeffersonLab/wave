@@ -143,7 +143,7 @@
                         end = new Date();
                         end.setMinutes(end.getMinutes() + 1); /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
                         start = new Date(end);
-                        start.setMinutes(start.getMinutes() - 2); /*One hour ago*/
+                        start.setMinutes(start.getMinutes() - _options.liveWindowMinutes);
                     }
 
                     let url = '/myquery/interval',

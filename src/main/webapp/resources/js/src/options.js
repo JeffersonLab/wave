@@ -36,6 +36,11 @@
                     if (this.viewerMode !== this.viewerMode) { /*Only NaN is not equal itself*/
                         this.viewerMode = wave.viewerModeEnum.ARCHIVE;
                     }
+
+                    /*Verify reasonable minutes*/
+                    if(this.liveWindowMinutes !== this.liveWindowMinutes || this.liveWindowMinutes < 1) {
+                        this.liveWindowMinutes = 1;
+                    }
                 };
             }
         };

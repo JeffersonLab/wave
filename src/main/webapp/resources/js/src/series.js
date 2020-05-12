@@ -73,7 +73,7 @@
                         }
 
                         if(numToRemove > 0) {
-                            this.data.slice(0, numToRemove);
+                            this.data.splice(0, numToRemove);
                         }
 
 
