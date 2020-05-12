@@ -447,10 +447,12 @@
                     if (typeof series !== 'undefined') {
                         if(point < series.metadata.min || series.metadata.min === undefined) {
                             series.metadata.min = point;
+                            series.calculateFractionDigits();
                         }
 
                         if(point > series.metadata.max || series.metadata.max === undefined) {
                             series.metadata.max = point;
+                            series.calculateFractionDigits();
                         }
 
                         series.lastUpdated = lastUpdated;

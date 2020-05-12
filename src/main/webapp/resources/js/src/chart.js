@@ -52,32 +52,22 @@
                             yAxisLog = preferences.yAxisLog ? preferences.yAxisLog : null,
                             interval = null;
 
-                    /*Set function, then call it immediately for fixed charts*/
-                    series.calculateFractionDigits = function() {
-                        let diff = (series.metadata.max || 0) - (series.metadata.min || 0),
-                            base10 = diff === 0 ? 0 : Math.log10(diff);
-                        series.fractionDigits = Math.ceil(Math.abs(base10)) + 1;
-                    }();
+                    /*Only called once for fixed charts, called whenever min/max changes for strip charts*/
+                    series.calculateFractionDigits();
 
                     var yAxisLabelFormatter = function(e) {
-                                var label = e.value,
-                                    fractionDigits = 1,
-                                    series = e.axis.series,
-                                    diff = (series.metadata.max || 0) - (series.metadata.min || 0),
-                                    base10 = diff === 0 ? 1 : Math.log10(diff),
-                                    fractionDigits = Math.ceil(Math.abs(base10)) + 1;
-
-                        console.log("diff: ", diff, "base10: ", base10, "max: ", series.metadata.max, "min: ", series.metadata.min, 'digits: ', fractionDigits);
-
+                        var label = e.value,
+                            series = e.axis.series,
+                            fractionDigits = series.fractionDigits;
 
                         if(label > 0 && (label < 0.001 || label > 100000)) {
-                                    label = label.toExponential(fractionDigits);
-                                } else {
-                                    label = label.toFixed(fractionDigits);
-                                }
+                            label = label.toExponential(fractionDigits);
+                        } else {
+                            label = label.toFixed(fractionDigits);
+                        }
 
-                                return label;
-                            };
+                        return label;
+                    };
 
                     if(series.metadata !== null &&
                         series.metadata.datatype === 'DBR_ENUM' &&
