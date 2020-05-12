@@ -60,7 +60,7 @@
                             series = e.axis.series,
                             fractionDigits = series.fractionDigits;
 
-                        if(label > 0 && (label < 0.001 || label > 100000)) {
+                        if(series.exponentialFormat) {
                             label = label.toExponential(fractionDigits);
                         } else {
                             label = label.toFixed(fractionDigits);

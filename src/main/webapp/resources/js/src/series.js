@@ -17,13 +17,23 @@
                 this.preferences = {color: null, label: null, yAxisLabel: null, yAxisMin: null, yAxisMax: null, scaler: null, yAxisLog: null}; /* Unlike metadata, this is maintained across fetch refreshes */
                 this.error = null; /* Series error message */
                 this.fractionDigits = 0;
+                this.exponentialFormat = false;
 
                 let prev = this.data !== null && this.data.length > 0 ? this.data[this.data.length - 1] : null;
 
                 this.calculateFractionDigits = function() {
-                    let diff = (this.metadata.max || 0) - (this.metadata.min || 0),
+                    let max = this.metadata.max || 0,
+                        min = this.metadata.min || 0,
+                        diff = max - min,
                         base10 = diff === 0 ? 0 : Math.log10(diff);
+
                     this.fractionDigits = Math.ceil(Math.abs(base10)) + 1;
+
+                    if(max > 0 && (max < 0.001 || max > 100000)) {
+                        this.exponentialFormat = true;
+                    } else {
+                        this.exponentialFormat = false;
+                    }
 
                     /*console.log("diff: ", diff, "base10: ", base10, "max: ", this.metadata.max, "min: ", this.metadata.min, 'digits: ', this.fractionDigits);*/
                 }
