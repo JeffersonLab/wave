@@ -11,7 +11,8 @@
                 _options.validate();
 
                 this.getOptions = function () {
-                    return $.extend(true, {}, _options); /*Return a clone to ensure immutability*/
+                    return _options;
+                    //return $.extend(true, {}, _options); /*Return a clone to ensure immutability*/
                 };
 
                 // const MAX_POINTS_PER_SERIES = 100000;

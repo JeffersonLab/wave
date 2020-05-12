@@ -49,15 +49,33 @@
                     /*console.log("diff: ", diff, "base10: ", base10, "max: ", this.metadata.max, "min: ", this.metadata.min, 'digits: ', this.fractionDigits);*/
                 }
 
-                this.addSteppedPoint = function (point, lastUpdated) {
+                this.addSteppedPoint = function (point, lastUpdated, options) {
                     if (this.data === null) {
                         this.data = [];
                     }
 
                     if (point !== undefined) {
-                        if (this.data.length >= wave.MAX_STRIPCHART_POINTS) {
-                            this.data.splice(0, 2); // Remove first two points, since we add two points!
+                        let windowMinutes = options.liveWindowMinutes || 30;
+                        let oldestTime = new Date();
+                        oldestTime.setMinutes(oldestTime.getMinutes() - windowMinutes);
+
+                        let oldestUnixTime = oldestTime.getTime(),
+                            numToRemove = 0;
+
+                        for(var i = 0; i < this.data.length; i++) {
+                            var p = this.data[i];
+
+                            if(p.x < oldestUnixTime) {
+                                numToRemove++;
+                            } else {
+                                break;
+                            }
                         }
+
+                        if(numToRemove > 0) {
+                            this.data.slice(0, numToRemove);
+                        }
+
 
                         if (prev !== null) {
                             this.data.push({x: lastUpdated.getTime(), y: prev.y, source: 'ca'});

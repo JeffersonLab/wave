@@ -141,6 +141,7 @@
                             endTime = wave.util.parseUserTime(endTimeStr),
                             myaDeployment = $("#mya-deployment").val(),
                             myaLimit = $("#mya-limit").val(),
+                            liveWindowMinutes = $("#live-window-minutes").val(),
                             title = $("#chart-title-input").val();
 
                     _options.start.setFullYear(startDate.getFullYear());
@@ -161,6 +162,7 @@
                     _options.viewerMode = parseInt($("#viewer-mode-select").val());
                     _options.myaDeployment = myaDeployment;
                     _options.myaLimit = myaLimit;
+                    _options.liveWindowMinutes = liveWindowMinutes;
                     _options.title = title;
 
                     _options.validate();
@@ -172,6 +174,7 @@
                     uri.setQuery("viewerMode", _options.viewerMode);
                     uri.setQuery("myaDeployment", _options.myaDeployment);
                     uri.setQuery("myaLimit", _options.myaLimit);
+                    uri.setQuery("windowMinutes", _options.liveWindowMinutes);
                     uri.setQuery("title", _options.title);
                     window.history.replaceState({}, 'Set Options', uri.href());
 
@@ -352,6 +355,7 @@
                     $("#viewer-mode-select").val(_chartManager.getOptions().viewerMode).change();
                     $("#mya-deployment").val(_chartManager.getOptions().myaDeployment);
                     $("#mya-limit").val(_chartManager.getOptions().myaLimit);
+                    $("#live-window-minutes").val(_chartManager.getOptions.liveWindowMinutes);
                     $("#chart-title-input").val(_chartManager.getOptions().title);
                 });
 

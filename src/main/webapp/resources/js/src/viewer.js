@@ -2,7 +2,7 @@
 (function (jlab) {
     (function (wave) {
 
-        wave.MAX_STRIPCHART_POINTS = 100000;
+        /*wave.MAX_STRIPCHART_POINTS = 100;*/
 
         /*public wave viewer Enums*/
         wave.viewerModeEnum = Object.freeze({ARCHIVE: 1, STRIP: 2, WAVEFORM: 3});
@@ -314,7 +314,7 @@
                             let old = series.data,
                                 lastMyaPoint = formattedData[formattedData.length - 1];
 
-                            formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});
+                            formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, source: 'mya', markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});
 
                             series.data = formattedData.concat(old);
                             series.data.sort(function(a,b){
@@ -521,7 +521,7 @@
                         console.log(jlab.wave.util.toUserDateTimeString(new Date(lastUpdated)), point, 'ca');
 
                         series.lastUpdated = lastUpdated;
-                        series.addSteppedPoint(point, lastUpdated);
+                        series.addSteppedPoint(point, lastUpdated, chartManager.getOptions());
                         series.updatesSinceLastRender++;
                     } else {
                         console.log('Ignoring update for: ', pv);

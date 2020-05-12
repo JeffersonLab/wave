@@ -10,6 +10,7 @@
                 this.end = new Date(this.start.getTime());
                 this.myaDeployment = 'ops';
                 this.myaLimit = 100000;
+                this.liveWindowMinutes = 30;
 
                 this.start.setMinutes(this.start.getMinutes() - 5);
 

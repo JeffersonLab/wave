@@ -41,6 +41,13 @@
                     window.history.replaceState({}, 'Set myaLimit', url);
                 }
 
+                if (uri.hasQuery("windowMinutes")) {
+                    _options.liveWindowMinutes = queryMap["windowMinutes"];
+                } else {
+                    let url = $.mobile.path.addSearchParams($.mobile.path.getLocation(), {windowMinutes: _options.liveWindowMinutes});
+                    window.history.replaceState({}, 'Set windowMinutes', url);
+                }
+
                 if (uri.hasQuery("title")) {
                     _options.title = queryMap["title"];
                 } else {

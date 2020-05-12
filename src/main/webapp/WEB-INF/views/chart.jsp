@@ -30,13 +30,15 @@
                     <option value="1">Fixed Plot</option>
                     <option value="2">Live Plot</option>
                 </select>
-                <h3>Time Interval</h3>
+                <h3>Fixed Time Interval</h3>
                 <div class="endpoint-header">Start</div>
                 <input type="text" id="start-date-input" placeholder="Start Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="start-time-input" placeholder="Start Time"/>
                 <div class="endpoint-header">End</div>
                 <input type="text" id="end-date-input" placeholder="End Date" data-options="{&quot;overrideDateFormat&quot;: &quot;%b %d %Y&quot;}"/>
                 <input type="text" id="end-time-input" placeholder="End Time"/>
+                <h3>Live Window</h3>
+                <input type="text" id="live-window-minutes" placeholder="Size in Minutes"/>
                 <h3>Multiple PVs</h3>
                 <select id="layout-mode-select">
                     <option value="1">Separate Chart</option>
