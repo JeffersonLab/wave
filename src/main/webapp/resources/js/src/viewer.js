@@ -252,10 +252,8 @@
                                 }
 
                                 if (prev !== null && prev === prev) { /*prev === prev skips NaN*/
-                                    formattedData.push({x: timestamp, y: prev, source: 'mya'});
+                                    formattedData.push({x: timestamp, y: prev});
                                 }
-
-                                point.source = 'mya';
 
                                 formattedData.push(point);
                                 prev = value;
@@ -287,8 +285,6 @@
                                     point = {x: timestamp, y: value};
                                 }
 
-                                point.source = 'mya';
-
                                 formattedData.push(point);
                             }
                         }
@@ -314,7 +310,7 @@
                             let old = series.data,
                                 lastMyaPoint = formattedData[formattedData.length - 1];
 
-                            formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, source: 'mya', markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});
+                            /*formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, source: 'mya', markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});*/
 
                             series.data = formattedData.concat(old);
                             series.data.sort(function(a,b){
@@ -325,10 +321,10 @@
                             series.data = formattedData;
                         }
 
-                        for(var i = 0; i < series.data.length; i++) {
+                        /*for(var i = 0; i < series.data.length; i++) {
                             let point = series.data[i];
                             console.log(jlab.wave.util.toUserDateTimeString(new Date(point.x)), point.y, point.source);
-                        }
+                        }*/
 
                         if (typeof json.count !== "undefined" && json.count !== null) {
                             console.log('database event count: ' + jlab.wave.util.intToStringWithCommas(json.count));
@@ -518,7 +514,7 @@
                             series.calculateFractionDigits();
                         }
 
-                        console.log(jlab.wave.util.toUserDateTimeString(new Date(lastUpdated)), point, 'ca');
+                        /*console.log(jlab.wave.util.toUserDateTimeString(new Date(lastUpdated)), point, 'ca');*/
 
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated, chartManager.getOptions());

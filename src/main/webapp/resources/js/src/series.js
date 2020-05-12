@@ -78,12 +78,12 @@
 
 
                         if (prev !== null) {
-                            this.data.push({x: lastUpdated.getTime(), y: prev.y, source: 'ca'});
+                            this.data.push({x: lastUpdated.getTime(), y: prev.y});
                         }
 
                         prev = {x: lastUpdated.getTime(), y: point};
 
-                        this.data.push({x: lastUpdated.getTime(), y: point, source: 'ca'});
+                        this.data.push({x: lastUpdated.getTime(), y: point});
                     }
 
                     this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
@@ -93,9 +93,6 @@
                     if (this.data === null) {
                         this.data = [];
                     } else if (this.data.length > 0) {
-                        if (this.data.length >= wave.MAX_STRIPCHART_POINTS) {
-                            this.data.shift();
-                        }
 
                         let point = this.data[this.data.length - 1];
 

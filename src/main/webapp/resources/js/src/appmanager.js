@@ -355,7 +355,7 @@
                     $("#viewer-mode-select").val(_chartManager.getOptions().viewerMode).change();
                     $("#mya-deployment").val(_chartManager.getOptions().myaDeployment);
                     $("#mya-limit").val(_chartManager.getOptions().myaLimit);
-                    $("#live-window-minutes").val(_chartManager.getOptions.liveWindowMinutes);
+                    $("#live-window-minutes").val(_chartManager.getOptions().liveWindowMinutes);
                     $("#chart-title-input").val(_chartManager.getOptions().title);
                 });
 
