@@ -228,7 +228,7 @@
                 }
 
                 if (_chartManager.getOptions().viewerMode === wave.viewerModeEnum.STRIP) {
-                    subtitle = 'Sliding Window Live Plot';
+                    subtitle = 'Live Plot Last ' + _chartManager.getOptions().liveWindowMinutes + ' Minutes';
                 }
 
                 let subtitleSize = titleSize * 0.75;
