@@ -1,6 +1,7 @@
 plugins {
     id 'java'
 	id 'war'
+    id "eu.butter.gradle.js" version "2.15.1"
 }
 
 description = "Web Archive Viewer and Expositor"
@@ -25,14 +26,44 @@ dependencies {
 	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 }
 
+javascript.source {
+    dev {
+        js {
+            srcDir "${projectDir}/src/main/webapp/resources/js/src"
+            include "*.js"
+        }
+    }
+}
+
+combineJs {
+    encoding = "UTF-8"
+    source = javascript.source.dev.js.files
+    dest = file("${buildDir}/web/resources/js/combined.js")
+    dependsOn build
+}
+
+/*combineJs {
+    source = ["${projectDir}/src/main/webapp/resources/js/src/file1.js", "${projectDir}/js/file2.js"]
+    dest = file("${buildDir}/web/resources/js/combined.min.js")
+}*/
+
+minifyJs {
+    source = "${buildDir}/web/resources/js/combined.js"
+    dest = file("${buildDir}/web/resources/js/combined.min.js")
+    dependsOn combineJs
+}
+
 war {
     archiveName 'wave.war' // Otherwise defaults to having version attached which is pain to re-deploy on version upgrade
     filesMatching('WEB-INF/web.xml') {
         filter {
-            String line -> line.replaceAll("@VERSION@", version)
+            line -> line.replaceAll("@VERSION@", version)
         }
         filter {
-            String line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
+            line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
+        }
+        filter {
+            line -> line.replaceAll("@PRODUCTION_RELEASE@", "false")
         }
     }
 }
