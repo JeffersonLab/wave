@@ -4,7 +4,7 @@ plugins {
 }
 
 description = "Web Archive Viewer and Expositor"
-version = '2.0.0'
+version = '2.0.1'
 
 ext {
     releaseDate = 'May 13 2020'
