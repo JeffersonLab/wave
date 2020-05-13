@@ -109,7 +109,9 @@
                     updateViewer();
 
                     if (_options.viewerMode !== _old.viewerMode) {
-                        fetchRequired = true;
+                        /*Re-fetching isn't going to cut it.  If user changes mode, we must re-load entire app*/
+                        //fetchRequired = true;
+                        location.reload();
                     }
 
                     // If user has requested a new deployment, then request all of the data again
