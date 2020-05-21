@@ -12,6 +12,8 @@
         wave.pvToSeriesMap = {};
         wave.charts = [];
         wave.selectedSeries; /*When you click on series label in legend*/
+        wave.windowStart;
+        wave.windowEnd;
         
         /*http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=5*/
         /*One global set since viewer is destroyed on options update*/
@@ -140,10 +142,8 @@
                         end = _options.end;
 
                     if(_options.viewerMode ===  wave.viewerModeEnum.STRIP) {
-                        end = new Date();
-                        end.setMinutes(end.getMinutes() + 1); /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
-                        start = new Date(end);
-                        start.setMinutes(start.getMinutes() - _options.liveWindowMinutes);
+                        end = wave.windowEnd;
+                        start = wave.windowStart;
                     }
 
                     let url = '/myquery/interval',
@@ -312,6 +312,7 @@
 
                             /*formattedData.push({x: lastMyaPoint.x, y: lastMyaPoint.y, source: 'mya', markerType: 'circle', markerColor: 'red', markerSize: 12, toolTipContent: 'End of Mya History'});*/
 
+                            /*Should we be using unshift() instead of concat()?*/
                             series.data = formattedData.concat(old);
                             series.data.sort(function(a,b){
                                 return a.x - b.x;
@@ -422,36 +423,31 @@
 
                 let self = this;
 
-                let renderLastUpdated = new Date();
+                wave.windowEnd = new Date();
+                wave.windowEnd.setMinutes(wave.windowEnd.getMinutes() + 1); /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
+                wave.windowStart = new Date(wave.windowEnd);
+                wave.windowStart.setMinutes(wave.windowStart.getMinutes() - chartManager.getOptions().liveWindowMinutes);
 
                 let doRender = function() {
                     let newLastUpdated = new Date();
                     let keys = Object.keys(wave.pvToSeriesMap);
 
-                    let maxUpdates = 1;
-                    for (let i = 0; i < keys.length; i++) {
-                        let pv = keys[i];
-                        let series = wave.pvToSeriesMap[pv];
-                        if(series.updatesSinceLastRender > maxUpdates) {
-                            maxUpdates = series.updatesSinceLastRender;
-                        }
-                    }
-
                     for (let i = 0; i < keys.length; i++) {
                         let pv = keys[i];
                         let series = wave.pvToSeriesMap[pv];
 
-                        let diff = maxUpdates - series.updatesSinceLastRender;
-
-                        if(diff > 0) {
-                        //if(series.lastUpdated < renderLastUpdated) {
-                            series.addExtensionPoint(newLastUpdated, diff);
+                        if(series.lastUpdated < wave.windowEnd) {
+                            series.addExtensionPoint(newLastUpdated);
                         }
+
+                        series.trimOldPoints();
 
                         series.chart.canvasjsChart.render();
-                        series.updatesSinceLastRender = 0;
                     }
-                    renderLastUpdated = newLastUpdated;
+
+                    wave.windowEnd.setTime(newLastUpdated.getTime());
+                    wave.windowStart = new Date(wave.windowEnd);
+                    wave.windowStart.setMinutes(wave.windowStart.getMinutes() - chartManager.getOptions().liveWindowMinutes);
                 };
 
 
@@ -520,7 +516,6 @@
 
                         series.lastUpdated = lastUpdated;
                         series.addSteppedPoint(point, lastUpdated, chartManager.getOptions());
-                        series.updatesSinceLastRender++;
                     } else {
                         console.log('Ignoring update for: ', pv);
                     }

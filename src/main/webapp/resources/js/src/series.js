@@ -55,28 +55,6 @@
                     }
 
                     if (point !== undefined) {
-                        let windowMinutes = options.liveWindowMinutes || 30;
-                        let oldestTime = new Date();
-                        oldestTime.setMinutes(oldestTime.getMinutes() - windowMinutes);
-
-                        let oldestUnixTime = oldestTime.getTime(),
-                            numToRemove = 0;
-
-                        for(var i = 0; i < this.data.length; i++) {
-                            var p = this.data[i];
-
-                            if(p.x < oldestUnixTime) {
-                                numToRemove++;
-                            } else {
-                                break;
-                            }
-                        }
-
-                        if(numToRemove > 0) {
-                            this.data.splice(0, numToRemove);
-                        }
-
-
                         if (prev !== null) {
                             this.data.push({x: lastUpdated.getTime(), y: prev.y});
                         }
@@ -89,22 +67,43 @@
                     this.chart.canvasjsChart.options.data[this.chartSeriesIndex].dataPoints = this.data;
                 };
 
-                this.addExtensionPoint = function (lastUpdated, num) {
+                this.trimOldPoints = function() {
+                    let oldestUnixTime = wave.windowStart.getTime(),
+                        numToRemove = 0;
+
+                    /* Find points older than start of sliding window */
+                    for(var i = 0; i < this.data.length; i++) {
+                        var p = this.data[i];
+
+                        if(p.x < oldestUnixTime) {
+                            numToRemove++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if(numToRemove > 0) {
+                        /*Even smarter would be to simply change x and y of last-to-be-removed instead of removing/adding point?*/
+                        let newFirstPoint = {x: oldestUnixTime, y: this.data[numToRemove - 1].y};
+
+                        this.data.splice(0, numToRemove);
+
+                        /*If you remove leading points, you must ensure point exists at window start*/
+                        this.data.unshift(newFirstPoint);
+                    }
+                };
+
+                /*If multiple series, you don't want one falling behind, plus nice to see series grow even if only one*/
+                this.addExtensionPoint = function (lastUpdated) {
                     if (this.data === null) {
                         this.data = [];
                     } else if (this.data.length > 0) {
 
                         let point = this.data[this.data.length - 1];
 
-                        /*This is way more efficient, but tick generator algorithm won't match...*/
-                        /*if (this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
+                        if (this.data.length > 2 && this.data[this.data.length - 2].y === point.y) {
                             this.data[this.data.length - 1].x = lastUpdated.getTime();
                         } else {
-                            this.data.push({x: lastUpdated.getTime(), y: point.y});
-                        }*/
-
-                        /*Inefficient, but ticks now line up*/
-                        for(var i = 0; i < num; i++) {
                             this.data.push({x: lastUpdated.getTime(), y: point.y});
                         }
 
