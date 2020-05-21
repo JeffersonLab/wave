@@ -39,7 +39,6 @@ combineJs {
     encoding = "UTF-8"
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/web/resources/js/combined.js")
-    dependsOn build
 }
 
 /*combineJs {
@@ -50,6 +49,7 @@ combineJs {
 minifyJs {
     source = "${buildDir}/web/resources/js/combined.js"
     dest = file("${buildDir}/web/resources/js/combined.min.js")
+    closure.compilationLevel = 'WHITESPACE_ONLY'
     dependsOn combineJs
 }
 
@@ -63,7 +63,14 @@ war {
             line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
         }
         filter {
-            line -> line.replaceAll("@PRODUCTION_RELEASE@", "false")
+            line -> line.replaceAll("@PRODUCTION_RELEASE@", "true")
         }
     }
+
+    from("${buildDir}/web/resources/js") {
+        include 'combined.min.js'
+        into "resources/js"
+    }
+
+    dependsOn minifyJs
 }
