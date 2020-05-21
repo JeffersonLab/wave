@@ -463,6 +463,8 @@
                     self.doLayout();
 
                     con.monitorPvs(pvs);
+
+                    self.fetchMultiple(pvs, true);
                 };
 
                 wave.StripViewer.prototype.refresh = function () {
@@ -532,8 +534,6 @@
                 con.onopen = function (e) {
                     if (chartManager.getPvs().length > 0) {
                         self.addPvs(chartManager.getPvs(), chartManager.getPreferences());
-
-                        self.fetchMultiple(chartManager.getPvs(), true);
                     }
                 };
 
