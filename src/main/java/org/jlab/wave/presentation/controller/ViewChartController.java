@@ -1,4 +1,4 @@
-package org.jlab.wave;
+package org.jlab.wave.presentation.controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +12,7 @@ import java.io.IOException;
  * @author ryans
  */
 @WebServlet(name = "ChartController", urlPatterns = {"/chart"})
-public class ChartController extends HttpServlet {
+public class ViewChartController extends HttpServlet {
     
     /**
      * Handles the HTTP <code>GET</code> method.
