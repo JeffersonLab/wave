@@ -404,6 +404,8 @@
                     Viewer.prototype.addPvs(pvs, preferences);
 
                     this.fetchMultiple(pvs);
+
+                    wave.initialized = true;
                 };
 
                 wave.ArchiveViewer.prototype.refresh = function () {
@@ -530,6 +532,8 @@
                     if (chartManager.getPvs().length > 0) {
                         self.addPvs(chartManager.getPvs(), chartManager.getPreferences());
                     }
+
+                    wave.initialized = true;
                 };
 
                 con.onupdate = function (e) {

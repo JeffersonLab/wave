@@ -222,8 +222,10 @@
 
                 /*Don't register resize event until after page load*/
                 $(window).on("resize", function () {
-                    console.log("window resize");
-                    _viewer.doLayout();
+                    /*Don't try to reference series until Viewer is initialized*/
+                    if(wave.initialized) {
+                        _viewer.doLayout();
+                    }
                 });
             }
         };
