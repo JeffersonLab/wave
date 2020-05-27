@@ -2,6 +2,7 @@ package org.jlab.wave.presentation.controller;
 
 import org.jlab.wave.business.service.ChartConfigService;
 import org.jlab.wave.persistence.model.ChartConfig;
+import org.jlab.wave.persistence.model.SeriesConfig;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -88,6 +89,18 @@ public class ChartConfigController extends HttpServlet {
                     gen.write("mya-deployment", config.getMyaDeployment());
 
                     gen.write("mya-limit", config.getMyaLimit());
+
+                    gen.writeStartArray("series");
+
+                    for(SeriesConfig series: config.getSeriesConfigList()) {
+                        gen.writeStartObject();
+                        gen.write("series_config_id", series.getSeriesConfigId());
+                        gen.write("pv", series.getPv());
+                        gen.write("weight", series.getWeight());
+                        gen.writeEnd();
+                    }
+
+                    gen.writeEnd();
 
                     gen.writeEnd();
                 }

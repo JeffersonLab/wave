@@ -1,6 +1,7 @@
 package org.jlab.wave.business.service;
 
 import org.jlab.wave.persistence.model.ChartConfig;
+import org.jlab.wave.persistence.model.SeriesConfig;
 import org.jlab.wave.persistence.util.DatabaseManager;
 
 import java.sql.*;
@@ -10,6 +11,8 @@ import java.util.List;
 public class ChartConfigService {
     public List<ChartConfig> fetch() throws SQLException {
         List<ChartConfig> list = new ArrayList<>();
+
+        SeriesConfigService seriesService = new SeriesConfigService();
 
         try(Connection con = DatabaseManager.getConnection()) {
             try(PreparedStatement stmt = con.prepareStatement("select * from wave.chart_config")) {
@@ -34,6 +37,10 @@ public class ChartConfigService {
                         config.setWindowMinutes(windowMinutes);
                         config.setMyaDeployment(myaDeployment);
                         config.setMyaLimit(myaLimit);
+
+                        List<SeriesConfig> seriesConfigList = seriesService.fetch(con, chartConfigId);
+
+                        config.setSeriesConfigList(seriesConfigList);
 
                         list.add(config);
                     }
