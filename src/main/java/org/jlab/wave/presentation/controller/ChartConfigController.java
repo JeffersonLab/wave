@@ -1,5 +1,8 @@
 package org.jlab.wave.presentation.controller;
 
+import org.jlab.wave.business.service.ChartConfigService;
+import org.jlab.wave.persistence.model.ChartConfig;
+
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
 import javax.servlet.ServletException;
@@ -9,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -30,6 +35,16 @@ public class ChartConfigController extends HttpServlet {
             throws ServletException, IOException {
         String errorReason = null;
 
+        ChartConfigService service = new ChartConfigService();
+
+        List<ChartConfig> list = null;
+
+        try {
+            list = service.fetch();
+        } catch(SQLException e) {
+            errorReason = e.getMessage();
+        }
+
         response.setContentType("application/json");
 
         OutputStream out = response.getOutputStream();
@@ -41,7 +56,21 @@ public class ChartConfigController extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 gen.write("error", errorReason);
             } else {
+                gen.writeStartArray("configs");
+                for(ChartConfig config: list) {
+                    gen.writeStartObject();
+                    gen.write("chart-config-id", config.getChartConfigId());
 
+                    if(config.getUser() == null) {
+                        gen.writeNull("user");
+                    } else {
+                        gen.write("user", config.getUser());
+                    }
+
+                    gen.write("name", config.getName());
+                    gen.writeEnd();
+                }
+                gen.writeEnd();
             }
 
             gen.writeEnd();
