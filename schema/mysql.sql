@@ -5,23 +5,23 @@ create user 'wave' IDENTIFIED BY 'password goes here';
 grant select on wave.* to 'wave';
 
 create table chart_config (
-    chart_config_id int not null auto_increment primary key,
+    chart_config_id bigint not null auto_increment primary key,
     user varchar(24) null,
     name varchar(32) not null,
     start timestamp null,
     end timestamp null,
-    window_minutes int null,
+    window_minutes int not null default 30,
     mya_deployment varchar(12) not null default 'ops',
-    mya_limit int default 100000,
+    mya_limit bigint not null default 100000,
     layout_mode enum('separate', 'shared', 'shared_separate_axis') not null default 'separate',
     viewer_mode enum('fixed', 'live') not null default 'fixed',
     unique(user, name)
 );
 
 create table series_config (
-    series_config_id int not null auto_increment primary key,
-    chart_config_id int not null,
-    weight int not null default 0,
+    series_config_id bigint not null auto_increment primary key,
+    chart_config_id bigint not null,
+    weight smallint not null default 0,
     pv varchar(128) not null,
     label varchar(128) null,
     color varchar(128) null,

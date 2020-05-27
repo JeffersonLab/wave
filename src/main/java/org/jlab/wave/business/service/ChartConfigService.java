@@ -3,10 +3,7 @@ package org.jlab.wave.business.service;
 import org.jlab.wave.persistence.model.ChartConfig;
 import org.jlab.wave.persistence.util.DatabaseManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +17,23 @@ public class ChartConfigService {
                     while(rs.next()) {
                         ChartConfig config = new ChartConfig();
 
-                        int chartConfigId = rs.getInt("chart_config_id");
+                        long chartConfigId = rs.getLong("chart_config_id");
                         String user = rs.getString("user");
                         String name = rs.getString("name");
+                        Timestamp start = rs.getTimestamp("start");
+                        Timestamp end = rs.getTimestamp("end");
+                        int windowMinutes = rs.getInt("window_minutes");
+                        String myaDeployment = rs.getString("mya_deployment");
+                        long myaLimit = rs.getLong("mya_limit");
 
                         config.setChartConfigId(chartConfigId);
                         config.setUser(user);
                         config.setName(name);
+                        config.setStart(start == null ? null : start.toInstant());
+                        config.setEnd(end == null ? null : end.toInstant());
+                        config.setWindowMinutes(windowMinutes);
+                        config.setMyaDeployment(myaDeployment);
+                        config.setMyaLimit(myaLimit);
 
                         list.add(config);
                     }

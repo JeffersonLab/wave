@@ -9,7 +9,7 @@ public class ChartConfig {
     String user;
     Instant start;
     Instant end;
-    long windowMinutes;
+    int windowMinutes;
     String myaDeployment;
     long myaLimit;
     String title;
@@ -57,11 +57,11 @@ public class ChartConfig {
         this.end = end;
     }
 
-    public long getWindowMinutes() {
+    public int getWindowMinutes() {
         return windowMinutes;
     }
 
-    public void setWindowMinutes(long windowMinutes) {
+    public void setWindowMinutes(int windowMinutes) {
         this.windowMinutes = windowMinutes;
     }
 

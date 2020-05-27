@@ -2,6 +2,7 @@ package org.jlab.wave.persistence.model;
 
 public class SeriesConfig {
     long id;
+    short weight;
     String pv;
     String label;
     String color;

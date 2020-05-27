@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -68,6 +70,25 @@ public class ChartConfigController extends HttpServlet {
                     }
 
                     gen.write("name", config.getName());
+
+                    if(config.getStart() == null) {
+                        gen.writeNull("start");
+                    } else {
+                        gen.write("start", DateTimeFormatter.ISO_INSTANT.format(config.getStart().truncatedTo(ChronoUnit.SECONDS)));
+                    }
+
+                    if(config.getEnd() == null) {
+                        gen.writeNull("end");
+                    } else {
+                        gen.write("end", DateTimeFormatter.ISO_INSTANT.format(config.getEnd().truncatedTo(ChronoUnit.SECONDS)));
+                    }
+
+                    gen.write("window-minutes", config.getWindowMinutes());
+
+                    gen.write("mya-deployment", config.getMyaDeployment());
+
+                    gen.write("mya-limit", config.getMyaLimit());
+
                     gen.writeEnd();
                 }
                 gen.writeEnd();
