@@ -97,6 +97,45 @@ public class ChartConfigController extends HttpServlet {
                         gen.write("series_config_id", series.getSeriesConfigId());
                         gen.write("pv", series.getPv());
                         gen.write("weight", series.getWeight());
+
+                        if(series.getLabel() == null) {
+                            gen.writeNull("label");
+                        } else {
+                            gen.write("label", series.getLabel());
+                        }
+
+                        if(series.getColor() == null) {
+                            gen.writeNull("color");
+                        } else {
+                            gen.write("color", series.getColor());
+                        }
+
+                        if(series.getyAxisLabel() == null) {
+                            gen.writeNull("y-axis-label");
+                        } else {
+                            gen.write("y-axis-label", series.getyAxisLabel());
+                        }
+
+                        if(series.getyAxisMin() == null) {
+                            gen.writeNull("y-axis-min");
+                        } else {
+                            gen.write("y-axis-min", series.getyAxisMin());
+                        }
+
+                        if(series.getyAxisMax() == null) {
+                            gen.writeNull("y-axis-max");
+                        } else {
+                            gen.write("y-axis-max", series.getyAxisMax());
+                        }
+
+                        gen.write("y-axis-log-scale", series.isyAxisLogScale());
+
+                        if(series.getScaler() == null) {
+                            gen.writeNull("scaler");
+                        } else {
+                            gen.write("scaler", series.getScaler());
+                        }
+
                         gen.writeEnd();
                     }
 

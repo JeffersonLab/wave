@@ -9,7 +9,7 @@ public class SeriesConfig {
     String yAxisLabel = null;
     Float yAxisMin = null;
     Float yAxisMax = null;
-    boolean yAxisLog = false;
+    boolean yAxisLogScale = false;
     Float scaler = null;
 
     public long getSeriesConfigId() {
@@ -76,12 +76,12 @@ public class SeriesConfig {
         this.yAxisMax = yAxisMax;
     }
 
-    public boolean isyAxisLog() {
-        return yAxisLog;
+    public boolean isyAxisLogScale() {
+        return yAxisLogScale;
     }
 
-    public void setyAxisLog(boolean yAxisLog) {
-        this.yAxisLog = yAxisLog;
+    public void setyAxisLogScale(boolean yAxisLogScale) {
+        this.yAxisLogScale = yAxisLogScale;
     }
 
     public Float getScaler() {
