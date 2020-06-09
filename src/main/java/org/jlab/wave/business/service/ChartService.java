@@ -6,7 +6,9 @@ import org.jlab.wave.persistence.util.DatabaseManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class ChartService {
     public List<Chart> fetch() throws SQLException {
@@ -49,5 +51,32 @@ public class ChartService {
         }
 
         return list;
+    }
+
+    public void create(Chart chart) throws SQLException {
+        try(Connection con = DatabaseManager.getConnection()) {
+            try (PreparedStatement stmt = con.prepareStatement("insert (name, user) into wave.chart values(?, ?)")) {
+                stmt.setString(1, chart.getName());
+                stmt.setString(2, chart.getUser());
+
+                Timestamp startStamp = null;
+                if(chart.getStart() != null) {
+                    startStamp = Timestamp.from(chart.getStart());
+                }
+                stmt.setTimestamp(3, startStamp, Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+
+                Timestamp endStamp = null;
+                if(chart.getEnd() != null) {
+                    endStamp = Timestamp.from(chart.getEnd());
+                }
+                stmt.setTimestamp(4, endStamp, Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+
+
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    public void update(Chart chart) throws SQLException {
     }
 }

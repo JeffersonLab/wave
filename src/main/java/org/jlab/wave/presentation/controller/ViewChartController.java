@@ -11,7 +11,7 @@ import java.io.IOException;
  *
  * @author ryans
  */
-@WebServlet(name = "ChartController", urlPatterns = {"/chart"})
+@WebServlet(name = "ViewChartController", urlPatterns = {"/chart"})
 public class ViewChartController extends HttpServlet {
     
     /**
