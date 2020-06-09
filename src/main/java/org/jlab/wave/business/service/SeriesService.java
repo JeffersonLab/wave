@@ -1,30 +1,30 @@
 package org.jlab.wave.business.service;
 
-import org.jlab.wave.persistence.model.SeriesConfig;
+import org.jlab.wave.persistence.model.Series;
 import org.jlab.wave.persistence.util.DatabaseManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SeriesConfigService {
+public class SeriesService {
 
-    public List<SeriesConfig> fetch(long chartConfigId) throws SQLException {
+    public List<Series> fetch(long chartId) throws SQLException {
         try(Connection con = DatabaseManager.getConnection()) {
-            return fetch(con, chartConfigId);
+            return fetch(con, chartId);
         }
     }
 
-    public List<SeriesConfig> fetch(Connection con, long chartConfigId) throws SQLException {
-        List<SeriesConfig> list = new ArrayList<>();
+    public List<Series> fetch(Connection con, long chartId) throws SQLException {
+        List<Series> list = new ArrayList<>();
 
-            try(PreparedStatement stmt = con.prepareStatement("select * from wave.series_config where chart_config_id = ? order by weight")) {
-                stmt.setLong(1, chartConfigId);
+            try(PreparedStatement stmt = con.prepareStatement("select * from wave.series where chart_id = ? order by weight")) {
+                stmt.setLong(1, chartId);
                 try(ResultSet rs = stmt.executeQuery()) {
                     while(rs.next()) {
-                        SeriesConfig config = new SeriesConfig();
+                        Series config = new Series();
 
-                        long seriesConfigId = rs.getLong("series_config_id");
+                        long seriesId = rs.getLong("series_id");
                         String pv = rs.getString("pv");
                         short weight = rs.getShort("weight");
                         String label = rs.getString("label");
@@ -50,7 +50,7 @@ public class SeriesConfigService {
                             scaler = null;
                         }
 
-                        config.setSeriesConfigId(seriesConfigId);
+                        config.setSeriesId(seriesId);
                         config.setPv(pv);
                         config.setWeight(weight);
                         config.setLabel(label);

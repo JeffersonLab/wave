@@ -1,7 +1,7 @@
 package org.jlab.wave.persistence.model;
 
-public class SeriesConfig {
-    long seriesConfigId;
+public class Series {
+    long seriesId;
     short weight;
     String pv;
     String label;
@@ -12,12 +12,12 @@ public class SeriesConfig {
     boolean yAxisLogScale = false;
     Float scaler = null;
 
-    public long getSeriesConfigId() {
-        return seriesConfigId;
+    public long getSeriesId() {
+        return seriesId;
     }
 
-    public void setSeriesConfigId(long seriesConfigId) {
-        this.seriesConfigId = seriesConfigId;
+    public void setSeriesId(long seriesConfigId) {
+        this.seriesId = seriesId;
     }
 
     public short getWeight() {

@@ -1,8 +1,8 @@
 package org.jlab.wave.presentation.controller;
 
-import org.jlab.wave.business.service.ChartConfigService;
-import org.jlab.wave.persistence.model.ChartConfig;
-import org.jlab.wave.persistence.model.SeriesConfig;
+import org.jlab.wave.business.service.ChartService;
+import org.jlab.wave.persistence.model.Chart;
+import org.jlab.wave.persistence.model.Series;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -38,9 +38,9 @@ public class ChartConfigController extends HttpServlet {
             throws ServletException, IOException {
         String errorReason = null;
 
-        ChartConfigService service = new ChartConfigService();
+        ChartService service = new ChartService();
 
-        List<ChartConfig> list = null;
+        List<Chart> list = null;
 
         try {
             list = service.fetch();
@@ -60,9 +60,9 @@ public class ChartConfigController extends HttpServlet {
                 gen.write("error", errorReason);
             } else {
                 gen.writeStartArray("configs");
-                for(ChartConfig config: list) {
+                for(Chart config: list) {
                     gen.writeStartObject();
-                    gen.write("chart-config-id", config.getChartConfigId());
+                    gen.write("chart-id", config.getChartId());
 
                     if(config.getUser() == null) {
                         gen.writeNull("user");
@@ -92,9 +92,9 @@ public class ChartConfigController extends HttpServlet {
 
                     gen.writeStartArray("series");
 
-                    for(SeriesConfig series: config.getSeriesConfigList()) {
+                    for(Series series: config.getSeriesList()) {
                         gen.writeStartObject();
-                        gen.write("series_config_id", series.getSeriesConfigId());
+                        gen.write("series-id", series.getSeriesId());
                         gen.write("pv", series.getPv());
                         gen.write("weight", series.getWeight());
 

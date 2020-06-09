@@ -4,8 +4,8 @@ create user 'wave' IDENTIFIED BY 'password goes here';
 
 grant select on wave.* to 'wave';
 
-create table chart_config (
-    chart_config_id bigint not null auto_increment primary key,
+create table chart (
+    chart_id bigint not null auto_increment primary key,
     user varchar(24) null,
     name varchar(32) not null,
     start timestamp null,
@@ -18,9 +18,9 @@ create table chart_config (
     unique(user, name)
 );
 
-create table series_config (
-    series_config_id bigint not null auto_increment primary key,
-    chart_config_id bigint not null,
+create table series (
+    series_id bigint not null auto_increment primary key,
+    chart_id bigint not null,
     weight smallint not null default 0,
     pv varchar(128) not null,
     label varchar(128) null,
@@ -30,5 +30,5 @@ create table series_config (
     y_axis_max float null,
     y_axis_log_scale bool not null default false,
     scaler float null,
-    foreign key (chart_config_id) references chart_config(chart_config_id) on delete cascade
+    foreign key (chart_id) references chart(chart_id) on delete cascade
 );

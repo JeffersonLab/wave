@@ -3,8 +3,8 @@ package org.jlab.wave.persistence.model;
 import java.time.Instant;
 import java.util.List;
 
-public class ChartConfig {
-    long chartConfigId;
+public class Chart {
+    long chartId;
     String name;
     String user;
     Instant start;
@@ -15,14 +15,14 @@ public class ChartConfig {
     String title;
     LayoutMode layoutMode;
     ViewerMode viewerMode;
-    List<SeriesConfig> seriesConfigList;
+    List<Series> seriesList;
 
-    public long getChartConfigId() {
-        return chartConfigId;
+    public long getChartId() {
+        return chartId;
     }
 
-    public void setChartConfigId(long chartConfigId) {
-        this.chartConfigId = chartConfigId;
+    public void setChartId(long chartId) {
+        this.chartId = chartId;
     }
 
     public String getName() {
@@ -105,11 +105,11 @@ public class ChartConfig {
         this.viewerMode = viewerMode;
     }
 
-    public List<SeriesConfig> getSeriesConfigList() {
-        return seriesConfigList;
+    public List<Series> getSeriesList() {
+        return seriesList;
     }
 
-    public void setSeriesConfigList(List<SeriesConfig> seriesConfigList) {
-        this.seriesConfigList = seriesConfigList;
+    public void setSeriesList(List<Series> seriesList) {
+        this.seriesList = seriesList;
     }
 }
