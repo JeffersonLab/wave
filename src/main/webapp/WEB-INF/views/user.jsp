@@ -10,6 +10,7 @@
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/resources/img/favicon.ico?v=${initParam.releaseNumber}"/>
     </head>
     <body>
-    <p>Remote User: <c:out value="${pageContext.request.remoteUser}"/></p>
+    <p>X-Remote-User Header: <c:out value="${pageContext.request.getHeader('X-Remote-User')}"/></p>
+    <p>Servlet Remote User: <c:out value="${pageContext.request.remoteUser}"/></p>
     </body>
 </html>
