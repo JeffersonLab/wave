@@ -1,6 +1,10 @@
 # WAVE
 Web Archive Viewer and Expositor   
 
+<p>
+<a href="#"><img src="https://github.com/JeffersonLab/wave/raw/main/doc/Screenshot.png"/></a>     
+</p>
+
 Uses [myquery](https://github.com/JeffersonLab/myquery) and [epics2web](https://github.com/JeffersonLab/epics2web) to provide an [EPICS](https://en.wikipedia.org/wiki/EPICS) data viewer and analysis tool for the Jefferson Lab archiver MYA as well as plots of live data.
 
 Deployed at:    
