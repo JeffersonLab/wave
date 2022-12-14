@@ -1,0 +1,26 @@
+services:
+  mya:
+    extends:
+      file: deps.yml
+      service: mya
+
+  softioc:
+    extends:
+      file: deps.yml
+      service: softioc
+
+  myquery:
+    extends:
+      file: deps.yml
+      service: myquery
+
+  epics2web:
+    extends:
+      file: deps.yml
+      service: epics2web
+
+  wave:
+    hostname: wave
+    container_name: wave
+    ports:
+      - 8080:8080

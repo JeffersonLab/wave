@@ -1,0 +1,37 @@
+services:
+  mya:
+    image: jeffersonlab/mycontainer:1.0.0
+    hostname: mya
+    container_name: mya
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+
+  softioc:
+    image: jeffersonlab/softioc:1.1.0
+    tty: true
+    stdin_open: true
+    hostname: softioc
+    container_name: softioc
+    volumes:
+      - ./docker/softioc/db:/db
+
+  myquery:
+    hostname: myquery
+    container_name: myquery
+    image: jeffersonlab/myquery:2.5.0
+    ports:
+      - 8085:8080
+
+  epics2web:
+    hostname: epics2web
+    container_name: epics2web
+    image: jeffersonlab/epics2web:1.14.1
+    environment:
+      EPICS_CA_ADDR_LIST: softioc
+    depends_on:
+      - softioc
+    ports:
+      - 8086:8080

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+    <Resource name="jdbc/mya"
+              global="jdbc/mya"
+              type="javax.sql.DataSource"
+              username="myapi"
+              password="password"
+              driverClassName="org.mariadb.jdbc.Driver"
+              url="jdbc:mariadb://mya:3306/archive"
+              maxTotal="4"
+              minIdle="0"
+              maxIdle="2"
+              testOnBorrow="true"
+              validationQuery="select 1 from dual"
+              connectionProperties="useCompression=true;noAccessToProcedureBodies=true"
+              closeMethod="close"/>
+</Context>

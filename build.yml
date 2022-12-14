@@ -1,0 +1,30 @@
+services:
+  mya:
+    extends:
+      file: docker-compose.yml
+      service: mya
+
+  softioc:
+    extends:
+      file: docker-compose.yml
+      service: softioc
+
+  myquery:
+    extends:
+      file: docker-compose.yml
+      service: myquery
+
+  epics2web:
+    extends:
+      file: docker-compose.yml
+      service: epics2web
+
+  wave:
+    extends:
+      file: docker-compose.yml
+      service: wave
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CUSTOM_CRT_URL=http://pki.jlab.org/JLabCA.crt
