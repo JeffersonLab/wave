@@ -1,10 +1,12 @@
 plugins {
     id 'java'
 	id 'war'
-    id "eu.butter.gradle.js" version "2.15.1"
+    id "org.gradlewebtools.minify" version "1.3.1"
+    id "org.jlab.cat" version "1.0.0"
 }
 
 description = "Web Archive Viewer and Expositor"
+group = 'org.jlab'
 version = '2.1.0'
 
 ext {
@@ -12,52 +14,37 @@ ext {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
-compileJava   {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+tasks.withType(JavaCompile) {
+    options.release = 8
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
 
 dependencies {
-    compile 'javax.servlet:jstl:1.2'
-    providedCompile 'javax.json:javax.json-api:1.1.4'
-	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    providedCompile 'javax.servlet:jstl:1.2',
+                    'javax.json:javax.json-api:1.1.4',
+	                'javax.servlet:javax.servlet-api:3.1.0'
 }
 
-javascript.source {
-    dev {
-        js {
-            srcDir "${projectDir}/src/main/webapp/resources/js/src"
-            include "*.js"
-        }
-    }
+task combineJs(type: org.jlab.cat.CatTask) {
+    input.from("src/main/webapp/resources/js/src").include('**/*.js')
+    output = file("${buildDir}/combined-js/combined.js")
 }
 
-combineJs {
-    encoding = "UTF-8"
-    source = javascript.source.dev.js.files
-    dest = file("${buildDir}/web/resources/js/combined.js")
-}
-
-/*combineJs {
-    source = ["${projectDir}/src/main/webapp/resources/js/src/file1.js", "${projectDir}/js/file2.js"]
-    dest = file("${buildDir}/web/resources/js/combined.min.js")
-}*/
-
-minifyJs {
-    source = "${buildDir}/web/resources/js/combined.js"
-    dest = file("${buildDir}/web/resources/js/combined.min.js")
-    closure.compilationLevel = 'WHITESPACE_ONLY'
-    dependsOn combineJs
+task minifyJs(type: org.gradlewebtools.minify.JsMinifyTask) {
+    dependsOn(combineJs)
+    srcDir = project.file("build/combined-js")
+    dstDir = project.file("build/minified")
 }
 
 war {
-    archiveName 'wave.war' // Otherwise defaults to having version attached which is pain to re-deploy on version upgrade
+    archiveFileName =  'wave.war'
     filesMatching('WEB-INF/web.xml') {
         filter {
-            line -> line.replaceAll("@VERSION@", version)
+            line -> line.replaceAll("@VERSION@", project.version)
         }
         filter {
             line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
@@ -67,9 +54,9 @@ war {
         }
     }
 
-    from("${buildDir}/web/resources/js") {
+    from("${buildDir}/minified") {
         include 'combined.min.js'
-        into "resources/js"
+        into 'resources/js'
     }
 
     dependsOn minifyJs
