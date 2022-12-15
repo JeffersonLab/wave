@@ -21,9 +21,11 @@ services:
   myquery:
     hostname: myquery
     container_name: myquery
-    image: jeffersonlab/myquery:2.5.0
+    image: jeffersonlab/myquery:2.6.0
     ports:
       - 8085:8080
+    environment:
+      CORS_ALLOWED_ORIGINS: "*"
 
   epics2web:
     hostname: epics2web
