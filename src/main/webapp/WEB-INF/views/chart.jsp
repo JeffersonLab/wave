@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib prefix="wave" uri="http://jlab.org/wave/functions"%>
 <!DOCTYPE html>
 <html class="${param.print eq 'Y' ? 'print ' : ''}">
     <head>
@@ -167,6 +168,10 @@
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/zoomabletimeformatter.js?v=${initParam.releaseNumber}"></script>                 
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/src/main.js?v=${initParam.releaseNumber}"></script>                
             </c:otherwise>
-        </c:choose>        
+        </c:choose>
+        <script>
+            jlab.epics2webHost = '${wave:epics2webHost()}';
+            jlab.myqueryHost = '${wave:myqueryHost()}';
+        </script>
     </body>
 </html>
