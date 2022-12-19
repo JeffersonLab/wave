@@ -48,7 +48,7 @@
                 </select>
                 <h3>Mya Options</h3>
                 <div class="endpoint-header">Deployment</div>
-                <input type="text" id="mya-deployment" placeholder="Mya Deployment (ops, etc)" value="ops" />
+                <input type="text" id="mya-deployment" placeholder="Mya Deployment (ops, etc)" value="${env['MYQUERY_DEFAULT_DEPLOYMENT'] == null ? 'ops' : env['MYQUERY_DEFAULT_DEPLOYMENT']}" />
                 <div class="endpoint-header">Sampling Threshold</div>
                 <input type="text" id="mya-limit" placeholder="Binning limit (optional)" value="100000"/>
                 <h3>Title</h3>
@@ -170,8 +170,9 @@
             </c:otherwise>
         </c:choose>
         <script>
-            jlab.epics2webHost = '${wave:epics2webHost()}';
-            jlab.myqueryHost = '${wave:myqueryHost()}';
+            jlab.epics2webHost = '${env["EPICS_2_WEB_HOST"]}';
+            jlab.myqueryHost = '${env["MYQUERY_HOST"]}';
+            jlab.myqueryDefaultDeployment = '${env["MYQUERY_DEFAULT_DEPLOYMENT"]}';
         </script>
     </body>
 </html>

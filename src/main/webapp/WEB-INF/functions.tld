@@ -11,12 +11,6 @@
     <function>
         <name>epics2webHost</name>
         <function-class>org.jlab.wave.presentation.TagFunctions</function-class>
-        <function-signature>java.lang.String epics2webHost()</function-signature>
-    </function>
-
-    <function>
-        <name>myqueryHost</name>
-        <function-class>org.jlab.wave.presentation.TagFunctions</function-class>
-        <function-signature>java.lang.String myqueryHost()</function-signature>
+        <function-signature>java.lang.String testFunc()</function-signature>
     </function>
 </taglib>

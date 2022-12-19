@@ -8,7 +8,7 @@
                 this.fullscreen = false;
                 this.start = new Date();
                 this.end = new Date(this.start.getTime());
-                this.myaDeployment = 'ops';
+                this.myaDeployment = jlab.myqueryDefaultDeployment;
                 this.myaLimit = 100000;
                 this.liveWindowMinutes = 30;
 

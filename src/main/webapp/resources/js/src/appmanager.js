@@ -293,13 +293,19 @@
                     if ( value && value.length > 2 ) {
                         $ul.html( "<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>" );
                         $ul.listview( "refresh" );
+
+                        let host = jlab.myqueryHost || window.location.host,
+                            url = '//' + host + '/myquery/channel',
+                            data = {
+                                q: $input.val() + '%',
+                                m: _chartManager.getOptions().myaDeployment
+                            };
+
                         $.ajax({
-                            url: "/myquery/channel",
+                            url: url,
                             /*dataType: "jsonp",
                             crossDomain: true,*/
-                            data: {
-                                q: $input.val() + '%'
-                            }
+                            data: data
                         }).then( function ( response ) {
                                 $.each( response, function ( i, val ) {
                                     html += '<li><a href="#">' + val.name + "</a></li>";

@@ -146,9 +146,8 @@
                         start = wave.windowStart;
                     }
 
-                    var host = jlab.myqueryHost || window.location.host;
-
-                    let url = '//' + host + '/myquery/interval',
+                    let host = jlab.myqueryHost || window.location.host,
+                        url = '//' + host + '/myquery/interval',
                             data = {
                                 c: functionpv,
                                 b: jlab.wave.util.toIsoDateTimeString(start),
