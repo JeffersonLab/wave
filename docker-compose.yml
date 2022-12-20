@@ -24,3 +24,7 @@ services:
     container_name: wave
     ports:
       - 8080:8080
+    environment:
+      EPICS_2_WEB_HOST: localhost:8086
+      MYQUERY_HOST: localhost:8085
+      MYQUERY_DEFAULT_DEPLOYMENT: docker
