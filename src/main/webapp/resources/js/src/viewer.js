@@ -524,8 +524,16 @@
                     }
                 };
 
+                let protocol = 'ws:';
+                if (window.location.protocol === 'https:') {
+                    protocol = 'wss:';
+                }
 
-                let _conOpts = {};
+                let host = jlab.epics2webHost || window.location.host;
+
+                let _conOpts = {
+                    url: protocol + "//" + host + "/epics2web/monitor"
+                };
 
                 con = new jlab.epics2web.ClientConnection(_conOpts);
 
