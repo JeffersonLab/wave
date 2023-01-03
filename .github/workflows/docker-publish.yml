@@ -19,7 +19,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            jeffersonlab/wave
+            jeffersonlab/${{ github.event.repository.name }}
           tags: |
             type=semver,pattern={{version}}
       -
