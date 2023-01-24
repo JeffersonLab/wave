@@ -1,6 +1,6 @@
 services:
   mya:
-    image: jeffersonlab/mycontainer:1.0.0
+    image: jeffersonlab/mycontainer:1.1.0
     hostname: mya
     container_name: mya
     ports:
@@ -21,7 +21,7 @@ services:
   myquery:
     hostname: myquery
     container_name: myquery
-    image: jeffersonlab/myquery:2.6.0
+    image: jeffersonlab/myquery:2.6.1
     ports:
       - 8085:8080
     environment:
