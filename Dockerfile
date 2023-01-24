@@ -33,3 +33,4 @@ RUN useradd -m tomcat \
     && chown -R ${RUN_USER}:tomcat ${DEPLOYMENTS} \
     && chmod -R g+rw ${DEPLOYMENTS}
 USER ${RUN_USER}
+ENV TZ='America/New_York'
