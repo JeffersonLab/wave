@@ -426,10 +426,12 @@
 
                 let self = this;
 
-                wave.windowEnd = new Date();
-                wave.windowEnd.setMinutes(wave.windowEnd.getMinutes() + 1); /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
-                wave.windowStart = new Date(wave.windowEnd);
-                wave.windowStart.setMinutes(wave.windowStart.getMinutes() - chartManager.getOptions().liveWindowMinutes);
+                /*Wiggle room for query time, doesn't hurt to ask for future time as no points exists in archiver for it*/
+                wave.windowEnd = luxon.DateTime.local().plus({minute: 1});
+
+                wave.windowStart = luxon.DateTime.fromMillis(wave.windowEnd.toMillis());
+
+                wave.windowStart = wave.windowStart.minus({minute: chartManager.getOptions().liveWindowMinutes * 1});
 
                 let doRender = function() {
                     let newLastUpdated = new Date();
@@ -448,9 +450,10 @@
                         series.chart.canvasjsChart.render();
                     }
 
-                    wave.windowEnd.setTime(newLastUpdated.getTime());
-                    wave.windowStart = new Date(wave.windowEnd);
-                    wave.windowStart.setMinutes(wave.windowStart.getMinutes() - chartManager.getOptions().liveWindowMinutes);
+                    wave.windowEnd = luxon.DateTime.fromMillis(newLastUpdated.getTime());
+                    wave.windowStart = luxon.DateTime.fromMillis(wave.windowEnd.toMillis());
+
+                    wave.windowStart = wave.windowStart.minus({minute: chartManager.getOptions().liveWindowMinutes * 1});
                 };
 
 
