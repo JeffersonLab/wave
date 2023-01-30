@@ -144,18 +144,9 @@
                             liveWindowMinutes = $("#live-window-minutes").val(),
                             title = $("#chart-title-input").val();
 
-                    _options.start.setFullYear(startDate.getFullYear());
-                    _options.start.setMonth(startDate.getMonth());
-                    _options.start.setDate(startDate.getDate());
-                    _options.start.setHours(startTime.getHours());
-                    _options.start.setMinutes(startTime.getMinutes());
-                    _options.start.setSeconds(startTime.getSeconds());
-                    _options.end.setFullYear(endDate.getFullYear());
-                    _options.end.setMonth(endDate.getMonth());
-                    _options.end.setDate(endDate.getDate());
-                    _options.end.setHours(endTime.getHours());
-                    _options.end.setMinutes(endTime.getMinutes());
-                    _options.end.setSeconds(endTime.getSeconds());
+                    _options.start = startDate;
+
+                    _options.end = endDate;
 
                     _options.layoutMode = parseInt($("#layout-mode-select").val());
 

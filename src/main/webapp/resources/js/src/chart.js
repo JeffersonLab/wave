@@ -190,8 +190,22 @@
                                     }
                                     /*console.timeEnd("search");*/
 
+                                    let v = e.value;
+
+                                    if(e.value instanceof Date) {
+                                        v = e.value.getTime();
+                                    } else {
+                                        //console.log('not a date');
+                                    }
+
+                                    let dt = luxon.DateTime.fromMillis(v, {zone: 'America/New_York'});
+
+                                    let str = dt.toFormat(e.chart.options.axisX.valueFormatString);
+
+
                                     //e.chart.options.timeFormatter.tickFormat
-                                    return CanvasJS.formatDate(e.value, e.chart.options.axisX.valueFormatString) + ", " + y;
+                                    //return CanvasJS.formatDate(e.value, e.chart.options.axisX.valueFormatString) + ", " + y;
+                                    return str + ", " + y;
                                 }
                             },
                             minimum: minLimit,
@@ -212,6 +226,24 @@
                     valueFormatString: timeFormatter.startingTickFormat,
                     interval: timeFormatter.startingInterval,
                     intervalType: timeFormatter.startingIntervalType,
+                    labelFormatter: function ( e ) {
+                        //console.log('e: ', e);
+
+                        let v = e.value;
+
+                        if(e.value instanceof Date) {
+                            v = e.value.getTime();
+                        } else {
+                            console.log('not a date');
+                        }
+
+                        let dt = luxon.DateTime.fromMillis(v, {zone: 'America/New_York'});
+
+                        let str = dt.toFormat(e.chart.options.axisX.valueFormatString);
+
+                        //console.log('dt: ', dt, ', str: ', str, ", fmt: ", e.chart.options.axisX.valueFormatString);
+                        return str;
+                    },
                     labelAngle: -45//,
                             //minimum: minDate,
                             //maximum: maxDate

@@ -21,8 +21,8 @@
              * In addition there are non-changing "starting" values for tickFormat, 
              * interval, and intervalType such that a reset is possible (zoom out).
              * 
-             * @param {date} start - The start date
-             * @param {date} end - The end date
+             * @param {luxon.DateTime} start - The start date
+             * @param {luxon.DateTime} end - The end date
              * @returns {jlab.wave.TimeFormatter} - The time formatter
              */
             constructor(start, end) {
@@ -43,60 +43,60 @@
                 this.interval = null;
                 this.intervalType = null;
 
-                if (start.getHours() !== 0 || start.getMinutes() !== 0 || start.getSeconds() !== 0) {
+                if (start.hour !== 0 || start.minute !== 0 || start.second !== 0) {
                     startTimeNonZero = true;
                 }
 
-                if (end.getHours() !== 0 || end.getMinutes() !== 0 || end.getSeconds() !== 0) {
+                if (end.hour !== 0 || end.minute !== 0 || end.second !== 0) {
                     endTimeNonZero = true;
                 }
 
                 if (startTimeNonZero || endTimeNonZero) {
                     formattedTime = ' (' + jlab.wave.util.toUserTimeString(start) + ' - ' + jlab.wave.util.toUserTimeString(end) + ')';
                 } else { /*Check for no-time special cases*/
-                    let d = new Date(start.getTime());
-                    d.setDate(start.getDate() + 1);
-                    oneDaySpecial = d.getTime() === end.getTime();
+                    let d = luxon.DateTime.fromMillis((start.toMillis()));
+                    d = d.plus({day: 1})
+                    oneDaySpecial = d.toMillis() === end.toMillis();
 
-                    if (!oneDaySpecial && start.getDate() === 1) { /*Check for one month special*/
-                        d = new Date(start.getTime());
-                        d.setMonth(start.getMonth() + 1);
-                        oneMonthSpecial = d.getTime() === end.getTime();
+                    if (!oneDaySpecial && start.day() === 1) { /*Check for one month special*/
+                        d = luxon.DaetTime.fromMillis(start.toMillis());
+                        d = d.plus({month: 1});
+                        oneMonthSpecial = d.toMillis() === end.toMillis();
 
-                        if (!oneMonthSpecial && start.getMonth() === 0) { /*Check for one year special*/
-                            d = new Date(start.getTime());
-                            d.setFullYear(start.getFullYear() + 1);
-                            oneYearSpecial = d.getTime() === end.getTime();
+                        if (!oneMonthSpecial && start.month() === 0) { /*Check for one year special*/
+                            d = luxon.DateTime.fromMillis(start.toMillis());
+                            d = d.plus({year: 1});
+                            oneYearSpecial = d.toMillis() === end.toMillis();
                         }
                     }
                 }
 
-                sameYear = start.getFullYear() === end.getFullYear();
-                sameMonth = sameYear ? start.getMonth() === end.getMonth() : false;
-                sameDay = sameMonth ? start.getDate() === end.getDate() : false;
+                sameYear = start.year === end.year;
+                sameMonth = sameYear ? start.month === end.month : false;
+                sameDay = sameMonth ? start.day === end.day : false;
 
                 if (oneDaySpecial) {
-                    this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+                    this.title = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day + ', ' + start.year;
                 } else if (oneMonthSpecial) {
-                    this.title = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getFullYear();
+                    this.title = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.year;
                 } else if (oneYearSpecial) {
-                    this.title = start.getFullYear();
+                    this.title = start.year;
                 } else {
                     if (sameYear) {
-                        formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate();
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day;
 
                         if (sameMonth) {
                             if (sameDay) {
-                                formattedEndDate = ', ' + end.getFullYear();
+                                formattedEndDate = ', ' + end.year;
                             } else { /*Days differ*/
-                                formattedEndDate = ' - ' + end.getDate() + ', ' + end.getFullYear();
+                                formattedEndDate = ' - ' + end.day + ', ' + end.year;
                             }
                         } else { /*Months differ*/
-                            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+                            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month + 1] + ' ' + end.day + ', ' + end.year;
                         }
                     } else { /*Years differ*/
-                        formattedStartDate = jlab.wave.util.fullMonthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
-                        formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + end.getFullYear();
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day + ', ' + start.year;
+                        formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month + 1] + ' ' + end.day + ', ' + end.year;
                     }
 
                     this.title = formattedStartDate + formattedEndDate + formattedTime;
@@ -198,7 +198,7 @@
                 };
 
                 /*Initialize with unzoomed values*/
-                this.adjustForViewportZoom(start.getTime(), end.getTime());
+                this.adjustForViewportZoom(start.toMillis(), end.toMillis());
 
                 this.startingTickFormat = this.tickFormat;
                 this.startingInterval = this.interval;
