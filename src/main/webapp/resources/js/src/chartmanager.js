@@ -198,7 +198,7 @@
                         data = data + '--- ' + pv + ' ---\r\n';
                         for (let j = 0; j < d.length; j++) {
                             if (!(j % 2)) { /*Only output even to skip stepped points */
-                                data = data + wave.util.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
+                                data = data + wave.util.toIsoDateTimeString(luxon.DateTime.fromMillis(d[j].x)) + ',' + d[j].y + '\r\n';
                             }
                         }
                     }
