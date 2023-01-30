@@ -58,12 +58,12 @@
                     d = d.plus({day: 1})
                     oneDaySpecial = d.toMillis() === end.toMillis();
 
-                    if (!oneDaySpecial && start.day() === 1) { /*Check for one month special*/
+                    if (!oneDaySpecial && start.day === 1) { /*Check for one month special*/
                         d = luxon.DaetTime.fromMillis(start.toMillis());
                         d = d.plus({month: 1});
                         oneMonthSpecial = d.toMillis() === end.toMillis();
 
-                        if (!oneMonthSpecial && start.month() === 0) { /*Check for one year special*/
+                        if (!oneMonthSpecial && start.month=== 0) { /*Check for one year special*/
                             d = luxon.DateTime.fromMillis(start.toMillis());
                             d = d.plus({year: 1});
                             oneYearSpecial = d.toMillis() === end.toMillis();

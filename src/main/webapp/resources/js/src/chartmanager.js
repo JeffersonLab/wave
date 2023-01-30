@@ -124,7 +124,7 @@
                         fetchRequired = true;
                     }
 
-                    if (_old.start.getTime() !== _options.start.getTime() || _old.end.getTime() !== _options.end.getTime()) {
+                    if (_old.start.toMillis() !== _options.start.toMillis() || _old.end.toMillis() !== _options.end.toMillis()) {
                         fetchRequired = true;
                     }
 

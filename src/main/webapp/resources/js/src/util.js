@@ -33,7 +33,7 @@
                 let year = x.year,
                         month = x.month,
                         day = x.day;
-                return util.triCharMonthNames[month + 1] + ' ' + util.pad(day, 2) + ' ' + year;
+                return util.triCharMonthNames[month - 1] + ' ' + util.pad(day, 2) + ' ' + year;
             };
             util.toUserTimeString = function (x) {
                 let hour = x.hour,
@@ -48,7 +48,7 @@
                         hour = x.hour,
                         minute = x.minute,
                         second = x.second;
-                return util.triCharMonthNames[month + 1] + ' ' + util.pad(day, 2) + ' ' + year + ' ' + util.pad(hour, 2) + ':' + util.pad(minute, 2) + ':' + util.pad(second, 2);
+                return util.triCharMonthNames[month - 1] + ' ' + util.pad(day, 2) + ' ' + year + ' ' + util.pad(hour, 2) + ':' + util.pad(minute, 2) + ':' + util.pad(second, 2);
             };
             util.parseUserDate = function (x) {
                 return luxon.DateTime.fromFormat(x, 'LLL dd yyyy', {zone: 'America/New_York'});

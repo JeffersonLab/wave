@@ -6,7 +6,7 @@
                 this.viewerMode = wave.viewerModeEnum.ARCHIVE;
                 this.layoutMode = wave.layoutModeEnum.SEPARATE_CHART;
                 this.fullscreen = false;
-                this.start = new luxon.DateTime({zone: 'America/New_York'});
+                this.start = luxon.DateTime.local({zone: 'America/New_York'});
                 this.end = luxon.DateTime.fromMillis(this.start.toMillis(), {zone: 'America/New_York'});
                 this.myaDeployment = jlab.myqueryDefaultDeployment;
                 this.myaLimit = 100000;
@@ -19,12 +19,12 @@
                 this.validate = function () {
                     /*Verify valid number*/
                     if (this.start.toMillis() !== this.start.toMillis()) { /*Only NaN is not equal itself*/
-                        this.start = new luxon.DateTime({zone: 'America/New_York'});
+                        this.start = luxon.DateTime.local({zone: 'America/New_York'});
                     }
 
                     /*Verify valid number*/
                     if (this.end.toMillis() !== this.end.toMillis()) { /*Only NaN is not equal itself*/
-                        this.end = new luxon.DateTime({zone: 'America/New_York'});
+                        this.end = luxon.DateTime.local({zone: 'America/New_York'});
                     }
 
                     /*Verify valid number*/
