@@ -76,14 +76,14 @@
                 sameDay = sameMonth ? start.day === end.day : false;
 
                 if (oneDaySpecial) {
-                    this.title = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day + ', ' + start.year;
+                    this.title = jlab.wave.util.fullMonthNames[start.month - 1] + ' ' + start.day + ', ' + start.year;
                 } else if (oneMonthSpecial) {
-                    this.title = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.year;
+                    this.title = jlab.wave.util.fullMonthNames[start.month - 1] + ' ' + start.year;
                 } else if (oneYearSpecial) {
                     this.title = start.year;
                 } else {
                     if (sameYear) {
-                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day;
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month - 1] + ' ' + start.day;
 
                         if (sameMonth) {
                             if (sameDay) {
@@ -92,11 +92,11 @@
                                 formattedEndDate = ' - ' + end.day + ', ' + end.year;
                             }
                         } else { /*Months differ*/
-                            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month + 1] + ' ' + end.day + ', ' + end.year;
+                            formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month - 1] + ' ' + end.day + ', ' + end.year;
                         }
                     } else { /*Years differ*/
-                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month + 1] + ' ' + start.day + ', ' + start.year;
-                        formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month + 1] + ' ' + end.day + ', ' + end.year;
+                        formattedStartDate = jlab.wave.util.fullMonthNames[start.month - 1] + ' ' + start.day + ', ' + start.year;
+                        formattedEndDate = ' - ' + jlab.wave.util.fullMonthNames[end.month - 1] + ' ' + end.day + ', ' + end.year;
                     }
 
                     this.title = formattedStartDate + formattedEndDate + formattedTime;
