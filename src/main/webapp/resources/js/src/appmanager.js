@@ -35,6 +35,42 @@
                     _chartManager.removePvs(pvs);
                 };
 
+                let getPvConfigUpdateValues = function() {
+                    return {label: $("#pv-label").val(),
+                            color: $("#pv-color").val(),
+                            yAxisLabel: $("#pv-y-axis-label").val(),
+                            yAxisMin: $("#pv-y-axis-min").val(),
+                            yAxisMax: $("#pv-y-axis-max").val(),
+                            yAxisLog: $("#pv-y-axis-log").is(":checked") ? true : null,
+                            scaler: $("#pv-scaler").val()}
+                };
+
+                let setPvConfigValues = function(updates) {
+                    let e = wave.selectedSeries;
+
+                    if (typeof wave.selectedSeries !== 'undefined') {
+                        let series = wave.pvToSeriesMap[e.dataSeries.pv];
+
+                        series.preferences.label = updates.label;
+                        series.preferences.color = updates.color;
+                        series.preferences.yAxisLabel = updates.yAxisLabel;
+                        series.preferences.yAxisMin = updates.yAxisMin;
+                        series.preferences.yAxisMax = updates.yAxisMax;
+                        series.preferences.yAxisLog = updates.yAxisLog;
+                        series.preferences.scaler = updates.scaler;
+
+                        let uri = new URI();
+                        uri.setQuery(e.dataSeries.pv + "label", updates.label);
+                        uri.setQuery(e.dataSeries.pv + "color", updates.color);
+                        uri.setQuery(e.dataSeries.pv + "yAxisLabel", updates.yAxisLabel);
+                        uri.setQuery(e.dataSeries.pv + "yAxisMin", updates.yAxisMin);
+                        uri.setQuery(e.dataSeries.pv + "yAxisMax", updates.yAxisMax);
+                        uri.setQuery(e.dataSeries.pv + "yAxisLog", updates.yAxisLog);
+                        uri.setQuery(e.dataSeries.pv + "scaler", updates.scaler);
+                        window.history.replaceState({}, 'Set PV Config', uri.href());
+                    }
+                };
+
                 /* JQUERY MOBILE GLOBAL TOOLBAR INIT */
                 $("#header-panel").toolbar({theme: "a", tapToggle: false});
                 $("#footer-panel").toolbar({theme: "a", tapToggle: false});
@@ -179,13 +215,7 @@
                     let e = wave.selectedSeries;
 
                     if (typeof wave.selectedSeries !== 'undefined') {
-                        let label = $("#pv-label").val();
-                        let color = $("#pv-color").val();
-                        let yAxisLabel = $("#pv-y-axis-label").val();
-                        let yAxisMin = $("#pv-y-axis-min").val();
-                        let yAxisMax = $("#pv-y-axis-max").val();
-                        let yAxisLog = $("#pv-y-axis-log").is(":checked") ? true : null;
-                        let scaler = $("#pv-scaler").val();
+                        let updates = getPvConfigUpdateValues();
 
                         /*e.dataSeries.legendText = label;
                         e.dataSeries.color = color;
@@ -194,27 +224,11 @@
                         let series = wave.pvToSeriesMap[e.dataSeries.pv];
 
                         let fetchRequired = false;
-                        if(series.preferences.scaler !== scaler) {
+                        if(series.preferences.scaler !== updates.scaler) {
                             fetchRequired = true;
                         }
 
-                        series.preferences.label = label;
-                        series.preferences.color = color;
-                        series.preferences.yAxisLabel = yAxisLabel;
-                        series.preferences.yAxisMin = yAxisMin;
-                        series.preferences.yAxisMax = yAxisMax;
-                        series.preferences.yAxisLog = yAxisLog;
-                        series.preferences.scaler = scaler;
-
-                        let uri = new URI();
-                        uri.setQuery(e.dataSeries.pv + "label", label);
-                        uri.setQuery(e.dataSeries.pv + "color", color);
-                        uri.setQuery(e.dataSeries.pv + "yAxisLabel", yAxisLabel);
-                        uri.setQuery(e.dataSeries.pv + "yAxisMin", yAxisMin);
-                        uri.setQuery(e.dataSeries.pv + "yAxisMax", yAxisMax);
-                        uri.setQuery(e.dataSeries.pv + "yAxisLog", yAxisLog);
-                        uri.setQuery(e.dataSeries.pv + "scaler", scaler);
-                        window.history.replaceState({}, 'Set PV Config', uri.href());
+                        setPvConfigValues(updates);
 
                         if(fetchRequired) {
                             _chartManager.refresh();
@@ -241,6 +255,19 @@
                     }
 
                     $("#pv-panel").panel("close");
+                });
+                $(document).on("click", "#pv-move-to-top-button", function () {
+                    let e = wave.selectedSeries;
+
+                    if (typeof wave.selectedSeries !== 'undefined') {
+                        let updates = getPvConfigUpdateValues();
+                        let pv = e.dataSeries.pv;
+                        removePvs([pv]);
+                        addPvs([pv]);
+                        setPvConfigValues(updates);
+
+                        location.reload();
+                    }
                 });
                 $(document).on("click", "#pv-delete-button", function () {
                     let e = wave.selectedSeries;
