@@ -68,7 +68,7 @@
                 };
 
                 this.trimOldPoints = function() {
-                    let oldestUnixTime = wave.windowStart.getTime(),
+                    let oldestUnixTime = wave.windowStart.toMillis(),
                         numToRemove = 0;
 
                     /* Find points older than start of sliding window */

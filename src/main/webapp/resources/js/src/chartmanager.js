@@ -124,7 +124,7 @@
                         fetchRequired = true;
                     }
 
-                    if (_old.start.getTime() !== _options.start.getTime() || _old.end.getTime() !== _options.end.getTime()) {
+                    if (_old.start.toMillis() !== _options.start.toMillis() || _old.end.toMillis() !== _options.end.toMillis()) {
                         fetchRequired = true;
                     }
 
@@ -198,7 +198,7 @@
                         data = data + '--- ' + pv + ' ---\r\n';
                         for (let j = 0; j < d.length; j++) {
                             if (!(j % 2)) { /*Only output even to skip stepped points */
-                                data = data + wave.util.toIsoDateTimeString(new Date(d[j].x)) + ',' + d[j].y + '\r\n';
+                                data = data + wave.util.toIsoDateTimeString(luxon.DateTime.fromMillis(d[j].x)) + ',' + d[j].y + '\r\n';
                             }
                         }
                     }

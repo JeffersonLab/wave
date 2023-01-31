@@ -135,27 +135,20 @@
                             startTimeStr = $("#start-time-input").val(),
                             endDateStr = $("#end-date-input").val(),
                             endTimeStr = $("#end-time-input").val(),
-                            startDate = wave.util.parseUserDate(startDateStr),
-                            startTime = wave.util.parseUserTime(startTimeStr),
-                            endDate = wave.util.parseUserDate(endDateStr),
-                            endTime = wave.util.parseUserTime(endTimeStr),
+                            sd = wave.util.parseUserDate(startDateStr),
+                            st = wave.util.parseUserTime(startTimeStr),
+                            ed = wave.util.parseUserDate(endDateStr),
+                            et = wave.util.parseUserTime(endTimeStr),
                             myaDeployment = $("#mya-deployment").val(),
                             myaLimit = $("#mya-limit").val(),
                             liveWindowMinutes = $("#live-window-minutes").val(),
                             title = $("#chart-title-input").val();
 
-                    _options.start.setFullYear(startDate.getFullYear());
-                    _options.start.setMonth(startDate.getMonth());
-                    _options.start.setDate(startDate.getDate());
-                    _options.start.setHours(startTime.getHours());
-                    _options.start.setMinutes(startTime.getMinutes());
-                    _options.start.setSeconds(startTime.getSeconds());
-                    _options.end.setFullYear(endDate.getFullYear());
-                    _options.end.setMonth(endDate.getMonth());
-                    _options.end.setDate(endDate.getDate());
-                    _options.end.setHours(endTime.getHours());
-                    _options.end.setMinutes(endTime.getMinutes());
-                    _options.end.setSeconds(endTime.getSeconds());
+                    let s = luxon.DateTime.local(sd.year, sd.month, sd.day, st.hour, st.minute, st.second, 0, {zone: 'America/New_York'});
+                    let e = luxon.DateTime.local(ed.year, ed.month, ed.day, et.hour, et.minute, et.second, 0, {zone: 'America/New_York'});
+
+                    _options.start = s;
+                    _options.end = e;
 
                     _options.layoutMode = parseInt($("#layout-mode-select").val());
 

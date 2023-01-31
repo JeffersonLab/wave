@@ -151,6 +151,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/uri-1.14.1.min.js"></script>   
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-whenall.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/epics2web-1.4.0.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/luxon-3.2.1.min.js"></script>
         <c:choose>
             <c:when test="${initParam.productionRelease eq 'true'}">
                 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/combined.min.js?v=${initParam.releaseNumber}"></script>
