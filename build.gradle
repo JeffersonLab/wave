@@ -2,7 +2,7 @@ plugins {
     id 'java'
 	id 'war'
     id "org.gradlewebtools.minify" version "1.3.1"
-    id "org.jlab.cat" version "1.0.0"
+    id "org.jlab.cat" version "1.1.0"
 }
 
 description = "Web Archive Viewer and Expositor"
@@ -30,7 +30,7 @@ dependencies {
 }
 
 task combineJs(type: org.jlab.cat.CatTask) {
-    input.from("src/main/webapp/resources/js/src").include('**/*.js')
+    from("src/main/webapp/resources/js/src").include('**/*.js')
     output = file("${buildDir}/combined-js/combined.js")
 }
 
