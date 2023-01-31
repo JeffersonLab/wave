@@ -358,6 +358,14 @@
                         $("#start-time-input").parent("div").removeClass("ui-disabled");
                         $("#end-date-input").parent("div").removeClass("ui-disabled");
                         $("#end-time-input").parent("div").removeClass("ui-disabled");
+
+                        if(wave.windowStart && wave.windowEnd) {
+                            $("#start-date-input").val(wave.util.toUserDateString(wave.windowStart));
+                            $("#start-time-input").val(wave.util.toUserTimeString(wave.windowStart));
+                            $("#end-date-input").val(wave.util.toUserDateString(wave.windowEnd));
+                            $("#end-time-input").val(wave.util.toUserTimeString(wave.windowEnd));
+                        }
+
                     } else {
                         $("#start-date-input").parent("div").addClass("ui-disabled");
                         $("#start-time-input").parent("div").addClass("ui-disabled");
