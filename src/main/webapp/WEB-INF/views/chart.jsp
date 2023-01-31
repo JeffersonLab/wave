@@ -84,6 +84,7 @@
                 </ul>
                 <h3>Actions</h3>
                 <button type="button" class="ui-btn ui-icon-eye ui-btn-icon-left" id="pv-visibility-toggle-button">Hide</button>
+                <button type="button" class="ui-btn ui-icon-arrow-u ui-btn-icon-left" id="pv-move-to-top-button">Move to Top</button>
                 <hr class="options-hr"/>
                 <button type="button" class="ui-btn ui-icon-minus ui-btn-icon-left" id="pv-delete-button">Delete</button>
             </div>
