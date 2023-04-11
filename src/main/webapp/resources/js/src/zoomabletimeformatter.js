@@ -59,7 +59,7 @@
                     oneDaySpecial = d.toMillis() === end.toMillis();
 
                     if (!oneDaySpecial && start.day === 1) { /*Check for one month special*/
-                        d = luxon.DaetTime.fromMillis(start.toMillis());
+                        d = luxon.DateTime.fromMillis(start.toMillis());
                         d = d.plus({month: 1});
                         oneMonthSpecial = d.toMillis() === end.toMillis();
 
