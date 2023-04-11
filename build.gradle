@@ -7,10 +7,10 @@ plugins {
 
 description = "Web Archive Viewer and Expositor"
 group = 'org.jlab'
-version = '2.4.1'
+version = '2.4.2'
 
 ext {
-    releaseDate = 'Jan 31 2023'
+    releaseDate = 'April 11 2023'
 }
 
 repositories {
