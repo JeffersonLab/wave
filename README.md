@@ -12,7 +12,7 @@ Web Archive Viewer and Expositor
  - [Configure](https://github.com/JeffersonLab/wave#configure)    
  - [Build](https://github.com/JeffersonLab/wave#build)
  - [Develop](https://github.com/JeffersonLab/wave#develop)
- - [Test](https://github.com/JeffersonLab/wave#dtest)  
+ - [Test](https://github.com/JeffersonLab/wave#test)  
  - [Release](https://github.com/JeffersonLab/wave#release)
  - [Deploy](https://github.com/JeffersonLab/wave#deploy) 
 ---
