@@ -11,7 +11,10 @@ Web Archive Viewer and Expositor
  - [Install](https://github.com/JeffersonLab/wave#install)    
  - [Configure](https://github.com/JeffersonLab/wave#configure)    
  - [Build](https://github.com/JeffersonLab/wave#build)
+ - [Develop](https://github.com/JeffersonLab/wave#develop)
+ - [Test](https://github.com/JeffersonLab/wave#dtest)  
  - [Release](https://github.com/JeffersonLab/wave#release)
+ - [Deploy](https://github.com/JeffersonLab/wave#deploy) 
 ---
 
 ## Overview
@@ -68,8 +71,32 @@ gradlew build
 
 **Note for JLab On-Site Users**: Jefferson Lab has an intercepting [proxy](https://gist.github.com/slominskir/92c25a033db93a90184a5994e71d0b78)
 
+## Develop
+In order to iterate rapidly when making changes it's often useful to run the app directly on the local workstation, perhaps leveraging an IDE. In this scenario run the service dependencies with:
+```
+docker compose -f deps.yml up
+```
+
+## Test
+Manual tests can be manually run on a local workstation using:
+```
+docker compose -f build.yml up
+```
+
 ## Release
 1. Bump the version number and release date in build.gradle and commit and push to GitHub (using [Semantic Versioning](https://semver.org/)).   
 2. Create a new release on the GitHub [Releases](https://github.com/JeffersonLab/wave/releases) page corresponding to same version in build.gradle (Enumerate changes and link issues).  Attach war file for users to download.
 3. Build and publish a new Docker image [from the GitHub tag](https://gist.github.com/slominskir/a7da801e8259f5974c978f9c3091d52c#8-build-an-image-based-of-github-tag).  GitHub is configured to do this automatically on git push of semver tag (typically part of GitHub release) or the [Publish to DockerHub](https://github.com/JeffersonLab/wave/actions/workflows/docker-publish.yml) action can be manually triggered after selecting a tag.
-4. Bump and commit quick start [image version](https://github.com/JeffersonLab/wave/blob/main/docker-compose.override.yml)
+4. Bump and commit quick start [image version](https://github.com/JeffersonLab/wave/blob/main/docker-compose.override.yml).
+
+5. ## Deploy
+At JLab this app is found at [epicsweb.jlab.org/myquery](https://epicsweb.jlab.org/wave/) and internally at [epicswebtest.acc.jlab.org/myquery](https://epicswebtest.acc.jlab.org/wave/).  However, those servers are proxies for `tomcat1.acc.jlab.org` and `tomcattest1.acc.jlab.org` respectively.   Use wget or the like to grab the release war file.  Don't download directly into webapps dir as file scanner may attempt to deploy before fully downloaded.  Be careful of previous war file as by default wget won't overrwite.  The war file should be attached to each release, so right click it and copy location (or just update version in path provided in the example below).  Example:
+
+```
+cd /tmp
+rm wave.war
+wget https://github.com/JeffersonLab/wave/releases/download/v1.2.3/wave.war
+mv  wave.war /opt/tomcat/webapps
+```
+
+**JLab Internal Docs**:  [InstallGuideTomcatRHEL9](https://accwiki.acc.jlab.org/do/view/SysAdmin/InstallGuideTomcatRHEL9)
