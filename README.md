@@ -78,7 +78,7 @@ docker compose -f deps.yml up
 ```
 
 ## Test
-Manual tests can be manually run on a local workstation using:
+Manual tests can be run on a local workstation using:
 ```
 docker compose -f build.yml up
 ```
