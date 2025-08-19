@@ -103,7 +103,7 @@ Or manually execute:
 cd /tmp
 rm wave.war
 wget https://github.com/JeffersonLab/wave/releases/download/v1.2.3/wave.war
-mv  wave.war /opt/tomcat/webapps
+mv wave.war /opt/tomcat/webapps
 ```
 
 **JLab Internal Docs**:  [builds/epicsweb](https://acgdocs.acc.jlab.org/ace/builds/epicsweb)
