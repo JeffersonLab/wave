@@ -8,9 +8,9 @@ plugins {
 
 description = "Web Archive Viewer and Expositor"
 group = 'org.jlab'
-version = '2.4.2'
+version = new File("${projectDir}/VERSION").text.trim()
 ext.version = project.version
-ext.releaseDate = 'April 11 2023'
+ext.releaseDate = new Date().format('MMM dd yyyy')
 
 repositories {
     mavenCentral()
