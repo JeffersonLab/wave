@@ -16,7 +16,7 @@ services:
     hostname: softioc
     container_name: softioc
     volumes:
-      - ./docker/softioc/db:/db
+      - ./container/softioc/db:/db
 
   myquery:
     hostname: myquery
