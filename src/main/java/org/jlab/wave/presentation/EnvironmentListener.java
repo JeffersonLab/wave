@@ -8,10 +8,10 @@ import jakarta.servlet.annotation.WebListener;
 @WebListener
 public class EnvironmentListener implements ServletContextListener {
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        ServletContext context = sce.getServletContext();
+  @Override
+  public void contextInitialized(ServletContextEvent sce) {
+    ServletContext context = sce.getServletContext();
 
-        context.setAttribute("env", System.getenv());
-    }
+    context.setAttribute("env", System.getenv());
+  }
 }

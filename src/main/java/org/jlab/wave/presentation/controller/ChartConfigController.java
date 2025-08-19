@@ -1,11 +1,5 @@
 package org.jlab.wave.presentation.controller;
 
-import org.jlab.wave.business.service.ChartService;
-import org.jlab.wave.persistence.model.Chart;
-import org.jlab.wave.persistence.model.Series;
-
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,329 +13,338 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
+import org.jlab.wave.business.service.ChartService;
+import org.jlab.wave.persistence.model.Chart;
+import org.jlab.wave.persistence.model.Series;
 
 /**
- *
  * @author ryans
  */
-@WebServlet(name = "ChartConfigController", urlPatterns = {"/chart-config"})
+@WebServlet(
+    name = "ChartConfigController",
+    urlPatterns = {"/chart-config"})
 public class ChartConfigController extends HttpServlet {
-    
-    /**
-     * Handles the HTTP <code>GET</code> method.  Get Chart.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String errorReason = null;
 
-        ChartService service = new ChartService();
+  /**
+   * Handles the HTTP <code>GET</code> method. Get Chart.
+   *
+   * @param request servlet request
+   * @param response servlet response
+   * @throws ServletException if a servlet-specific error occurs
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String errorReason = null;
 
-        List<Chart> list = null;
+    ChartService service = new ChartService();
 
-        try {
-            list = service.fetch();
-        } catch(SQLException e) {
-            errorReason = e.getMessage();
-        }
+    List<Chart> list = null;
 
-        response.setContentType("application/json");
+    try {
+      list = service.fetch();
+    } catch (SQLException e) {
+      errorReason = e.getMessage();
+    }
 
-        OutputStream out = response.getOutputStream();
+    response.setContentType("application/json");
 
-        try (JsonGenerator gen = Json.createGenerator(out)) {
+    OutputStream out = response.getOutputStream();
+
+    try (JsonGenerator gen = Json.createGenerator(out)) {
+      gen.writeStartObject();
+
+      if (errorReason != null) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        gen.write("error", errorReason);
+      } else {
+        gen.writeStartArray("configs");
+        for (Chart config : list) {
+          gen.writeStartObject();
+          gen.write("chart-id", config.getChartId());
+
+          if (config.getUser() == null) {
+            gen.writeNull("user");
+          } else {
+            gen.write("user", config.getUser());
+          }
+
+          gen.write("name", config.getName());
+
+          if (config.getStart() == null) {
+            gen.writeNull("start");
+          } else {
+            gen.write(
+                "start",
+                DateTimeFormatter.ISO_INSTANT.format(
+                    config.getStart().truncatedTo(ChronoUnit.SECONDS)));
+          }
+
+          if (config.getEnd() == null) {
+            gen.writeNull("end");
+          } else {
+            gen.write(
+                "end",
+                DateTimeFormatter.ISO_INSTANT.format(
+                    config.getEnd().truncatedTo(ChronoUnit.SECONDS)));
+          }
+
+          gen.write("window-minutes", config.getWindowMinutes());
+
+          gen.write("mya-deployment", config.getMyaDeployment());
+
+          gen.write("mya-limit", config.getMyaLimit());
+
+          gen.writeStartArray("series");
+
+          for (Series series : config.getSeriesList()) {
             gen.writeStartObject();
+            gen.write("series-id", series.getSeriesId());
+            gen.write("pv", series.getPv());
+            gen.write("weight", series.getWeight());
 
-            if (errorReason != null) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                gen.write("error", errorReason);
+            if (series.getLabel() == null) {
+              gen.writeNull("label");
             } else {
-                gen.writeStartArray("configs");
-                for(Chart config: list) {
-                    gen.writeStartObject();
-                    gen.write("chart-id", config.getChartId());
+              gen.write("label", series.getLabel());
+            }
 
-                    if(config.getUser() == null) {
-                        gen.writeNull("user");
-                    } else {
-                        gen.write("user", config.getUser());
-                    }
+            if (series.getColor() == null) {
+              gen.writeNull("color");
+            } else {
+              gen.write("color", series.getColor());
+            }
 
-                    gen.write("name", config.getName());
+            if (series.getyAxisLabel() == null) {
+              gen.writeNull("y-axis-label");
+            } else {
+              gen.write("y-axis-label", series.getyAxisLabel());
+            }
 
-                    if(config.getStart() == null) {
-                        gen.writeNull("start");
-                    } else {
-                        gen.write("start", DateTimeFormatter.ISO_INSTANT.format(config.getStart().truncatedTo(ChronoUnit.SECONDS)));
-                    }
+            if (series.getyAxisMin() == null) {
+              gen.writeNull("y-axis-min");
+            } else {
+              gen.write("y-axis-min", series.getyAxisMin());
+            }
 
-                    if(config.getEnd() == null) {
-                        gen.writeNull("end");
-                    } else {
-                        gen.write("end", DateTimeFormatter.ISO_INSTANT.format(config.getEnd().truncatedTo(ChronoUnit.SECONDS)));
-                    }
+            if (series.getyAxisMax() == null) {
+              gen.writeNull("y-axis-max");
+            } else {
+              gen.write("y-axis-max", series.getyAxisMax());
+            }
 
-                    gen.write("window-minutes", config.getWindowMinutes());
+            gen.write("y-axis-log-scale", series.isyAxisLogScale());
 
-                    gen.write("mya-deployment", config.getMyaDeployment());
-
-                    gen.write("mya-limit", config.getMyaLimit());
-
-                    gen.writeStartArray("series");
-
-                    for(Series series: config.getSeriesList()) {
-                        gen.writeStartObject();
-                        gen.write("series-id", series.getSeriesId());
-                        gen.write("pv", series.getPv());
-                        gen.write("weight", series.getWeight());
-
-                        if(series.getLabel() == null) {
-                            gen.writeNull("label");
-                        } else {
-                            gen.write("label", series.getLabel());
-                        }
-
-                        if(series.getColor() == null) {
-                            gen.writeNull("color");
-                        } else {
-                            gen.write("color", series.getColor());
-                        }
-
-                        if(series.getyAxisLabel() == null) {
-                            gen.writeNull("y-axis-label");
-                        } else {
-                            gen.write("y-axis-label", series.getyAxisLabel());
-                        }
-
-                        if(series.getyAxisMin() == null) {
-                            gen.writeNull("y-axis-min");
-                        } else {
-                            gen.write("y-axis-min", series.getyAxisMin());
-                        }
-
-                        if(series.getyAxisMax() == null) {
-                            gen.writeNull("y-axis-max");
-                        } else {
-                            gen.write("y-axis-max", series.getyAxisMax());
-                        }
-
-                        gen.write("y-axis-log-scale", series.isyAxisLogScale());
-
-                        if(series.getScaler() == null) {
-                            gen.writeNull("scaler");
-                        } else {
-                            gen.write("scaler", series.getScaler());
-                        }
-
-                        gen.writeEnd();
-                    }
-
-                    gen.writeEnd();
-
-                    gen.writeEnd();
-                }
-                gen.writeEnd();
+            if (series.getScaler() == null) {
+              gen.writeNull("scaler");
+            } else {
+              gen.write("scaler", series.getScaler());
             }
 
             gen.writeEnd();
+          }
+
+          gen.writeEnd();
+
+          gen.writeEnd();
         }
+        gen.writeEnd();
+      }
+
+      gen.writeEnd();
+    }
+  }
+
+  /**
+   * Handles the HTTP <code>POST</code> method. Create Chart.
+   *
+   * @param request servlet request
+   * @param response servlet response
+   * @throws ServletException if a servlet-specific error occurs
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String errorReason = null;
+
+    ChartService service = new ChartService();
+
+    Chart chart = requestToChart(request);
+
+    try {
+      service.create(chart);
+    } catch (SQLException e) {
+      errorReason = e.getMessage();
     }
 
-    /**
-     * Handles the HTTP
-     * <code>POST</code> method.  Create Chart.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String errorReason = null;
+    response.setContentType("application/json");
 
-        ChartService service = new ChartService();
+    OutputStream out = response.getOutputStream();
 
-        Chart chart = requestToChart(request);
+    try (JsonGenerator gen = Json.createGenerator(out)) {
+      gen.writeStartObject();
 
-        try {
-            service.create(chart);
-        } catch(SQLException e) {
-            errorReason = e.getMessage();
-        }
+      if (errorReason != null) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        gen.write("error", errorReason);
+      }
 
-        response.setContentType("application/json");
+      gen.writeEnd();
+    }
+  }
 
-        OutputStream out = response.getOutputStream();
+  /**
+   * Handles the HTTP <code>PUT</code> method. Update Chart.
+   *
+   * @param request servlet request
+   * @param response servlet response
+   * @throws ServletException if a servlet-specific error occurs
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  protected void doPut(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String errorReason = null;
 
-        try (JsonGenerator gen = Json.createGenerator(out)) {
-            gen.writeStartObject();
+    ChartService service = new ChartService();
 
-            if (errorReason != null) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                gen.write("error", errorReason);
-            }
+    Chart chart = requestToChart(request);
 
-            gen.writeEnd();
-        }
+    try {
+      service.update(chart);
+    } catch (SQLException e) {
+      errorReason = e.getMessage();
     }
 
-    /**
-     * Handles the HTTP
-     * <code>PUT</code> method.  Update Chart.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String errorReason = null;
+    response.setContentType("application/json");
 
-        ChartService service = new ChartService();
+    OutputStream out = response.getOutputStream();
 
-        Chart chart = requestToChart(request);
+    try (JsonGenerator gen = Json.createGenerator(out)) {
+      gen.writeStartObject();
 
-        try {
-            service.update(chart);
-        } catch(SQLException e) {
-            errorReason = e.getMessage();
-        }
+      if (errorReason != null) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        gen.write("error", errorReason);
+      }
 
-        response.setContentType("application/json");
+      gen.writeEnd();
+    }
+  }
 
-        OutputStream out = response.getOutputStream();
+  private Chart requestToChart(HttpServletRequest request) {
+    Chart chart = new Chart();
 
-        try (JsonGenerator gen = Json.createGenerator(out)) {
-            gen.writeStartObject();
+    // For new charts this will be null (and should be ignored if provided)
+    chart.setChartId(parseLong(request.getParameter("chart-id")));
 
-            if (errorReason != null) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                gen.write("error", errorReason);
-            }
+    chart.setUser(request.getRemoteUser());
 
-            gen.writeEnd();
-        }
+    chart.setName(request.getParameter("name"));
+    chart.setStart(parseInstant(request.getParameter("start")));
+    chart.setEnd(parseInstant(request.getParameter("end")));
+    chart.setWindowMinutes(parseInt(request.getParameter("window-minutes")));
+    chart.setMyaDeployment(request.getParameter("mya-deployment"));
+    chart.setMyaLimit(parseLong(request.getParameter("mya-limit")));
 
+    List<Series> seriesList = new ArrayList<>();
+
+    String[] seriesIdList = request.getParameterValues("series-id");
+    String[] pvList = request.getParameterValues("pv");
+    String[] weightList = request.getParameterValues("weight");
+    String[] labelList = request.getParameterValues("label");
+    String[] colorList = request.getParameterValues("color");
+    String[] yAxisLabelList = request.getParameterValues("y-axis-label");
+    String[] yAxisMinList = request.getParameterValues("y-axis-min");
+    String[] yAxisMaxList = request.getParameterValues("y-axis-max");
+    String[] yAxisLogScaleList = request.getParameterValues("y-axis-log-scale");
+    String[] scalerList = request.getParameterValues("scaler");
+
+    for (int i = 0; i < pvList.length; i++) {
+      Series series = new Series();
+
+      // For new series this will be null (and should be ignored if provided)
+      series.setSeriesId(parseLong(seriesIdList[i]));
+
+      series.setPv(pvList[i]);
+      series.setWeight(parseShort(weightList[i]));
+      series.setLabel(labelList[i]);
+      series.setColor(colorList[i]);
+      series.setyAxisLabel(yAxisLabelList[i]);
+      series.setyAxisMin(parseFloatBox(yAxisMinList[i]));
+      series.setyAxisMax(parseFloatBox(yAxisMaxList[i]));
+      series.setyAxisLogScale(parseBoolean(yAxisLogScaleList[i]));
+      series.setScaler(parseFloatBox(scalerList[i]));
+
+      seriesList.add(series);
     }
 
-    private Chart requestToChart(HttpServletRequest request) {
-        Chart chart = new Chart();
+    chart.setSeriesList(seriesList);
 
-        // For new charts this will be null (and should be ignored if provided)
-        chart.setChartId(parseLong(request.getParameter("chart-id")));
+    return chart;
+  }
 
-        chart.setUser(request.getRemoteUser());
+  private Float parseFloatBox(String input) {
+    Float output = null;
 
-        chart.setName(request.getParameter("name"));
-        chart.setStart(parseInstant(request.getParameter("start")));
-        chart.setEnd(parseInstant(request.getParameter("end")));
-        chart.setWindowMinutes(parseInt(request.getParameter("window-minutes")));
-        chart.setMyaDeployment(request.getParameter("mya-deployment"));
-        chart.setMyaLimit(parseLong(request.getParameter("mya-limit")));
-
-        List<Series> seriesList = new ArrayList<>();
-
-        String[] seriesIdList = request.getParameterValues("series-id");
-        String[] pvList = request.getParameterValues("pv");
-        String[] weightList = request.getParameterValues("weight");
-        String[] labelList = request.getParameterValues("label");
-        String[] colorList = request.getParameterValues("color");
-        String[] yAxisLabelList = request.getParameterValues("y-axis-label");
-        String[] yAxisMinList = request.getParameterValues("y-axis-min");
-        String[] yAxisMaxList = request.getParameterValues("y-axis-max");
-        String[] yAxisLogScaleList = request.getParameterValues("y-axis-log-scale");
-        String[] scalerList = request.getParameterValues("scaler");
-
-        for(int i = 0; i < pvList.length; i++) {
-            Series series = new Series();
-
-            // For new series this will be null (and should be ignored if provided)
-            series.setSeriesId(parseLong(seriesIdList[i]));
-
-            series.setPv(pvList[i]);
-            series.setWeight(parseShort(weightList[i]));
-            series.setLabel(labelList[i]);
-            series.setColor(colorList[i]);
-            series.setyAxisLabel(yAxisLabelList[i]);
-            series.setyAxisMin(parseFloatBox(yAxisMinList[i]));
-            series.setyAxisMax(parseFloatBox(yAxisMaxList[i]));
-            series.setyAxisLogScale(parseBoolean(yAxisLogScaleList[i]));
-            series.setScaler(parseFloatBox(scalerList[i]));
-
-            seriesList.add(series);
-        }
-
-        chart.setSeriesList(seriesList);
-
-        return chart;
+    if (input != null) {
+      output = Float.parseFloat(input);
     }
 
-    private Float parseFloatBox(String input) {
-        Float output = null;
+    return output;
+  }
 
-        if(input != null) {
-            output = Float.parseFloat(input);
-        }
+  private boolean parseBoolean(String input) {
+    boolean output = false;
 
-        return output;
+    if (input != null) {
+      output = "true".equals(input);
     }
 
-    private boolean parseBoolean(String input) {
-        boolean output = false;
+    return output;
+  }
 
-        if(input != null) {
-            output = "true".equals(input);
-        }
+  private long parseLong(String input) {
+    long output = 0;
 
-        return output;
+    if (input != null) {
+      output = Long.parseLong(input);
     }
 
-    private long parseLong(String input) {
-        long output = 0;
+    return output;
+  }
 
-        if(input != null) {
-            output = Long.parseLong(input);
-        }
+  private int parseInt(String input) {
+    int output = 0;
 
-        return output;
+    if (input != null) {
+      output = Integer.parseInt(input);
     }
 
-    private int parseInt(String input) {
-        int output = 0;
+    return output;
+  }
 
-        if(input != null) {
-            output = Integer.parseInt(input);
-        }
+  private short parseShort(String input) {
+    short output = 0;
 
-        return output;
+    if (input != null) {
+      output = Short.parseShort(input);
     }
 
-    private short parseShort(String input) {
-        short output = 0;
+    return output;
+  }
 
-        if(input != null) {
-            output = Short.parseShort(input);
-        }
+  private Instant parseInstant(String input) {
+    Instant output = null;
 
-        return output;
+    if (input != null) {
+      output = Instant.parse(input);
     }
 
-    private Instant parseInstant(String input) {
-        Instant output = null;
-
-        if(input != null) {
-            output = Instant.parse(input);
-        }
-
-        return output;
-    }
+    return output;
+  }
 }
