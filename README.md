@@ -47,7 +47,7 @@ docker compose up
 
 ## Install
  1. Download [Java JDK 17+](https://adoptium.net/)
- 2. Download [Apache Tomcat 10+](http://tomcat.apache.org/) (Compiled against Jakarta EE)
+ 2. Download [Apache Tomcat 11](http://tomcat.apache.org/) (Compiled against Jakarta EE)
  4. Download [wave.war](https://github.com/JeffersonLab/wave/releases) and drop it into the Tomcat webapps directory
  5. Install [myquery](https://github.com/JeffersonLab/myquery) and [epics2web](https://github.com/JeffersonLab/epics2web).
  5. [Configure](https://github.com/JeffersonLab/wave#configure) Tomcat
@@ -60,7 +60,7 @@ docker compose up
  - __MYQUERY_DEFAULT_DEPLOYMENT__: default MYA deployment
   
  ## Build
-This project is built with [Java 17](https://adoptium.net/) (compiled to Java 17 bytecode), and uses the [Gradle 7](https://gradle.org/) build tool to automatically download dependencies and build the project from source:
+This project is built with [Java 21](https://adoptium.net/) (compiled to Java 17 bytecode), and uses the [Gradle 9](https://gradle.org/) build tool to automatically download dependencies and build the project from source:
 
 ```
 git clone https://github.com/JeffersonLab/wave
