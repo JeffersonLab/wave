@@ -1,4 +1,4 @@
-# WAVE [![CI](https://github.com/JeffersonLab/wave/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffersonLab/wave/actions/workflows/ci.yml) [![Docker](https://img.shields.io/docker/v/jeffersonlab/wave?sort=semver&label=DockerHub)](https://hub.docker.com/r/jeffersonlab/wave)
+# WAVE [![CI](https://github.com/JeffersonLab/wave/actions/workflows/ci.yaml/badge.svg)](https://github.com/JeffersonLab/wave/actions/workflows/ci.yaml) [![Docker](https://img.shields.io/docker/v/jeffersonlab/wave?sort=semver&label=DockerHub)](https://hub.docker.com/r/jeffersonlab/wave)
 Web Archive Viewer and Expositor   
 
 <p>
@@ -74,20 +74,20 @@ gradlew build
 ## Develop
 In order to iterate rapidly when making changes it's often useful to run the app directly on the local workstation, perhaps leveraging an IDE. In this scenario run the service dependencies with:
 ```
-docker compose -f deps.yml up
+docker compose -f deps.yaml up
 ```
 
 ## Test
 Manual tests can be run on a local workstation using:
 ```
-docker compose -f build.yml up
+docker compose -f build.yaml up
 ```
 
 ## Release
-1. Bump the version number and release date in build.gradle and commit and push to GitHub (using [Semantic Versioning](https://semver.org/)).   
-2. Create a new release on the GitHub [Releases](https://github.com/JeffersonLab/wave/releases) page corresponding to same version in build.gradle (Enumerate changes and link issues).  Attach war file for users to download.
-3. Build and publish a new Docker image [from the GitHub tag](https://gist.github.com/slominskir/a7da801e8259f5974c978f9c3091d52c#8-build-an-image-based-of-github-tag).  GitHub is configured to do this automatically on git push of semver tag (typically part of GitHub release) or the [Publish to DockerHub](https://github.com/JeffersonLab/wave/actions/workflows/docker-publish.yml) action can be manually triggered after selecting a tag.
-4. Bump and commit quick start [image version](https://github.com/JeffersonLab/wave/blob/main/docker-compose.override.yml).
+1. Bump the version number in the VERSION file and commit and push to GitHub (using [Semantic Versioning](https://semver.org/)).
+2. The [CD](https://github.com/JeffersonLab/wave/blob/main/.github/workflows/cd.yaml) GitHub Action should run automatically invoking:
+    - The [Create release](https://github.com/JeffersonLab/java-workflows/blob/main/.github/workflows/gh-release.yaml) GitHub Action to tag the source and create release notes summarizing any pull requests.   Edit the release notes to add any missing details.  A war file artifact is attached to the release.
+    - The [Publish docker image](https://github.com/JeffersonLab/container-workflows/blob/main/.github/workflows/docker-publish.yaml) GitHub Action to create a new demo Docker image.
 
 ## Deploy
 At JLab this app is found at [epicsweb.jlab.org/wave](https://epicsweb.jlab.org/wave/) and internally at [epicswebtest.acc.jlab.org/wave](https://epicswebtest.acc.jlab.org/wave/).  However, those servers are proxies for `tomcat1.acc.jlab.org` and `tomcattest1.acc.jlab.org` respectively.   Use wget or the like to grab the release war file.  Don't download directly into webapps dir as file scanner may attempt to deploy before fully downloaded.  Be careful of previous war file as by default wget won't overrwite.  The war file should be attached to each release, so right click it and copy location (or just update version in path provided in the example below).  Example:
