@@ -90,20 +90,12 @@ docker compose -f build.yaml up
     - The [Publish docker image](https://github.com/JeffersonLab/container-workflows/blob/main/.github/workflows/docker-publish.yaml) GitHub Action to create a new demo Docker image.
 
 ## Deploy
-At JLab this app is found at [epicsweb.jlab.org/wave](https://epicsweb.jlab.org/wave/) and internally at [epicswebtest.acc.jlab.org/wave](https://epicswebtest.acc.jlab.org/wave/).  However, those servers are proxies for `tomcat1.acc.jlab.org` and `tomcattest1.acc.jlab.org` respectively.   Use wget or the like to grab the release war file.  Don't download directly into webapps dir as file scanner may attempt to deploy before fully downloaded.  Be careful of previous war file as by default wget won't overrwite.  The war file should be attached to each release, so right click it and copy location (or just update version in path provided in the example below).  Example:
+The deploy to JLab's epicswebtest is handled automatically via the release workflow.
 
-A script is provided to automate the deployment. As root run:
-```
-cd /root/setup
-./deploy.sh epics2web {version}
-```
+At JLab this app is found at [epicsweb.jlab.org/wave](https://epicsweb.jlab.org/wave/) and internally at [epicswebtest.acc.jlab.org/wave](https://epicswebtest.acc.jlab.org/wave/).  However, those servers are proxies for `tomcat1.acc.jlab.org` and `tomcattest1.acc.jlab.org` respectively. A deploy script is provided on each server to automate wget and deploy. Example:
 
-Or manually execute:
 ```
-cd /tmp
-rm wave.war
-wget https://github.com/JeffersonLab/wave/releases/download/v1.2.3/wave.war
-mv wave.war /opt/tomcat/webapps
+/opt/tomcat/cd/deploy.sh wave 1.2.3
 ```
 
 **JLab Internal Docs**:  [builds/epicsweb](https://acgdocs.acc.jlab.org/ace/builds/epicsweb)
