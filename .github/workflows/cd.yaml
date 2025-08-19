@@ -24,6 +24,8 @@ jobs:
     secrets: inherit
 
   epicswebtest_deploy:
+    permissions:
+      contents: read
     needs:
       - release
     uses: jeffersonlab/general-workflows/.github/workflows/jlab-deploy-app.yaml@v2
