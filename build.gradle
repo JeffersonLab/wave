@@ -8,43 +8,39 @@ plugins {
 description = "Web Archive Viewer and Expositor"
 group = 'org.jlab'
 version = '2.4.2'
-
-ext {
-    releaseDate = 'April 11 2023'
-}
+ext.version = project.version
+ext.releaseDate = 'April 11 2023'
 
 repositories {
     mavenCentral()
 }
-
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.release = 17
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
-
 dependencies {
     implementation  'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
     providedCompile 'javax.json:javax.json-api:1.1.4',
                     'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
-
-task combineJs(type: org.jlab.cat.CatTask) {
+tasks.register('combineJs', org.jlab.cat.CatTask) {
     from("src/main/webapp/resources/js/src").include('**/*.js')
     output = file("${buildDir}/combined-js/combined.js")
 }
-
-task minifyJs(type: org.gradlewebtools.minify.JsMinifyTask) {
+tasks.register('minifyJs', org.gradlewebtools.minify.JsMinifyTask) {
     dependsOn(combineJs)
     srcDir = project.file("build/combined-js")
     dstDir = project.file("build/minified")
 }
-
+tasks.named('jar') {
+    enabled = false
+}
 war {
     archiveFileName =  'wave.war'
     filesMatching('WEB-INF/web.xml') {
         filter {
-            line -> line.replaceAll("@VERSION@", project.version)
+            line -> line.replaceAll("@VERSION@", version)
         }
         filter {
             line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
