@@ -22,3 +22,13 @@ jobs:
     with:
       semvertag: ${{ needs.release.outputs.semvertag }}
     secrets: inherit
+
+  epicswebtest_deploy:
+    needs:
+      - release
+    uses: jeffersonlab/general-workflows/.github/workflows/jlab-deploy-app.yaml@v2
+    with:
+      app: wave
+      env: epicswebtest
+      ver: ${{ needs.release.outputs.semver }}
+    secrets: inherit
