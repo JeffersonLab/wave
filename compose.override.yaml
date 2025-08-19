@@ -1,0 +1,3 @@
+services:
+  wave:
+    image: jeffersonlab/wave:latest

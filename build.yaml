@@ -1,27 +1,27 @@
 services:
   mya:
     extends:
-      file: docker-compose.yml
+      file: compose.yaml
       service: mya
 
   softioc:
     extends:
-      file: docker-compose.yml
+      file: compose.yaml
       service: softioc
 
   myquery:
     extends:
-      file: docker-compose.yml
+      file: compose.yaml
       service: myquery
 
   epics2web:
     extends:
-      file: docker-compose.yml
+      file: compose.yaml
       service: epics2web
 
   wave:
     extends:
-      file: docker-compose.yml
+      file: compose.yaml
       service: wave
     build:
       context: .

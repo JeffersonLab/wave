@@ -1,3 +1,0 @@
-services:
-  wave:
-    image: jeffersonlab/wave:2.4.2

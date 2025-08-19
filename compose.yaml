@@ -1,22 +1,22 @@
 services:
   mya:
     extends:
-      file: deps.yml
+      file: deps.yaml
       service: mya
 
   softioc:
     extends:
-      file: deps.yml
+      file: deps.yaml
       service: softioc
 
   myquery:
     extends:
-      file: deps.yml
+      file: deps.yaml
       service: myquery
 
   epics2web:
     extends:
-      file: deps.yml
+      file: deps.yaml
       service: epics2web
 
   wave:
